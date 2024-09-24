@@ -18,7 +18,7 @@ Tolerance Tolerance_FromOverallDifficulty(double overallDifficulty)
         .Ok = (int32_t) ((double) BASE_TOLERANCE_OK - od3),
         .Meh = (int32_t) ((double) BASE_TOLERANCE_MEH - od3),
         .Miss = (int32_t) ((double) BASE_TOLERANCE_MISS - od3),
-    }
+    };
 }
 
 BeatmapError Metadata_LoadFromFile(Metadata *metadata, FILE *file)

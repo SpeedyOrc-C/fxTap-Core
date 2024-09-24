@@ -77,6 +77,8 @@ typedef enum FindError
     FindError_BadFile,
 } FindError;
 
+// Load a beatmap from a file path.
+// If failed, return null and set the error code.
 __attribute__ ((malloc))
 Beatmap* Beatmap_New_LoadFromPath(const char *path, BeatmapError *error);
 
@@ -88,6 +90,8 @@ int Beatmap_NoteCount(const Beatmap *beatmap);
 
 Tolerance Tolerance_FromOverallDifficulty(double overallDifficulty);
 
+// Find all beatmaps under a directory, but subdirectories are not searched.
+// If failed, return null and set the error code.
 __attribute__ ((malloc))
 BeatmapFindEntries *BeatmapFindEntries_New_InsideDirectory(const char *path, FindError *error);
 

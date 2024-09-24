@@ -1,5 +1,6 @@
 #include <fxTap/beatmap-casiowin.h>
 #include <fxTap/endian-utility.h>
+#include <fxTap/bfile-extern.h>
 #include <stdlib.h>
 
 BeatmapError Metadata_LoadFromFile_BFile(Metadata *metadata, int bfile)
