@@ -7,7 +7,7 @@ void RendererController_Run(const RendererController *controller, const FxTap *f
     const double TimeScale = controller->HeightAbove / controller->VisibleTime;
     const Metadata *Metadata = &fxTap->Beatmap->Metadata;
 
-    for (char column = 0; column < fxTap->ColumnCount && Metadata->SizeOfColumn[column] > 0; column += 1)
+    for (int column = 0; column < fxTap->ColumnCount && Metadata->SizeOfColumn[column] > 0; column += 1)
     {
         const FxtapTime InitialAccumulatedStartTime = fxTap->Columns[column].AccumulatedTimeMs;
         const int32_t FocusedNoteNo = fxTap->Columns[column].FocusedNoteNo;

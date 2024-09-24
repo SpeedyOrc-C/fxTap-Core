@@ -28,7 +28,7 @@ bool Test_Hold()
         },
     };
 
-    Tolerance_FromOverallDifficulty(&beatmap.Tolerance, 0);
+    beatmap.Tolerance = Tolerance_FromOverallDifficulty(0);
 
     FxTap fxTap;
     FxTap_Init(&fxTap, &beatmap);
@@ -129,12 +129,12 @@ bool Test_Config()
     return true;
 }
 
-void DummyRenderTap(char column, double positionBottom)
+void DummyRenderTap(int column, double positionBottom)
 {
     printf("%d: %.5f\n", column + 1, positionBottom);
 }
 
-void DummyRenderHold(char column, double positionBottom, double positionTop)
+void DummyRenderHold(int column, double positionBottom, double positionTop)
 {
     printf("%d: %.5f ~ %.5f\n", column + 1, positionBottom, positionTop);
 }

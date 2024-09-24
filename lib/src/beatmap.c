@@ -7,15 +7,18 @@
 #include <ctype.h>
 #include <assert.h>
 
-void Tolerance_FromOverallDifficulty(Tolerance *tolerance, double overallDifficulty)
+Tolerance Tolerance_FromOverallDifficulty(double overallDifficulty)
 {
     const double od3 = 3 * overallDifficulty;
-    tolerance->Perfect = BASE_TOLERANCE_PERFECT;
-    tolerance->Great = (int32_t) ((double) BASE_TOLERANCE_GREAT - od3);
-    tolerance->Good = (int32_t) ((double) BASE_TOLERANCE_GOOD - od3);
-    tolerance->Ok = (int32_t) ((double) BASE_TOLERANCE_OK - od3);
-    tolerance->Meh = (int32_t) ((double) BASE_TOLERANCE_MEH - od3);
-    tolerance->Miss = (int32_t) ((double) BASE_TOLERANCE_MISS - od3);
+
+    return (Tolerance) {
+        .Perfect = BASE_TOLERANCE_PERFECT,
+        .Great = (int32_t) ((double) BASE_TOLERANCE_GREAT - od3),
+        .Good = (int32_t) ((double) BASE_TOLERANCE_GOOD - od3),
+        .Ok = (int32_t) ((double) BASE_TOLERANCE_OK - od3),
+        .Meh = (int32_t) ((double) BASE_TOLERANCE_MEH - od3),
+        .Miss = (int32_t) ((double) BASE_TOLERANCE_MISS - od3),
+    }
 }
 
 BeatmapError Metadata_LoadFromFile(Metadata *metadata, FILE *file)
@@ -41,7 +44,7 @@ BeatmapError Beatmap_LoadFromFile(Beatmap *beatmap, FILE *file)
     if (error)
         return error;
 
-    Tolerance_FromOverallDifficulty(&beatmap->Tolerance, beatmap->Metadata.OverallDifficulty);
+    beatmap->Tolerance = Tolerance_FromOverallDifficulty(beatmap->Metadata.OverallDifficulty);
 
     // Load notes
     const int TotalNotesCount = Beatmap_NoteCount(beatmap);
@@ -54,7 +57,7 @@ BeatmapError Beatmap_LoadFromFile(Beatmap *beatmap, FILE *file)
     beatmap->Notes[0] = notesBuffer;
     int accumulatedNotesCount = beatmap->Metadata.SizeOfColumn[0];
 
-    for (char column = 1; column < MAX_COLUMN_COUNT; column += 1)
+    for (int column = 1; column < MAX_COLUMN_COUNT; column += 1)
     {
         beatmap->Notes[column] = notesBuffer + accumulatedNotesCount;
         accumulatedNotesCount += beatmap->Metadata.SizeOfColumn[column];
@@ -126,11 +129,11 @@ void Beatmap_Free(Beatmap *beatmap)
     free(beatmap);
 }
 
-char Beatmap_ColumnCount(Beatmap *beatmap)
+int Beatmap_ColumnCount(const Beatmap *beatmap)
 {
-    char fromColumn = -1;
+    int fromColumn = -1;
 
-    for (char column = 0; column < MAX_COLUMN_COUNT; column += 1)
+    for (int column = 0; column < MAX_COLUMN_COUNT; column += 1)
     {
         if (beatmap->Metadata.SizeOfColumn[column] > 0)
         {
@@ -142,10 +145,9 @@ char Beatmap_ColumnCount(Beatmap *beatmap)
     if (fromColumn == -1)
         return 0;
 
+    int toColumn = MAX_COLUMN_COUNT + 1;
 
-    char toColumn = MAX_COLUMN_COUNT + 1;
-
-    for (char column = MAX_COLUMN_COUNT - 1; column >= 0; column -= 1)
+    for (int column = MAX_COLUMN_COUNT - 1; column >= 0; column -= 1)
     {
         if (beatmap->Metadata.SizeOfColumn[column] > 0)
         {
@@ -154,14 +156,14 @@ char Beatmap_ColumnCount(Beatmap *beatmap)
         }
     }
 
-    return (char) (toColumn - fromColumn + 1);
+    return toColumn - fromColumn + 1;
 }
 
-int Beatmap_NoteCount(Beatmap *beatmap)
+int Beatmap_NoteCount(const Beatmap *beatmap)
 {
     int count = 0;
 
-    for (char column = 0; column < MAX_COLUMN_COUNT; column += 1)
+    for (int column = 0; column < MAX_COLUMN_COUNT; column += 1)
         count += beatmap->Metadata.SizeOfColumn[column];
 
     return count;
@@ -277,6 +279,7 @@ BeatmapFindEntries *BeatmapFindEntries_New_InsideDirectory(const char *path, Fin
 
     closedir(directory);
 
+    *error = FindError_OK;
     return entries;
 }
 

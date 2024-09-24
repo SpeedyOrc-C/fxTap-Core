@@ -3,9 +3,9 @@
 
 #include <fxTap/game.h>
 
-typedef void (*TapRenderer)(char column, double positionBottom);
+typedef void (*TapRenderer)(int column, double positionBottom);
 
-typedef void (*HoldRenderer)(char column, double positionBottom, double positionTop);
+typedef void (*HoldRenderer)(int column, double positionBottom, double positionTop);
 
 typedef struct RendererController
 {

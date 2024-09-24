@@ -22,7 +22,7 @@ BeatmapError Beatmap_LoadFromFile_BFile(Beatmap *beatmap, int bfile)
     if (error)
         return error;
 
-    Tolerance_FromOverallDifficulty(&beatmap->Tolerance, beatmap->Metadata.OverallDifficulty);
+    beatmap->Tolerance = Tolerance_FromOverallDifficulty(beatmap->Metadata.OverallDifficulty);
 
     // Load notes
     const int TotalNotesCount = Beatmap_NoteCount(beatmap);
@@ -35,7 +35,7 @@ BeatmapError Beatmap_LoadFromFile_BFile(Beatmap *beatmap, int bfile)
     beatmap->Notes[0] = notesBuffer;
     int accumulatedNotesCount = beatmap->Metadata.SizeOfColumn[0];
 
-    for (char column = 1; column < MAX_COLUMN_COUNT; column += 1)
+    for (int column = 1; column < MAX_COLUMN_COUNT; column += 1)
     {
         beatmap->Notes[column] = notesBuffer + accumulatedNotesCount;
         accumulatedNotesCount += beatmap->Metadata.SizeOfColumn[column];

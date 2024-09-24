@@ -61,17 +61,17 @@ typedef struct BeatmapFindEntries
 
 typedef enum BeatmapError
 {
-    BeatmapError_OK = 0,
-    BeatmapError_MallocFailed = 1,
-    BeatmapError_FileNotFound = 2,
-    BeatmapError_CannotCloseFile = 3,
-    BeatmapError_ReadMetadataFailed = 4,
-    BeatmapError_ReadNotesFailed = 5,
+    BeatmapError_OK,
+    BeatmapError_MallocFailed,
+    BeatmapError_FileNotFound,
+    BeatmapError_CannotCloseFile,
+    BeatmapError_ReadMetadataFailed,
+    BeatmapError_ReadNotesFailed,
 } BeatmapError;
 
 typedef enum FindError
 {
-    FindError_OK = 0,
+    FindError_OK,
     FindError_MallocFailed,
     FindError_FxtapFolderNotFound,
     FindError_BadFile,
@@ -82,11 +82,11 @@ Beatmap* Beatmap_New_LoadFromPath(const char *path, BeatmapError *error);
 
 void Beatmap_Free(Beatmap *beatmap);
 
-char Beatmap_ColumnCount(Beatmap *beatmap);
+int Beatmap_ColumnCount(const Beatmap *beatmap);
 
-int Beatmap_NoteCount(Beatmap *beatmap);
+int Beatmap_NoteCount(const Beatmap *beatmap);
 
-void Tolerance_FromOverallDifficulty(Tolerance* tolerance, double overallDifficulty);
+Tolerance Tolerance_FromOverallDifficulty(double overallDifficulty);
 
 __attribute__ ((malloc))
 BeatmapFindEntries *BeatmapFindEntries_New_InsideDirectory(const char *path, FindError *error);

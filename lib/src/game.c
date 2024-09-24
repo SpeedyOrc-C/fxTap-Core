@@ -12,6 +12,7 @@ void FxTap_Init(FxTap *fxTap, Beatmap *beatmap)
     fxTap->Beatmap = beatmap;
     fxTap->LastUpdateTimeMs = 0;
     fxTap->ColumnCount = Beatmap_ColumnCount(beatmap);
+    fxTap->Combo = 0;
 
     fxTap->Grades.Perfect = 0;
     fxTap->Grades.Great = 0;
@@ -20,23 +21,23 @@ void FxTap_Init(FxTap *fxTap, Beatmap *beatmap)
     fxTap->Grades.Meh = 0;
     fxTap->Grades.Miss = 0;
 
-    for (char i = 0; i < MAX_COLUMN_COUNT; i += 1)
+    for (int column = 0; column < MAX_COLUMN_COUNT; column += 1)
     {
-        fxTap->LastUpdatePressedColumn[i] = false;
-        fxTap->Columns[i].AccumulatedTimeMs = 0;
+        fxTap->LastUpdatePressedColumn[column] = false;
+        fxTap->Columns[column].AccumulatedTimeMs = 0;
 
-        if (beatmap->Metadata.SizeOfColumn[i] > 0)
+        if (beatmap->Metadata.SizeOfColumn[column] > 0)
         {
-            fxTap->Columns[i].FocusedNoteNo = 0;
-            HoldState_SetDefault(&fxTap->Columns[i].HoldState);
+            fxTap->Columns[column].FocusedNoteNo = 0;
+            HoldState_SetDefault(&fxTap->Columns[column].HoldState);
         } else
         {
-            fxTap->Columns[i].FocusedNoteNo = END_OF_COLUMN;
+            fxTap->Columns[column].FocusedNoteNo = END_OF_COLUMN;
         }
     }
 }
 
-Grade GradeTapNote(Tolerance *tolerance, int32_t timeNowMs, bool keyIsDown, int32_t noteStartMs)
+Grade GradeTapNote(const Tolerance *tolerance, int32_t timeNowMs, bool keyIsDown, int32_t noteStartMs)
 {
     // Negative: early
     // Positive: late
@@ -61,7 +62,7 @@ Grade GradeTapNote(Tolerance *tolerance, int32_t timeNowMs, bool keyIsDown, int3
     return Grade_Miss;
 }
 
-Grade GradeHoldNoteDefinite(Tolerance *tolerance, HoldState *holdState)
+Grade GradeHoldNoteDefinite(const Tolerance *tolerance, HoldState *holdState)
 {
     const int32_t headError = abs(holdState->HeadDelta);
     const int32_t tailError = abs(holdState->TailDelta);
@@ -79,7 +80,7 @@ Grade GradeHoldNoteDefinite(Tolerance *tolerance, HoldState *holdState)
     return Grade_Meh;
 }
 
-Grade GradeHoldNote(Tolerance *tolerance, int32_t timeNowMs, bool keyIsDown, bool keyIsUp, HoldState *holdState,
+Grade GradeHoldNote(const Tolerance *tolerance, int32_t timeNowMs, bool keyIsDown, bool keyIsUp, HoldState *holdState,
                     int32_t noteStartMs, int32_t noteEndMs)
 {
     // Before the grading area
@@ -134,7 +135,7 @@ GameUpdateResult FxTap_Update(FxTap *fxTap, FxtapTime timeNowMs, const bool isPr
     if (timeNowMs < fxTap->LastUpdateTimeMs)
         return GameUpdateResult_Error_RewoundTime;
 
-    for (char columnIndex = 0; columnIndex < fxTap->ColumnCount; columnIndex += 1)
+    for (int columnIndex = 0; columnIndex < fxTap->ColumnCount; columnIndex += 1)
     {
         Column *column = &fxTap->Columns[columnIndex];
 
@@ -180,13 +181,16 @@ GameUpdateResult FxTap_Update(FxTap *fxTap, FxtapTime timeNowMs, const bool isPr
                 break;
         }
 
+        if (grade != Grade_Miss)
+            fxTap->Combo += 1;
+
         column->FocusedNoteNo += 1;
         column->AccumulatedTimeMs += note.AccumulatedStartTime;
         HoldState_SetDefault(&fxTap->Columns[columnIndex].HoldState);
     }
 
-    for (char key = 0; key < MAX_COLUMN_COUNT; key += 1)
-        fxTap->LastUpdatePressedColumn[key] = isPressingColumn[key];
+    for (int column = 0; column < MAX_COLUMN_COUNT; column += 1)
+        fxTap->LastUpdatePressedColumn[column] = isPressingColumn[column];
 
     return GameUpdateResult_OK;
 }

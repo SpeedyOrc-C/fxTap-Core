@@ -45,11 +45,12 @@ typedef struct FxTap
 {
     Beatmap *Beatmap;
 
-    char ColumnCount;
+    int ColumnCount;
     Column Columns[MAX_COLUMN_COUNT];
     int32_t LastUpdateTimeMs;
     bool LastUpdatePressedColumn[MAX_COLUMN_COUNT];
     Grades Grades;
+    unsigned int Combo;
 } FxTap;
 
 typedef enum GameUpdateResult
