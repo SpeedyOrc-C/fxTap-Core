@@ -130,10 +130,12 @@ Grade GradeHoldNote(const Tolerance *tolerance, int32_t timeNowMs, bool keyIsDow
     return Grade_Null;
 }
 
-GameUpdateResult FxTap_Update(FxTap *fxTap, FxtapTime timeNowMs, const bool isPressingColumn[16])
+FxTapUpdateResult FxTap_Update(FxTap *fxTap, FxtapTime timeNowMs, const bool isPressingColumn[16])
 {
     if (timeNowMs < fxTap->LastUpdateTimeMs)
-        return GameUpdateResult_Error_RewoundTime;
+        return FxTapUpdateResult_Error_RewoundTime;
+
+    bool ended = true;
 
     for (int columnIndex = 0; columnIndex < fxTap->ColumnCount; columnIndex += 1)
     {
@@ -144,6 +146,8 @@ GameUpdateResult FxTap_Update(FxTap *fxTap, FxtapTime timeNowMs, const bool isPr
 
         if (column->FocusedNoteNo == END_OF_COLUMN)
             continue;
+
+        ended = false;
 
         const Note note = fxTap->Beatmap->Notes[columnIndex][column->FocusedNoteNo];
         const int32_t noteStartMs = column->AccumulatedTimeMs + note.AccumulatedStartTime;
@@ -160,26 +164,13 @@ GameUpdateResult FxTap_Update(FxTap *fxTap, FxtapTime timeNowMs, const bool isPr
 
         switch (grade)
         {
-            case Grade_Null:
-                continue;
-            case Grade_Miss:
-                fxTap->Grades.Miss += 1;
-                break;
-            case Grade_Meh:
-                fxTap->Grades.Meh += 1;
-                break;
-            case Grade_Ok:
-                fxTap->Grades.Ok += 1;
-                break;
-            case Grade_Good:
-                fxTap->Grades.Good += 1;
-                break;
-            case Grade_Great:
-                fxTap->Grades.Great += 1;
-                break;
-            case Grade_Perfect:
-                fxTap->Grades.Perfect += 1;
-                break;
+            case Grade_Null: continue;
+            case Grade_Miss: fxTap->Grades.Miss += 1; break;
+            case Grade_Meh: fxTap->Grades.Meh += 1; break;
+            case Grade_Ok: fxTap->Grades.Ok += 1; break;
+            case Grade_Good: fxTap->Grades.Good += 1; break;
+            case Grade_Great: fxTap->Grades.Great += 1; break;
+            case Grade_Perfect: fxTap->Grades.Perfect += 1; break;
         }
 
         if (grade != Grade_Miss)
@@ -192,10 +183,13 @@ GameUpdateResult FxTap_Update(FxTap *fxTap, FxtapTime timeNowMs, const bool isPr
         HoldState_SetDefault(&fxTap->Columns[columnIndex].HoldState);
     }
 
+    if (ended)
+        return FxTapUpdateResult_Ended;
+
     for (int column = 0; column < MAX_COLUMN_COUNT; column += 1)
         fxTap->LastUpdatePressedColumn[column] = isPressingColumn[column];
 
-    return GameUpdateResult_OK;
+    return FxTapUpdateResult_OK;
 }
 
 KeyMapper FxTap_FetchKeyMapper(const FxTap *fxTap, const Config *config)
@@ -205,42 +199,26 @@ KeyMapper FxTap_FetchKeyMapper(const FxTap *fxTap, const Config *config)
         case KeyMappingStyle_DJMAX:
             switch (fxTap->ColumnCount)
             {
-                case 1:
-                    return &KeyMapper_DJMAX_1K;
-                case 2:
-                    return &KeyMapper_DJMAX_2K;
-                case 3:
-                    return &KeyMapper_DJMAX_3K;
-                case 4:
-                    return &KeyMapper_DJMAX_4K;
-                case 5:
-                    return &KeyMapper_DJMAX_5K;
-                case 6:
-                    return &KeyMapper_DJMAX_6K;
-                case 7:
-                    return &KeyMapper_DJMAX_7K;
-                case 8:
-                    return &KeyMapper_DJMAX_8K;
-                case 9:
-                    return &KeyMapper_DJMAX_9K;
-                default:
-                    return NULL;
+                case 1: return &KeyMapper_DJMAX_1K;
+                case 2: return &KeyMapper_DJMAX_2K;
+                case 3: return &KeyMapper_DJMAX_3K;
+                case 4: return &KeyMapper_DJMAX_4K;
+                case 5: return &KeyMapper_DJMAX_5K;
+                case 6: return &KeyMapper_DJMAX_6K;
+                case 7: return &KeyMapper_DJMAX_7K;
+                case 8: return &KeyMapper_DJMAX_8K;
+                case 9: return &KeyMapper_DJMAX_9K;
+                default: return NULL;
             }
         case KeyMappingStyle_BeatmaniaIIDX:
             switch (fxTap->ColumnCount)
             {
-                case 4:
-                    return &KeyMapper_BeatmaniaIIDX_4K;
-                case 5:
-                    return &KeyMapper_BeatmaniaIIDX_5K;
-                case 6:
-                    return &KeyMapper_BeatmaniaIIDX_6K;
-                case 7:
-                    return &KeyMapper_BeatmaniaIIDX_7K;
-                case 8:
-                    return &KeyMapper_BeatmaniaIIDX_8K;
-                default:
-                    return NULL;
+                case 4: return &KeyMapper_BeatmaniaIIDX_4K;
+                case 5: return &KeyMapper_BeatmaniaIIDX_5K;
+                case 6: return &KeyMapper_BeatmaniaIIDX_6K;
+                case 7: return &KeyMapper_BeatmaniaIIDX_7K;
+                case 8: return &KeyMapper_BeatmaniaIIDX_8K;
+                default: return NULL;
             }
         case KeyMappingStyle_Coop:
             return NULL;

@@ -53,16 +53,16 @@ typedef struct FxTap
     unsigned int Combo;
 } FxTap;
 
-typedef enum GameUpdateResult
+typedef enum FxTapUpdateResult
 {
-    GameUpdateResult_OK,
-    GameUpdateResult_Ended,
-    GameUpdateResult_Error_RewoundTime,
-} GameUpdateResult;
+    FxTapUpdateResult_Ended,
+    FxTapUpdateResult_OK,
+    FxTapUpdateResult_Error_RewoundTime,
+} FxTapUpdateResult;
 
 void FxTap_Init(FxTap *fxTap, Beatmap *beatmap);
 
-GameUpdateResult FxTap_Update(FxTap *fxTap, FxtapTime timeNowMs, const bool isPressingColumn[MAX_COLUMN_COUNT]);
+FxTapUpdateResult FxTap_Update(FxTap *fxTap, FxtapTime timeNowMs, const bool isPressingColumn[MAX_COLUMN_COUNT]);
 
 KeyMapper FxTap_FetchKeyMapper(const FxTap *fxTap, const Config *config);
 
