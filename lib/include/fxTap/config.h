@@ -17,12 +17,18 @@ typedef enum KeyMappingStyle
     KeyMappingStyle_Coop,
 } KeyMappingStyle;
 
+typedef enum Language
+{
+    EN_US, ZH_CN,
+} Language;
+
 typedef struct Config
 {
     int8_t Version[CONFIG_VERSION_LEN];
     uint8_t PhysicalKeyOfFxTapKey[MAX_COLUMN_COUNT];
     int16_t NotesFallingTime;
     KeyMappingStyle KeyMappingStyle;
+    Language Language;
 } Config;
 
 typedef enum ConfigError

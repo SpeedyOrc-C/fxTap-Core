@@ -82,6 +82,7 @@ void Config_SetDefault(Config *config)
 
     config->NotesFallingTime = 1000;
     config->KeyMappingStyle = KeyMappingStyle_DJMAX;
+    config->Language = EN_US;
 }
 
 ConfigError Config_SaveToDisk(Config *config)
