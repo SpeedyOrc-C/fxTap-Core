@@ -43,7 +43,7 @@ typedef struct Column
 
 typedef struct FxTap
 {
-    Beatmap *Beatmap;
+    const Beatmap *Beatmap;
 
     int ColumnCount;
     Column Columns[MAX_COLUMN_COUNT];
@@ -60,7 +60,7 @@ typedef enum FxTapUpdateResult
     FxTapUpdateResult_Error_RewoundTime,
 } FxTapUpdateResult;
 
-void FxTap_Init(FxTap *fxTap, Beatmap *beatmap);
+void FxTap_Init(FxTap *fxTap, const Beatmap *beatmap);
 
 FxTapUpdateResult FxTap_Update(FxTap *fxTap, FxtapTime timeNowMs, const bool isPressingColumn[MAX_COLUMN_COUNT]);
 

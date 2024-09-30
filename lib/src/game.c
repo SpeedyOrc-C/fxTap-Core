@@ -7,7 +7,7 @@ void HoldState_SetDefault(HoldState *holdState)
     holdState->TailIsValid = false;
 }
 
-void FxTap_Init(FxTap *fxTap, Beatmap *beatmap)
+void FxTap_Init(FxTap *fxTap, const Beatmap *beatmap)
 {
     fxTap->Beatmap = beatmap;
     fxTap->LastUpdateTimeMs = 0;
@@ -62,7 +62,7 @@ Grade GradeTapNote(const Tolerance *tolerance, int32_t timeNowMs, bool keyIsDown
     return Grade_Miss;
 }
 
-Grade GradeHoldNoteDefinite(const Tolerance *tolerance, HoldState *holdState)
+Grade GradeHoldNoteDefinite(const Tolerance *tolerance, const HoldState *holdState)
 {
     const int32_t headError = abs(holdState->HeadDelta);
     const int32_t tailError = abs(holdState->TailDelta);
