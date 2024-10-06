@@ -24,6 +24,14 @@ So if you want to include [this file](./lib/include/fxTap/beatmap.h)
 #include <fxTap/beatmap.h>
 ```
 
+If you use C++, you must wrap the include like this:
+
+```c++
+extern "C" {
+    #include <fxTap/beatmap.h>
+}
+```
+
 It's also very likely that this library will be used on an embedded system,
 not PC, since there are already tons of rhythm games on PC.
 So you need to choose your platform by defining **one** of the following macros:
