@@ -21,7 +21,7 @@
         #define FXTAP_CORE_ON_MODERN_OS
     #endif
 
-    #if defined(GINT_GINT)
+    #if defined(FX9860G) | defined(FXCG50)
         #define FXTAP_CORE_ON_GINT
     #endif
 
