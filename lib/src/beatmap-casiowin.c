@@ -1,4 +1,7 @@
 #include <fxTap/beatmap-casiowin.h>
+
+#if defined(FXTAP_CORE_ON_GINT)
+
 #include <fxTap/endian-utility.h>
 #include <fxTap/bfile-extern.h>
 #include <stdlib.h>
@@ -102,3 +105,5 @@ Beatmap *Beatmap_New_LoadFromPath_BFile(const char *path, BeatmapError *error)
     *error = BeatmapError_OK;
     return beatmap;
 }
+
+#endif

@@ -1,6 +1,10 @@
 #ifndef FXTAP_CORE_BFILE_EXTERN_H
 #define FXTAP_CORE_BFILE_EXTERN_H
 
+#include <fxTap/lib-config.h>
+
+#if defined(FXTAP_CORE_ON_GINT)
+
 // The source below is copied from Lephenixnoir's gint:
 
 #include <stdint.h>
@@ -266,5 +270,6 @@ extern uint16_t *fs_path_normalize_fc(char const *path);
 
 #endif //GINT_FS
 
-#endif //FXTAP_CORE_BFILE_EXTERN_H
+#endif
 
+#endif //FXTAP_CORE_BFILE_EXTERN_H

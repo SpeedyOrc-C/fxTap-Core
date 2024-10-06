@@ -4,6 +4,8 @@
 #include <stdlib.h>
 #include <assert.h>
 
+#if defined(FXTAP_CORE_ON_GINT)
+
 Config *Config_New_LoadFromDisk_BFile(ConfigError *error)
 {
     Config *config = malloc(sizeof(Config));
@@ -101,3 +103,5 @@ ConfigError Config_SaveToDisk_BFile(Config *config)
 
     return ConfigError_OK;
 }
+
+#endif
