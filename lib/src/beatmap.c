@@ -2,10 +2,13 @@
 #include <fxTap/endian-utility.h>
 #include <stdlib.h>
 #include <stdio.h>
-#include <dirent.h>
 #include <string.h>
 #include <ctype.h>
 #include <assert.h>
+
+#ifdef FXTAP_CORE_HAS_DIRENT
+#include <dirent.h>
+#endif
 
 Tolerance Tolerance_FromOverallDifficulty(double overallDifficulty)
 {
@@ -169,6 +172,8 @@ int Beatmap_NoteCount(const Beatmap *beatmap)
     return count;
 }
 
+#ifdef FXTAP_CORE_HAS_DIRENT
+
 BeatmapFindEntries *BeatmapFindEntries_New_InsideDirectory(const char *path, FindError *error)
 {
     BeatmapFindEntries *entries = malloc(sizeof(BeatmapFindEntries));
@@ -282,6 +287,8 @@ BeatmapFindEntries *BeatmapFindEntries_New_InsideDirectory(const char *path, Fin
     *error = FindError_OK;
     return entries;
 }
+
+#endif
 
 void BeatmapFindEntries_Free(BeatmapFindEntries *entries)
 {

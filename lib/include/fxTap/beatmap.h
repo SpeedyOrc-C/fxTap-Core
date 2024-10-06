@@ -3,7 +3,7 @@
 
 #include <stdint.h>
 #include <stdbool.h>
-#include <stdio.h>
+#include <fxTap/lib-config.h>
 
 #define MAX_COLUMN_COUNT 16
 #define BASE_TOLERANCE_PERFECT 16
@@ -90,10 +90,14 @@ int Beatmap_NoteCount(const Beatmap *beatmap);
 
 Tolerance Tolerance_FromOverallDifficulty(double overallDifficulty);
 
+#ifdef FXTAP_CORE_HAS_DIRENT
+
 // Find all beatmaps under a directory, but subdirectories are not searched.
 // If failed, return null and set the error code.
 __attribute__ ((malloc))
 BeatmapFindEntries *BeatmapFindEntries_New_InsideDirectory(const char *path, FindError *error);
+
+#endif //FXTAP_CORE_HAS_DIRENT
 
 void BeatmapFindEntries_Free(BeatmapFindEntries *entries);
 
