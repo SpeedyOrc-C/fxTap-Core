@@ -8,16 +8,16 @@ written in pure C without any user interfaces.
 Add this to compile the library:
 
 ```cmake
-add_subdirectory(fxTap-Core/lib)
+add_subdirectory(fxTap-Core)
 ```
 
 Add this to `#include` headers from fxTap Core:
 
 ```cmake
-target_include_directories(Your-Project PRIVATE fxTap-Core/lib/include)
+target_include_directories(Your-Project PRIVATE fxTap-Core/include)
 ```
 
-So if you want to include [this file](./lib/include/fxTap/beatmap.h)
+So if you want to include [this file](include/fxTap/beatmap.h)
 `./lib/include/fxTap/beatmap.h`, write this in your project:
 
 ```c

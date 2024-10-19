@@ -4,7 +4,7 @@
 #if !defined(FXTAP_CORE_ON_GINT)      & \
     !defined(FXTAP_CORE_ON_ARDUINO)   & \
     !defined(FXTAP_CORE_ON_MODERN_OS)
-    #error Platform for fxTap Core not selected.
+    #warning Platform for fxTap Core not selected.
 #endif
 
 #if defined(FXTAP_CORE_ON_GINT) | defined(FXTAP_CORE_ON_MODERN_OS)
