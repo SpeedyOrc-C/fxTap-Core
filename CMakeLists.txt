@@ -16,13 +16,13 @@ add_library(fxTap-Core
 )
 
 target_include_directories(fxTap-Core PUBLIC include)
-target_compile_definitions(fxTap-Core PRIVATE FXTAP_CORE_ON_MODERN_OS)
-
-add_executable(fxTap-Core-Test test/main.c)
-target_link_libraries(fxTap-Core-Test PRIVATE fxTap-Core)
-target_include_directories(fxTap-Core-Test PRIVATE include)
-target_compile_definitions(fxTap-Core-Test PRIVATE FXTAP_CORE_ON_MODERN_OS)
 
 enable_testing()
+
+add_executable(fxTap-Core-Test EXCLUDE_FROM_ALL test/main.c)
+target_compile_definitions(fxTap-Core PRIVATE FXTAP_CORE_ON_MODERN_OS)
+target_link_libraries(fxTap-Core-Test PRIVATE fxTap-Core)
+target_include_directories(fxTap-Core-Test PRIVATE include)
+target_compile_definitions(fxTap-Core-Test PUBLIC FXTAP_CORE_ON_MODERN_OS)
 
 add_test(NAME Test_All COMMAND $<TARGET_FILE:fxTap-Core-Test>)
