@@ -2,7 +2,6 @@
 #define FXTAP_CORE_BEATMAP_H
 
 #include <stdint.h>
-#include <stdbool.h>
 #include <fxTap/lib-config.h>
 
 #define MAX_COLUMN_COUNT 16

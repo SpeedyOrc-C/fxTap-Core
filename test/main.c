@@ -8,7 +8,7 @@
 
 bool Run(bool (*test)(), const char *name)
 {
-	int result = test();
+	const int result = test();
 	printf("[TEST] %s: %s\n", name, result ? "OK" : "ERROR");
 	return result;
 }

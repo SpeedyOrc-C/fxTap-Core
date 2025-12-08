@@ -206,7 +206,7 @@ BeatmapFindEntries *BeatmapFindEntries_New_InsideDirectory(const char *path, Fin
 			break;
 
 		// Check whether the file extension is *.FXT
-		unsigned long fileNameLength = strlen(entry->d_name);
+		const unsigned long fileNameLength = strlen(entry->d_name);
 
 		if (fileNameLength < 5)
 			continue;

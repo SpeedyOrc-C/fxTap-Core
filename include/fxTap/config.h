@@ -2,7 +2,6 @@
 #define FXTAP_CORE_CONFIG_H
 
 #include <stdint.h>
-#include <stdbool.h>
 #include <fxTap/beatmap.h>
 
 #define FXTAP_CONFIG_PATH "fxTap.cfg"
@@ -48,7 +47,7 @@ Config *Config_New_LoadFromDisk(ConfigError *error);
 
 void Config_SetDefault(Config *config);
 
-ConfigError Config_SaveToDisk(Config *config);
+ConfigError Config_SaveToDisk(const Config *config);
 
 void Config_ChangeEndian(Config *config);
 

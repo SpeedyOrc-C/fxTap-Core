@@ -84,7 +84,7 @@ void Config_SetDefault(Config *config)
 	config->Language = EN_US;
 }
 
-ConfigError Config_SaveToDisk(Config *config)
+ConfigError Config_SaveToDisk(const Config *config)
 {
 	FILE *file = fopen(FXTAP_CONFIG_PATH, "wb");
 

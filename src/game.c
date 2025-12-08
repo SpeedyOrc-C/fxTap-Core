@@ -226,7 +226,7 @@ KeyMapper FxTap_FetchKeyMapper(const FxTap *fxTap, const Config *config)
 		case 8: return &KeyMapper_BeatmaniaIIDX_8K;
 		default: return NULL;
 		}
-	case KeyMappingStyle_Coop:
+	default:
 		return NULL;
 	}
 }

@@ -13,10 +13,8 @@ void RendererController_Run(const RendererController *controller, const FxTap *f
 		const int32_t FocusedNoteNo = fxTap->Columns[column].FocusedNoteNo;
 		const uint16_t SizeOfColumn = Metadata->SizeOfColumn[column];
 
-		FxtapTime controllerAccumulatedStartTime;
-
 		// Render notes above the line
-		controllerAccumulatedStartTime = InitialAccumulatedStartTime;
+		FxtapTime controllerAccumulatedStartTime = InitialAccumulatedStartTime;
 
 		for (int noteNo = FocusedNoteNo; noteNo < SizeOfColumn; noteNo += 1)
 		{
