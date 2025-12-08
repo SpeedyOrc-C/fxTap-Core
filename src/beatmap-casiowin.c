@@ -8,102 +8,102 @@
 
 BeatmapError Metadata_LoadFromFile_BFile(Metadata *metadata, int bfile)
 {
-    if (sizeof(Metadata) > BFile_Read(bfile, metadata, sizeof(Metadata), -1))
-        return BeatmapError_ReadMetadataFailed;
+	if (sizeof(Metadata) > BFile_Read(bfile, metadata, sizeof(Metadata), -1))
+		return BeatmapError_ReadMetadataFailed;
 
-    for (int column = 0; column < MAX_COLUMN_COUNT; column += 1)
-        SwapBytes(metadata->SizeOfColumn[column]);
+	for (int column = 0; column < MAX_COLUMN_COUNT; column += 1)
+		SwapBytes(metadata->SizeOfColumn[column]);
 
-    SwapBytes(metadata->OverallDifficulty);
+	SwapBytes(metadata->OverallDifficulty);
 
-    return BeatmapError_OK;
+	return BeatmapError_OK;
 }
 
 BeatmapError Beatmap_LoadFromFile_BFile(Beatmap *beatmap, int bfile)
 {
-    const BeatmapError error = Metadata_LoadFromFile_BFile(&beatmap->Metadata, bfile);
+	const BeatmapError error = Metadata_LoadFromFile_BFile(&beatmap->Metadata, bfile);
 
-    if (error)
-        return error;
+	if (error)
+		return error;
 
-    beatmap->Tolerance = Tolerance_FromOverallDifficulty(beatmap->Metadata.OverallDifficulty);
+	beatmap->Tolerance = Tolerance_FromOverallDifficulty(beatmap->Metadata.OverallDifficulty);
 
-    // Load notes
-    const int TotalNotesCount = Beatmap_NoteCount(beatmap);
+	// Load notes
+	const int TotalNotesCount = Beatmap_NoteCount(beatmap);
 
-    Note *notesBuffer = calloc(TotalNotesCount, sizeof(Note));
+	Note *notesBuffer = calloc(TotalNotesCount, sizeof(Note));
 
-    if (notesBuffer == NULL)
-        return BeatmapError_MallocFailed;
+	if (notesBuffer == NULL)
+		return BeatmapError_MallocFailed;
 
-    beatmap->Notes[0] = notesBuffer;
-    int accumulatedNotesCount = beatmap->Metadata.SizeOfColumn[0];
+	beatmap->Notes[0] = notesBuffer;
+	int accumulatedNotesCount = beatmap->Metadata.SizeOfColumn[0];
 
-    for (int column = 1; column < MAX_COLUMN_COUNT; column += 1)
-    {
-        beatmap->Notes[column] = notesBuffer + accumulatedNotesCount;
-        accumulatedNotesCount += beatmap->Metadata.SizeOfColumn[column];
-    }
+	for (int column = 1; column < MAX_COLUMN_COUNT; column += 1)
+	{
+		beatmap->Notes[column] = notesBuffer + accumulatedNotesCount;
+		accumulatedNotesCount += beatmap->Metadata.SizeOfColumn[column];
+	}
 
-    if (sizeof(Note) * TotalNotesCount > BFile_Read(bfile, notesBuffer, (int) sizeof(Note) * TotalNotesCount, -1))
-    {
-        free(notesBuffer);
-        return BeatmapError_ReadNotesFailed;
-    }
+	if (sizeof(Note) * TotalNotesCount > BFile_Read(bfile, notesBuffer, (int) sizeof(Note) * TotalNotesCount, -1))
+	{
+		free(notesBuffer);
+		return BeatmapError_ReadNotesFailed;
+	}
 
-    for (int column = 0; column < 8; column += 1)
-    {
-        for (int note = 0; note < beatmap->Metadata.SizeOfColumn[column]; note += 1)
-        {
-            SwapBytes(beatmap->Notes[column][note].AccumulatedStartTime);
-            SwapBytes(beatmap->Notes[column][note].Duration);
-        }
-    }
+	for (int column = 0; column < 8; column += 1)
+	{
+		for (int note = 0; note < beatmap->Metadata.SizeOfColumn[column]; note += 1)
+		{
+			SwapBytes(beatmap->Notes[column][note].AccumulatedStartTime);
+			SwapBytes(beatmap->Notes[column][note].Duration);
+		}
+	}
 
-    return BeatmapError_OK;
+	return BeatmapError_OK;
 }
 
 Beatmap *Beatmap_New_LoadFromPath_BFile(const char *path, BeatmapError *error)
 {
-    uint16_t *pathCasiowin = fs_path_normalize_fc(path);
+	uint16_t *pathCasiowin = fs_path_normalize_fc(path);
 
-    if (pathCasiowin == NULL)
-        return NULL;
+	if (pathCasiowin == NULL)
+		return NULL;
 
-    int bfile = BFile_Open(pathCasiowin, BFile_ReadOnly);
+	int bfile = BFile_Open(pathCasiowin, BFile_ReadOnly);
 
-    if (bfile < 0)
-    {
-        free(pathCasiowin);
-        *error = BeatmapError_FileNotFound;
-        return NULL;
-    }
+	if (bfile < 0)
+	{
+		free(pathCasiowin);
+		*error = BeatmapError_FileNotFound;
+		return NULL;
+	}
 
-    Beatmap *beatmap = malloc(sizeof(Beatmap));
+	Beatmap *beatmap = malloc(sizeof(Beatmap));
 
-    if (beatmap == NULL)
-    {
-        free(pathCasiowin);
-        BFile_Close(bfile);
-        *error = BeatmapError_MallocFailed;
-        return NULL;
-    }
+	if (beatmap == NULL)
+	{
+		free(pathCasiowin);
+		BFile_Close(bfile);
+		*error = BeatmapError_MallocFailed;
+		return NULL;
+	}
 
-    *error = Beatmap_LoadFromFile_BFile(beatmap, bfile);
+	*error = Beatmap_LoadFromFile_BFile(beatmap, bfile);
 
-    if (*error)
-    {
-        free(pathCasiowin);
-        free(beatmap);
-        BFile_Close(bfile);
-        return NULL;
-    }
+	if (*error)
+	{
+		free(pathCasiowin);
+		free(beatmap);
+		BFile_Close(bfile);
+		return NULL;
+	}
 
-    free(pathCasiowin);
-    BFile_Close(bfile);
+	free(pathCasiowin);
+	BFile_Close(bfile);
 
-    *error = BeatmapError_OK;
-    return beatmap;
+	*error = BeatmapError_OK;
+	return beatmap;
 }
 
 #endif
