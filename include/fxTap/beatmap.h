@@ -88,6 +88,13 @@ int Beatmap_NoteCount(const Beatmap *beatmap);
 
 Tolerance Tolerance_FromOverallDifficulty(double overallDifficulty);
 
+#ifdef FXTAP_CORE_USE_CASIOWIN
+
+[[nodiscard]]
+Beatmap *Beatmap_New_LoadFromPath_BFile(const char *path, BeatmapError *error);
+
+#endif
+
 #ifdef FXTAP_CORE_HAS_DIRENT
 
 // Find all beatmaps under a directory, but subdirectories are not searched.

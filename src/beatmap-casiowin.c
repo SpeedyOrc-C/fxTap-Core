@@ -1,7 +1,7 @@
 #ifdef FXTAP_CORE_USE_CASIOWIN
 
 #include <stdlib.h>
-#include <fxTap/beatmap-casiowin.h>
+#include <fxTap/beatmap.h>
 #include <fxTap/bfile-interface.h>
 #include <fxTap/endian-utility.h>
 
