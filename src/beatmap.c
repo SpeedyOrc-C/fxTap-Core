@@ -9,11 +9,11 @@
 #include <dirent.h>
 #endif
 
-Tolerance Tolerance_FromOverallDifficulty(double overallDifficulty)
+FXT_Tolerance FXT_Tolerance_FromOverallDifficulty(double overallDifficulty)
 {
 	const double od3 = 3 * overallDifficulty;
 
-	return (Tolerance){
+	return (FXT_Tolerance){
 		.Perfect = BASE_TOLERANCE_PERFECT,
 		.Great = (int32_t) ((double) BASE_TOLERANCE_GREAT - od3),
 		.Good = (int32_t) ((double) BASE_TOLERANCE_GOOD - od3),
@@ -23,10 +23,10 @@ Tolerance Tolerance_FromOverallDifficulty(double overallDifficulty)
 	};
 }
 
-BeatmapError Metadata_LoadFromFile(Metadata *metadata, FILE *file)
+FXT_BeatmapError Metadata_LoadFromFile(FXT_Metadata *metadata, FILE *file)
 {
-	if (1 > fread(metadata, sizeof(Metadata), 1, file))
-		return BeatmapError_ReadMetadataFailed;
+	if (1 > fread(metadata, sizeof(FXT_Metadata), 1, file))
+		return FXT_BeatmapError_ReadMetadataFailed;
 
 	if (EnvironmentIsBigEndian())
 	{
@@ -36,25 +36,25 @@ BeatmapError Metadata_LoadFromFile(Metadata *metadata, FILE *file)
 		SwapBytes(metadata->OverallDifficulty);
 	}
 
-	return BeatmapError_OK;
+	return FXT_BeatmapError_OK;
 }
 
-BeatmapError Beatmap_LoadFromFile(Beatmap *beatmap, FILE *file)
+FXT_BeatmapError Beatmap_LoadFromFile(FXT_Beatmap *beatmap, FILE *file)
 {
-	const BeatmapError error = Metadata_LoadFromFile(&beatmap->Metadata, file);
+	const FXT_BeatmapError error = Metadata_LoadFromFile(&beatmap->Metadata, file);
 
 	if (error)
 		return error;
 
-	beatmap->Tolerance = Tolerance_FromOverallDifficulty(beatmap->Metadata.OverallDifficulty);
+	beatmap->Tolerance = FXT_Tolerance_FromOverallDifficulty(beatmap->Metadata.OverallDifficulty);
 
 	// Load notes
-	const int TotalNotesCount = Beatmap_NoteCount(beatmap);
+	const int TotalNotesCount = FXT_Beatmap_NoteCount(beatmap);
 
-	Note *notesBuffer = calloc(TotalNotesCount, sizeof(Note));
+	FXT_Note *notesBuffer = calloc(TotalNotesCount, sizeof(FXT_Note));
 
-	if (notesBuffer == NULL)
-		return BeatmapError_MallocFailed;
+	if (notesBuffer == nullptr)
+		return FXT_BeatmapError_MallocFailed;
 
 	beatmap->Notes[0] = notesBuffer;
 	int accumulatedNotesCount = beatmap->Metadata.SizeOfColumn[0];
@@ -65,10 +65,10 @@ BeatmapError Beatmap_LoadFromFile(Beatmap *beatmap, FILE *file)
 		accumulatedNotesCount += beatmap->Metadata.SizeOfColumn[column];
 	}
 
-	if (TotalNotesCount > fread(notesBuffer, sizeof(Note), TotalNotesCount, file))
+	if (TotalNotesCount > fread(notesBuffer, sizeof(FXT_Note), TotalNotesCount, file))
 	{
 		free(notesBuffer);
-		return BeatmapError_ReadNotesFailed;
+		return FXT_BeatmapError_ReadNotesFailed;
 	}
 
 	if (EnvironmentIsBigEndian())
@@ -83,26 +83,26 @@ BeatmapError Beatmap_LoadFromFile(Beatmap *beatmap, FILE *file)
 		}
 	}
 
-	return BeatmapError_OK;
+	return 0;
 }
 
-Beatmap *Beatmap_New_LoadFromPath(const char *path, BeatmapError *error)
+FXT_Beatmap *FXT_Beatmap_Load(const char *path, FXT_BeatmapError *error)
 {
-	Beatmap *beatmap = malloc(sizeof(Beatmap));
+	FXT_Beatmap *beatmap = malloc(sizeof(FXT_Beatmap));
 
-	if (beatmap == NULL)
+	if (beatmap == nullptr)
 	{
-		*error = BeatmapError_MallocFailed;
-		return NULL;
+		*error = FXT_BeatmapError_MallocFailed;
+		return nullptr;
 	}
 
 	FILE *file = fopen(path, "rb");
 
-	if (file == NULL)
+	if (file == nullptr)
 	{
 		free(beatmap);
-		*error = BeatmapError_FileNotFound;
-		return NULL;
+		*error = FXT_BeatmapError_FileNotFound;
+		return nullptr;
 	}
 
 	*error = Beatmap_LoadFromFile(beatmap, file);
@@ -111,27 +111,21 @@ Beatmap *Beatmap_New_LoadFromPath(const char *path, BeatmapError *error)
 	{
 		free(beatmap);
 		fclose(file);
-		return NULL;
+		return nullptr;
 	}
 
-	if (fclose(file) != 0)
-	{
-		free(beatmap);
-		*error = BeatmapError_CannotCloseFile;
-		return NULL;
-	}
-
-	*error = BeatmapError_OK;
+	fclose(file);
+	*error = FXT_BeatmapError_OK;
 	return beatmap;
 }
 
-void Beatmap_Free(Beatmap *beatmap)
+void FXT_Beatmap_Free(FXT_Beatmap *beatmap)
 {
 	free(beatmap->Notes[0]);
 	free(beatmap);
 }
 
-int Beatmap_ColumnCount(const Beatmap *beatmap)
+int FXT_Beatmap_ColumnCount(const FXT_Beatmap *beatmap)
 {
 	int fromColumn = -1;
 
@@ -161,7 +155,7 @@ int Beatmap_ColumnCount(const Beatmap *beatmap)
 	return toColumn - fromColumn + 1;
 }
 
-int Beatmap_NoteCount(const Beatmap *beatmap)
+int FXT_Beatmap_NoteCount(const FXT_Beatmap *beatmap)
 {
 	int count = 0;
 
@@ -173,35 +167,35 @@ int Beatmap_NoteCount(const Beatmap *beatmap)
 
 #ifdef FXTAP_CORE_HAS_DIRENT
 
-BeatmapFindEntries *BeatmapFindEntries_New_InsideDirectory(const char *path, FindError *error)
+FXT_BeatmapFindEntries *BeatmapFindEntries_New_InsideDirectory(const char *path, FXT_FindError *error)
 {
-	BeatmapFindEntries *entries = malloc(sizeof(BeatmapFindEntries));
+	FXT_BeatmapFindEntries *entries = malloc(sizeof(FXT_BeatmapFindEntries));
 
-	if (entries == NULL)
+	if (entries == nullptr)
 	{
-		*error = FindError_MallocFailed;
-		return NULL;
+		*error = FXT_FindError_MallocFailed;
+		return nullptr;
 	}
 
 	DIR *directory = opendir(path);
 
-	if (directory == NULL)
+	if (directory == nullptr)
 	{
 		free(entries);
-		*error = FindError_FxtapFolderNotFound;
-		return NULL;
+		*error = FXT_FindError_FxtapFolderNotFound;
+		return nullptr;
 	}
 
 	entries->Count = 0;
 
-	entries->Entries = calloc(1, sizeof(BeatmapFindEntry));
+	entries->Entries = calloc(1, sizeof(FXT_BeatmapFindEntry));
 
 	while (true)
 	{
 		// Read an entry
 		struct dirent *entry = readdir(directory);
 
-		if (entry == NULL)
+		if (entry == nullptr)
 			break;
 
 		// Check whether the file extension is *.FXT
@@ -220,10 +214,10 @@ BeatmapFindEntries *BeatmapFindEntries_New_InsideDirectory(const char *path, Fin
 		// Extend the file name list
 		entries->Count += 1;
 
-		BeatmapFindEntry *extendedEntries =
-				realloc(entries->Entries, entries->Count * sizeof(BeatmapFindEntry));
+		FXT_BeatmapFindEntry *extendedEntries =
+				realloc(entries->Entries, entries->Count * sizeof(FXT_BeatmapFindEntry));
 
-		if (extendedEntries == NULL)
+		if (extendedEntries == nullptr)
 		{
 			closedir(directory);
 
@@ -231,8 +225,8 @@ BeatmapFindEntries *BeatmapFindEntries_New_InsideDirectory(const char *path, Fin
 				free(entries->Entries[i].FileName);
 			free(entries->Entries);
 			free(entries);
-			*error = FindError_MallocFailed;
-			return NULL;
+			*error = FXT_FindError_MallocFailed;
+			return nullptr;
 		}
 
 		entries->Entries = extendedEntries;
@@ -240,7 +234,7 @@ BeatmapFindEntries *BeatmapFindEntries_New_InsideDirectory(const char *path, Fin
 		// Append the entry's file name to the list
 		char *fileName = malloc(strlen(entry->d_name) + 1);
 
-		if (fileName == NULL)
+		if (fileName == nullptr)
 		{
 			closedir(directory);
 
@@ -248,8 +242,8 @@ BeatmapFindEntries *BeatmapFindEntries_New_InsideDirectory(const char *path, Fin
 				free(entries->Entries[i].FileName);
 			free(entries->Entries);
 			free(entries);
-			*error = FindError_MallocFailed;
-			return NULL;
+			*error = FXT_FindError_MallocFailed;
+			return nullptr;
 		}
 
 		strcpy(fileName, entry->d_name);
@@ -264,7 +258,7 @@ BeatmapFindEntries *BeatmapFindEntries_New_InsideDirectory(const char *path, Fin
 		// Read metadata
 		FILE *file = fopen(filePath, "rb");
 
-		assert(file != NULL);
+		assert(file != nullptr);
 
 		if (Metadata_LoadFromFile(&entries->Entries[entries->Count - 1].Metadata, file))
 		{
@@ -274,8 +268,8 @@ BeatmapFindEntries *BeatmapFindEntries_New_InsideDirectory(const char *path, Fin
 				free(entries->Entries[i].FileName);
 			free(entries->Entries);
 			free(entries);
-			*error = FindError_BadFile;
-			return NULL;
+			*error = FXT_FindError_BadFile;
+			return nullptr;
 		}
 
 		fclose(file);
@@ -283,13 +277,13 @@ BeatmapFindEntries *BeatmapFindEntries_New_InsideDirectory(const char *path, Fin
 
 	closedir(directory);
 
-	*error = FindError_OK;
+	*error = FXT_FindError_OK;
 	return entries;
 }
 
 #endif
 
-void BeatmapFindEntries_Free(BeatmapFindEntries *entries)
+void FXT_BeatmapFindEntries_Free(FXT_BeatmapFindEntries *entries)
 {
 	for (int i = 0; i < entries->Count; i += 1)
 		free(entries->Entries[i].FileName);

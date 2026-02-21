@@ -31,23 +31,22 @@ typedef struct HoldState
 
 void HoldState_SetDefault(HoldState *holdState);
 
-typedef struct Column
+typedef struct ColumnState
 {
 	FxtapTime AccumulatedTimeMs;
 	int32_t FocusedNoteNo;
-
 	HoldState HoldState;
-} Column;
+} ColumnState;
 
 typedef struct FxTap
 {
-	const Beatmap *Beatmap;
+	const FXT_Beatmap *Beatmap;
 
 	int ColumnCount;
-	Column Columns[FXT_MaxColumnCount];
+	ColumnState ColumnsStates[FXT_MaxColumnCount];
 	int32_t LastUpdateTimeMs;
 	bool LastUpdatePressedColumn[FXT_MaxColumnCount];
-	Grades Grades;
+	FXT_Grades Grades;
 	unsigned int Combo;
 } FxTap;
 
@@ -58,7 +57,7 @@ typedef enum FxTapUpdateResult
 	FxTapUpdateResult_Error_RewoundTime,
 } FxTapUpdateResult;
 
-void FxTap_Init(FxTap *fxTap, const Beatmap *beatmap);
+void FxTap_Init(FxTap *fxTap, const FXT_Beatmap *beatmap);
 
 FxTapUpdateResult FxTap_Update(FxTap *fxTap, FxtapTime timeNowMs, const bool isPressingColumn[FXT_MaxColumnCount]);
 

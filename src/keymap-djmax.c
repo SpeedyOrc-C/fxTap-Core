@@ -1,5 +1,5 @@
-#include <fxTap/keymap.h>
 #include <stddef.h>
+#include <fxTap/keymap.h>
 
 FxTapKey KeyMapper_DJMAX_1K(const FxTapColumn column)
 {

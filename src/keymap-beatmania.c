@@ -1,7 +1,7 @@
-#include <fxTap/keymap.h>
 #include <assert.h>
+#include <fxTap/keymap.h>
 
-FxTapKey KeyMapper_BeatmaniaIIDX_4K(FxTapColumn column)
+FxTapKey KeyMapper_BeatmaniaIIDX_4K(const FxTapColumn column)
 {
 	switch (column)
 	{
@@ -13,7 +13,7 @@ FxTapKey KeyMapper_BeatmaniaIIDX_4K(FxTapColumn column)
 	}
 }
 
-FxTapKey KeyMapper_BeatmaniaIIDX_5K(FxTapColumn column)
+FxTapKey KeyMapper_BeatmaniaIIDX_5K(const FxTapColumn column)
 {
 	switch (column)
 	{
@@ -26,7 +26,7 @@ FxTapKey KeyMapper_BeatmaniaIIDX_5K(FxTapColumn column)
 	}
 }
 
-FxTapKey KeyMapper_BeatmaniaIIDX_6K(FxTapColumn column)
+FxTapKey KeyMapper_BeatmaniaIIDX_6K(const FxTapColumn column)
 {
 	switch (column)
 	{
@@ -40,7 +40,7 @@ FxTapKey KeyMapper_BeatmaniaIIDX_6K(FxTapColumn column)
 	}
 }
 
-FxTapKey KeyMapper_BeatmaniaIIDX_7K(FxTapColumn column)
+FxTapKey KeyMapper_BeatmaniaIIDX_7K(const FxTapColumn column)
 {
 	switch (column)
 	{
@@ -55,7 +55,7 @@ FxTapKey KeyMapper_BeatmaniaIIDX_7K(FxTapColumn column)
 	}
 }
 
-FxTapKey KeyMapper_BeatmaniaIIDX_8K(FxTapColumn column)
+FxTapKey KeyMapper_BeatmaniaIIDX_8K(const FxTapColumn column)
 {
 	switch (column)
 	{
@@ -71,7 +71,7 @@ FxTapKey KeyMapper_BeatmaniaIIDX_8K(FxTapColumn column)
 	}
 }
 
-FxTapKey KeyMapper_BeatmaniaIIDX_8KL(FxTapColumn column)
+FxTapKey KeyMapper_BeatmaniaIIDX_8KL(const FxTapColumn column)
 {
 	switch (column)
 	{
@@ -87,7 +87,7 @@ FxTapKey KeyMapper_BeatmaniaIIDX_8KL(FxTapColumn column)
 	}
 }
 
-FxTapKey KeyMapper_BeatmaniaIIDX_8KR(FxTapColumn column)
+FxTapKey KeyMapper_BeatmaniaIIDX_8KR(const FxTapColumn column)
 {
 	switch (column)
 	{

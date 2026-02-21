@@ -11,17 +11,16 @@
 #define BASE_TOLERANCE_MEH 151
 #define BASE_TOLERANCE_MISS 188
 
-typedef struct Metadata
+typedef struct FXT_Metadata
 {
 	char Header[16];
 	char Title[32];
 	char Artist[32];
 	uint16_t SizeOfColumn[FXT_MaxColumnCount];
 	double OverallDifficulty;
-	int64_t Blank;
-} Metadata;
+} FXT_Metadata;
 
-typedef struct Tolerance
+typedef struct FXT_Tolerance
 {
 	int32_t Perfect;
 	int32_t Great;
@@ -29,69 +28,67 @@ typedef struct Tolerance
 	int32_t Ok;
 	int32_t Meh;
 	int32_t Miss;
-} Tolerance, Grades;
+} FXT_Tolerance, FXT_Grades;
 
-typedef struct Note
+typedef struct FXT_Note
 {
 	uint16_t AccumulatedStartTime;
 	uint16_t Duration;
-} Note;
+} FXT_Note;
 
-typedef struct Beatmap
+typedef struct FXT_Beatmap
 {
-	Metadata Metadata;
-	Tolerance Tolerance;
+	FXT_Metadata Metadata;
+	FXT_Tolerance Tolerance;
 	// An 2D array: Notes[column_index][note_index].
-	Note *Notes[FXT_MaxColumnCount];
-} Beatmap;
+	FXT_Note *Notes[FXT_MaxColumnCount];
+} FXT_Beatmap;
 
-typedef struct BeatmapFindEntry
+typedef struct FXT_BeatmapFindEntry
 {
 	char *FileName;
-	Metadata Metadata;
-} BeatmapFindEntry;
+	FXT_Metadata Metadata;
+} FXT_BeatmapFindEntry;
 
-typedef struct BeatmapFindEntries
+typedef struct FXT_BeatmapFindEntries
 {
 	int Count;
-	BeatmapFindEntry *Entries;
-} BeatmapFindEntries;
+	FXT_BeatmapFindEntry *Entries;
+} FXT_BeatmapFindEntries;
 
-typedef enum BeatmapError
+typedef enum FXT_BeatmapError
 {
-	BeatmapError_OK,
-	BeatmapError_MallocFailed,
-	BeatmapError_FileNotFound,
-	BeatmapError_CannotCloseFile,
-	BeatmapError_ReadMetadataFailed,
-	BeatmapError_ReadNotesFailed,
-} BeatmapError;
+	FXT_BeatmapError_OK,
+	FXT_BeatmapError_MallocFailed,
+	FXT_BeatmapError_FileNotFound,
+	FXT_BeatmapError_CannotCloseFile,
+	FXT_BeatmapError_ReadMetadataFailed,
+	FXT_BeatmapError_ReadNotesFailed,
+} FXT_BeatmapError;
 
-typedef enum FindError
+typedef enum FXT_FindError
 {
-	FindError_OK,
-	FindError_MallocFailed,
-	FindError_FxtapFolderNotFound,
-	FindError_BadFile,
-} FindError;
+	FXT_FindError_OK,
+	FXT_FindError_MallocFailed,
+	FXT_FindError_FxtapFolderNotFound,
+	FXT_FindError_BadFile,
+} FXT_FindError;
 
-// Load a beatmap from a file path.
-// If failed, return null and set the error code.
 [[nodiscard]]
-Beatmap *Beatmap_New_LoadFromPath(const char *path, BeatmapError *error);
+FXT_Beatmap *FXT_Beatmap_Load(const char *path, FXT_BeatmapError *error);
 
-void Beatmap_Free(Beatmap *beatmap);
+void FXT_Beatmap_Free(FXT_Beatmap *beatmap);
 
-int Beatmap_ColumnCount(const Beatmap *beatmap);
+int FXT_Beatmap_ColumnCount(const FXT_Beatmap *beatmap);
 
-int Beatmap_NoteCount(const Beatmap *beatmap);
+int FXT_Beatmap_NoteCount(const FXT_Beatmap *beatmap);
 
-Tolerance Tolerance_FromOverallDifficulty(double overallDifficulty);
+FXT_Tolerance FXT_Tolerance_FromOverallDifficulty(double overallDifficulty);
 
 #ifdef FXTAP_CORE_USE_CASIOWIN
 
 [[nodiscard]]
-Beatmap *Beatmap_New_LoadFromPath_BFile(const char *path, BeatmapError *error);
+FXT_Beatmap *FXT_Beatmap_Load_BFile(const char *path, FXT_BeatmapError *error);
 
 #endif
 
@@ -100,8 +97,8 @@ Beatmap *Beatmap_New_LoadFromPath_BFile(const char *path, BeatmapError *error);
 // Find all beatmaps under a directory, but subdirectories are not searched.
 // If failed, return null and set the error code.
 [[nodiscard]]
-BeatmapFindEntries *BeatmapFindEntries_New_InsideDirectory(const char *path, FindError *error);
+FXT_BeatmapFindEntries *BeatmapFindEntries_New_InsideDirectory(const char *path, FXT_FindError *error);
 
 #endif //FXTAP_CORE_HAS_DIRENT
 
-void BeatmapFindEntries_Free(BeatmapFindEntries *entries);
+void FXT_BeatmapFindEntries_Free(FXT_BeatmapFindEntries *entries);

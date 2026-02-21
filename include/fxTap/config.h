@@ -14,8 +14,8 @@ typedef enum FXT_KeyMapStyle
 
 typedef enum FXT_Language
 {
-	FXT_Language_EnUs,
-	FXT_Language_ZhCn,
+	FXT_Language_EnUs = 0,
+	FXT_Language_ZhCn = 1,
 } FXT_Language;
 
 typedef struct config

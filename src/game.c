@@ -7,11 +7,11 @@ void HoldState_SetDefault(HoldState *holdState)
 	holdState->TailIsValid = false;
 }
 
-void FxTap_Init(FxTap *fxTap, const Beatmap *beatmap)
+void FxTap_Init(FxTap *fxTap, const FXT_Beatmap *beatmap)
 {
 	fxTap->Beatmap = beatmap;
 	fxTap->LastUpdateTimeMs = 0;
-	fxTap->ColumnCount = Beatmap_ColumnCount(beatmap);
+	fxTap->ColumnCount = FXT_Beatmap_ColumnCount(beatmap);
 	fxTap->Combo = 0;
 
 	fxTap->Grades.Perfect = 0;
@@ -24,22 +24,22 @@ void FxTap_Init(FxTap *fxTap, const Beatmap *beatmap)
 	for (int column = 0; column < FXT_MaxColumnCount; column += 1)
 	{
 		fxTap->LastUpdatePressedColumn[column] = false;
-		fxTap->Columns[column].AccumulatedTimeMs = 0;
+		fxTap->ColumnsStates[column].AccumulatedTimeMs = 0;
 
 		if (beatmap->Metadata.SizeOfColumn[column] > 0)
 		{
-			fxTap->Columns[column].FocusedNoteNo = 0;
-			HoldState_SetDefault(&fxTap->Columns[column].HoldState);
+			fxTap->ColumnsStates[column].FocusedNoteNo = 0;
+			HoldState_SetDefault(&fxTap->ColumnsStates[column].HoldState);
 		}
 		else
 		{
-			fxTap->Columns[column].FocusedNoteNo = END_OF_COLUMN;
+			fxTap->ColumnsStates[column].FocusedNoteNo = END_OF_COLUMN;
 		}
 	}
 }
 
 Grade GradeTapNote(
-	const Tolerance *tolerance,
+	const FXT_Tolerance *tolerance,
 	const int32_t timeNowMs,
 	const bool keyIsDown,
 	const int32_t noteStartMs)
@@ -67,7 +67,7 @@ Grade GradeTapNote(
 	return Grade_Miss;
 }
 
-Grade GradeHoldNoteDefinite(const Tolerance *tolerance, const HoldState *holdState)
+Grade GradeHoldNoteDefinite(const FXT_Tolerance *tolerance, const HoldState *holdState)
 {
 	const int32_t headError = abs(holdState->HeadDelta);
 	const int32_t tailError = abs(holdState->TailDelta);
@@ -86,7 +86,7 @@ Grade GradeHoldNoteDefinite(const Tolerance *tolerance, const HoldState *holdSta
 }
 
 Grade GradeHoldNote(
-	const Tolerance *tolerance,
+	const FXT_Tolerance *tolerance,
 	const int32_t timeNowMs,
 	const bool keyIsDown,
 	const bool keyIsUp,
@@ -153,7 +153,7 @@ FxTapUpdateResult FxTap_Update(
 
 	for (int columnIndex = 0; columnIndex < fxTap->ColumnCount; columnIndex += 1)
 	{
-		Column *column = &fxTap->Columns[columnIndex];
+		ColumnState *column = &fxTap->ColumnsStates[columnIndex];
 
 		if (column->FocusedNoteNo >= fxTap->Beatmap->Metadata.SizeOfColumn[columnIndex])
 			continue;
@@ -163,7 +163,7 @@ FxTapUpdateResult FxTap_Update(
 
 		ended = false;
 
-		const Note note = fxTap->Beatmap->Notes[columnIndex][column->FocusedNoteNo];
+		const FXT_Note note = fxTap->Beatmap->Notes[columnIndex][column->FocusedNoteNo];
 		const int32_t noteStartMs = column->AccumulatedTimeMs + note.AccumulatedStartTime;
 		const bool lastUpdatePressed = fxTap->LastUpdatePressedColumn[columnIndex];
 		const bool isPressing = isPressingColumn[columnIndex];
@@ -200,7 +200,7 @@ FxTapUpdateResult FxTap_Update(
 
 		column->FocusedNoteNo += 1;
 		column->AccumulatedTimeMs += note.AccumulatedStartTime;
-		HoldState_SetDefault(&fxTap->Columns[columnIndex].HoldState);
+		HoldState_SetDefault(&fxTap->ColumnsStates[columnIndex].HoldState);
 	}
 
 	if (ended)

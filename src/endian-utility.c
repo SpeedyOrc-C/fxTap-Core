@@ -2,7 +2,7 @@
 #include <stdint.h>
 #include <fxTap/endian-utility.h>
 
-void SwapBytesOfSize(void *bytes, size_t bytesCount)
+void SwapBytesOfSize(void *bytes, const size_t bytesCount)
 {
 	assert(bytesCount > 0);
 

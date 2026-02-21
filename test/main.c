@@ -1,6 +1,6 @@
+#include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <assert.h>
 #include <fxTap/beatmap.h>
 #include <fxTap/config.h>
 #include <fxTap/game.h>
@@ -15,20 +15,20 @@ bool Run(bool (*test)(), const char *name)
 
 bool Test_Hold()
 {
-	Beatmap beatmap = {
+	FXT_Beatmap beatmap = {
 		.Metadata = {
 			.SizeOfColumn = {2, 0, 0, 0, 0, 0, 0, 0},
 			.OverallDifficulty = 0,
 		},
 		.Notes = {
-			(Note[2]){
+			(FXT_Note[2]){
 				{.AccumulatedStartTime = 1000, .Duration = 1000},
 				{.AccumulatedStartTime = 2000, .Duration = 1000},
 			}
 		},
 	};
 
-	beatmap.Tolerance = Tolerance_FromOverallDifficulty(0);
+	beatmap.Tolerance = FXT_Tolerance_FromOverallDifficulty(0);
 
 	FxTap fxTap;
 	FxTap_Init(&fxTap, &beatmap);
@@ -54,8 +54,8 @@ bool Test_Hold()
 
 bool Test_FileLoading()
 {
-	BeatmapError error;
-	Beatmap *beatmap = Beatmap_New_LoadFromPath("FXTAP/WELUVLAM.fxt", &error);
+	FXT_BeatmapError error;
+	FXT_Beatmap *beatmap = FXT_Beatmap_Load("FXTAP/WELUVLAM.fxt", &error);
 	{
 		if (error)
 		{
@@ -66,9 +66,9 @@ bool Test_FileLoading()
 		printf("Title: %s\n", beatmap->Metadata.Title);
 		printf("Artist: %s\n", beatmap->Metadata.Artist);
 		printf("Overall Difficulty: %lf\n", beatmap->Metadata.OverallDifficulty);
-		printf("Number of Columns: %i\n", Beatmap_ColumnCount(beatmap));
+		printf("Number of Columns: %i\n", FXT_Beatmap_ColumnCount(beatmap));
 	}
-	Beatmap_Free(beatmap);
+	FXT_Beatmap_Free(beatmap);
 
 	FXT_Config_Error configError;
 	FXT_Config *config = Config_New_LoadFromDisk(&configError);
@@ -94,8 +94,8 @@ bool Test_FileLoading()
 
 bool Test_QueryBeatmaps()
 {
-	FindError error;
-	BeatmapFindEntries *entries = BeatmapFindEntries_New_InsideDirectory("FXTAP", &error);
+	FXT_FindError error;
+	FXT_BeatmapFindEntries *entries = BeatmapFindEntries_New_InsideDirectory("FXTAP", &error);
 
 	if (entries == NULL)
 		return false;
@@ -105,7 +105,7 @@ bool Test_QueryBeatmaps()
 	for (int i = 0; i < entries->Count; i += 1)
 		printf("%i. %s: %s\n", i + 1, entries->Entries[i].FileName, entries->Entries[i].Metadata.Title);
 
-	BeatmapFindEntries_Free(entries);
+	FXT_BeatmapFindEntries_Free(entries);
 
 	return true;
 }
@@ -141,8 +141,8 @@ void DummyRenderHold(int column, double positionBottom, double positionTop)
 
 bool Test_RendererController()
 {
-	BeatmapError error;
-	Beatmap *beatmap = Beatmap_New_LoadFromPath("FXTAP/WELUVLAM.fxt", &error);
+	FXT_BeatmapError error;
+	FXT_Beatmap *beatmap = FXT_Beatmap_Load("FXTAP/WELUVLAM.fxt", &error);
 
 	assert(beatmap != NULL);
 
@@ -165,7 +165,7 @@ bool Test_RendererController()
 		RendererController_Run(&controller, &fxTap, time);
 	}
 
-	Beatmap_Free(beatmap);
+	FXT_Beatmap_Free(beatmap);
 
 	return true;
 }

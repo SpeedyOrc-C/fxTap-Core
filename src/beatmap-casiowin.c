@@ -5,35 +5,35 @@
 #include <fxTap/bfile-interface.h>
 #include <fxTap/endian-utility.h>
 
-BeatmapError Metadata_LoadFromFile_BFile(Metadata *metadata, int bfile)
+FXT_BeatmapError Metadata_LoadFromFile_BFile(FXT_Metadata *metadata, int bfile)
 {
-	if (sizeof(Metadata) > BFile_Read(bfile, metadata, sizeof(Metadata), -1))
-		return BeatmapError_ReadMetadataFailed;
+	if (sizeof(FXT_Metadata) > BFile_Read(bfile, metadata, sizeof(FXT_Metadata), -1))
+		return FXT_BeatmapError_ReadMetadataFailed;
 
 	for (int column = 0; column < FXT_MaxColumnCount; column += 1)
 		SwapBytes(metadata->SizeOfColumn[column]);
 
 	SwapBytes(metadata->OverallDifficulty);
 
-	return BeatmapError_OK;
+	return FXT_BeatmapError_OK;
 }
 
-BeatmapError Beatmap_LoadFromFile_BFile(Beatmap *beatmap, int bfile)
+FXT_BeatmapError Beatmap_LoadFromFile_BFile(FXT_Beatmap *beatmap, int bfile)
 {
-	const BeatmapError error = Metadata_LoadFromFile_BFile(&beatmap->Metadata, bfile);
+	const FXT_BeatmapError error = Metadata_LoadFromFile_BFile(&beatmap->Metadata, bfile);
 
 	if (error)
 		return error;
 
-	beatmap->Tolerance = Tolerance_FromOverallDifficulty(beatmap->Metadata.OverallDifficulty);
+	beatmap->Tolerance = FXT_Tolerance_FromOverallDifficulty(beatmap->Metadata.OverallDifficulty);
 
 	// Load notes
-	const int TotalNotesCount = Beatmap_NoteCount(beatmap);
+	const int TotalNotesCount = FXT_Beatmap_NoteCount(beatmap);
 
-	Note *notesBuffer = calloc(TotalNotesCount, sizeof(Note));
+	FXT_Note *notesBuffer = calloc(TotalNotesCount, sizeof(FXT_Note));
 
 	if (notesBuffer == NULL)
-		return BeatmapError_MallocFailed;
+		return FXT_BeatmapError_MallocFailed;
 
 	beatmap->Notes[0] = notesBuffer;
 	int accumulatedNotesCount = beatmap->Metadata.SizeOfColumn[0];
@@ -44,10 +44,10 @@ BeatmapError Beatmap_LoadFromFile_BFile(Beatmap *beatmap, int bfile)
 		accumulatedNotesCount += beatmap->Metadata.SizeOfColumn[column];
 	}
 
-	if (sizeof(Note) * TotalNotesCount > BFile_Read(bfile, notesBuffer, (int) sizeof(Note) * TotalNotesCount, -1))
+	if (sizeof(FXT_Note) * TotalNotesCount > BFile_Read(bfile, notesBuffer, (int) sizeof(FXT_Note) * TotalNotesCount, -1))
 	{
 		free(notesBuffer);
-		return BeatmapError_ReadNotesFailed;
+		return FXT_BeatmapError_ReadNotesFailed;
 	}
 
 	for (int column = 0; column < 8; column += 1)
@@ -59,10 +59,10 @@ BeatmapError Beatmap_LoadFromFile_BFile(Beatmap *beatmap, int bfile)
 		}
 	}
 
-	return BeatmapError_OK;
+	return FXT_BeatmapError_OK;
 }
 
-Beatmap *Beatmap_New_LoadFromPath_BFile(const char *path, BeatmapError *error)
+FXT_Beatmap *FXT_Beatmap_Load_BFile(const char *path, FXT_BeatmapError *error)
 {
 	uint16_t *pathCasiowin = fs_path_normalize_fc(path);
 
@@ -74,17 +74,17 @@ Beatmap *Beatmap_New_LoadFromPath_BFile(const char *path, BeatmapError *error)
 	if (bfile < 0)
 	{
 		free(pathCasiowin);
-		*error = BeatmapError_FileNotFound;
+		*error = FXT_BeatmapError_FileNotFound;
 		return nullptr;
 	}
 
-	Beatmap *beatmap = malloc(sizeof(Beatmap));
+	FXT_Beatmap *beatmap = malloc(sizeof(FXT_Beatmap));
 
 	if (beatmap == NULL)
 	{
 		free(pathCasiowin);
 		BFile_Close(bfile);
-		*error = BeatmapError_MallocFailed;
+		*error = FXT_BeatmapError_MallocFailed;
 		return nullptr;
 	}
 
@@ -101,7 +101,7 @@ Beatmap *Beatmap_New_LoadFromPath_BFile(const char *path, BeatmapError *error)
 	free(pathCasiowin);
 	BFile_Close(bfile);
 
-	*error = BeatmapError_OK;
+	*error = FXT_BeatmapError_OK;
 	return beatmap;
 }
 
