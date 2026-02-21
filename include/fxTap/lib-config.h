@@ -1,14 +1,9 @@
-#ifndef FXTAP_CORE_LIB_CONFIG_H
-#define FXTAP_CORE_LIB_CONFIG_H
+#pragma once
 
-#if !defined(FXTAP_CORE_ON_GINT)      & \
-    !defined(FXTAP_CORE_ON_ARDUINO)   & \
-    !defined(FXTAP_CORE_ON_MODERN_OS)
-    #error Platform for fxTap Core not selected.
+#if defined(FX9860G) || defined(FXCG50) || defined(__linux__) || defined(_WIN64)
+#define FXTAP_CORE_HAS_DIRENT
 #endif
 
-#if defined(FXTAP_CORE_ON_GINT) | defined(FXTAP_CORE_ON_MODERN_OS)
-    #define FXTAP_CORE_HAS_DIRENT
+#if defined(FX9860G) && !defined(FXTAP_CORE_USE_CASIOWIN)
+#define FXTAP_CORE_USE_CASIOWIN
 #endif
-
-#endif //FXTAP_CORE_LIB_CONFIG_H

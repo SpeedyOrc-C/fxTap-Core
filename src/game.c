@@ -1,5 +1,5 @@
-#include <fxTap/game.h>
 #include <stdlib.h>
+#include <fxTap/game.h>
 
 void HoldState_SetDefault(HoldState *holdState)
 {
@@ -21,7 +21,7 @@ void FxTap_Init(FxTap *fxTap, const Beatmap *beatmap)
 	fxTap->Grades.Meh = 0;
 	fxTap->Grades.Miss = 0;
 
-	for (int column = 0; column < MAX_COLUMN_COUNT; column += 1)
+	for (int column = 0; column < FXT_MaxColumnCount; column += 1)
 	{
 		fxTap->LastUpdatePressedColumn[column] = false;
 		fxTap->Columns[column].AccumulatedTimeMs = 0;
@@ -30,14 +30,19 @@ void FxTap_Init(FxTap *fxTap, const Beatmap *beatmap)
 		{
 			fxTap->Columns[column].FocusedNoteNo = 0;
 			HoldState_SetDefault(&fxTap->Columns[column].HoldState);
-		} else
+		}
+		else
 		{
 			fxTap->Columns[column].FocusedNoteNo = END_OF_COLUMN;
 		}
 	}
 }
 
-Grade GradeTapNote(const Tolerance *tolerance, int32_t timeNowMs, bool keyIsDown, int32_t noteStartMs)
+Grade GradeTapNote(
+	const Tolerance *tolerance,
+	const int32_t timeNowMs,
+	const bool keyIsDown,
+	const int32_t noteStartMs)
 {
 	// Negative: early
 	// Positive: late
@@ -80,8 +85,14 @@ Grade GradeHoldNoteDefinite(const Tolerance *tolerance, const HoldState *holdSta
 	return Grade_Meh;
 }
 
-Grade GradeHoldNote(const Tolerance *tolerance, int32_t timeNowMs, bool keyIsDown, bool keyIsUp, HoldState *holdState,
-                    int32_t noteStartMs, int32_t noteEndMs)
+Grade GradeHoldNote(
+	const Tolerance *tolerance,
+	const int32_t timeNowMs,
+	const bool keyIsDown,
+	const bool keyIsUp,
+	HoldState *holdState,
+	const int32_t noteStartMs,
+	const int32_t noteEndMs)
 {
 	// Before the grading area
 	if (timeNowMs < -tolerance->Miss + noteStartMs)
@@ -130,7 +141,10 @@ Grade GradeHoldNote(const Tolerance *tolerance, int32_t timeNowMs, bool keyIsDow
 	return Grade_Null;
 }
 
-FxTapUpdateResult FxTap_Update(FxTap *fxTap, FxtapTime timeNowMs, const bool isPressingColumn[16])
+FxTapUpdateResult FxTap_Update(
+	FxTap *fxTap,
+	const FxtapTime timeNowMs,
+	const bool isPressingColumn[16])
 {
 	if (timeNowMs < fxTap->LastUpdateTimeMs)
 		return FxTapUpdateResult_Error_RewoundTime;
@@ -157,26 +171,26 @@ FxTapUpdateResult FxTap_Update(FxTap *fxTap, FxtapTime timeNowMs, const bool isP
 		const bool keyIsUp = lastUpdatePressed && !isPressing;
 
 		const Grade grade =
-			note.Duration == 0
-				? GradeTapNote(&fxTap->Beatmap->Tolerance, timeNowMs, keyIsDown, noteStartMs)
-				: GradeHoldNote(&fxTap->Beatmap->Tolerance, timeNowMs, keyIsDown, keyIsUp,
-				                &column->HoldState, noteStartMs, noteStartMs + note.Duration);
+				note.Duration == 0
+					? GradeTapNote(&fxTap->Beatmap->Tolerance, timeNowMs, keyIsDown, noteStartMs)
+					: GradeHoldNote(&fxTap->Beatmap->Tolerance, timeNowMs, keyIsDown, keyIsUp,
+					                &column->HoldState, noteStartMs, noteStartMs + note.Duration);
 
 		switch (grade)
 		{
-		case Grade_Null: continue;
-		case Grade_Miss: fxTap->Grades.Miss += 1;
-			break;
-		case Grade_Meh: fxTap->Grades.Meh += 1;
-			break;
-		case Grade_Ok: fxTap->Grades.Ok += 1;
-			break;
-		case Grade_Good: fxTap->Grades.Good += 1;
-			break;
-		case Grade_Great: fxTap->Grades.Great += 1;
-			break;
-		case Grade_Perfect: fxTap->Grades.Perfect += 1;
-			break;
+			case Grade_Null: continue;
+			case Grade_Miss: fxTap->Grades.Miss += 1;
+				break;
+			case Grade_Meh: fxTap->Grades.Meh += 1;
+				break;
+			case Grade_Ok: fxTap->Grades.Ok += 1;
+				break;
+			case Grade_Good: fxTap->Grades.Good += 1;
+				break;
+			case Grade_Great: fxTap->Grades.Great += 1;
+				break;
+			case Grade_Perfect: fxTap->Grades.Perfect += 1;
+				break;
 		}
 
 		if (grade != Grade_Miss)
@@ -192,41 +206,41 @@ FxTapUpdateResult FxTap_Update(FxTap *fxTap, FxtapTime timeNowMs, const bool isP
 	if (ended)
 		return FxTapUpdateResult_Ended;
 
-	for (int column = 0; column < MAX_COLUMN_COUNT; column += 1)
+	for (int column = 0; column < FXT_MaxColumnCount; column += 1)
 		fxTap->LastUpdatePressedColumn[column] = isPressingColumn[column];
 
 	return FxTapUpdateResult_OK;
 }
 
-KeyMapper FxTap_FetchKeyMapper(const FxTap *fxTap, const Config *config)
+KeyMapper FxTap_FetchKeyMapper(const FxTap *fxTap, const FXT_Config *config)
 {
-	switch (config->KeyMappingStyle)
+	switch (config->KeyMapStyle)
 	{
-	case KeyMappingStyle_DJMAX:
-		switch (fxTap->ColumnCount)
-		{
-		case 1: return &KeyMapper_DJMAX_1K;
-		case 2: return &KeyMapper_DJMAX_2K;
-		case 3: return &KeyMapper_DJMAX_3K;
-		case 4: return &KeyMapper_DJMAX_4K;
-		case 5: return &KeyMapper_DJMAX_5K;
-		case 6: return &KeyMapper_DJMAX_6K;
-		case 7: return &KeyMapper_DJMAX_7K;
-		case 8: return &KeyMapper_DJMAX_8K;
-		case 9: return &KeyMapper_DJMAX_9K;
-		default: return NULL;
-		}
-	case KeyMappingStyle_BeatmaniaIIDX:
-		switch (fxTap->ColumnCount)
-		{
-		case 4: return &KeyMapper_BeatmaniaIIDX_4K;
-		case 5: return &KeyMapper_BeatmaniaIIDX_5K;
-		case 6: return &KeyMapper_BeatmaniaIIDX_6K;
-		case 7: return &KeyMapper_BeatmaniaIIDX_7K;
-		case 8: return &KeyMapper_BeatmaniaIIDX_8K;
-		default: return NULL;
-		}
-	default:
-		return NULL;
+		case FXT_KeyMapStyle_DJMAX:
+			switch (fxTap->ColumnCount)
+			{
+				case 1: return &KeyMapper_DJMAX_1K;
+				case 2: return &KeyMapper_DJMAX_2K;
+				case 3: return &KeyMapper_DJMAX_3K;
+				case 4: return &KeyMapper_DJMAX_4K;
+				case 5: return &KeyMapper_DJMAX_5K;
+				case 6: return &KeyMapper_DJMAX_6K;
+				case 7: return &KeyMapper_DJMAX_7K;
+				case 8: return &KeyMapper_DJMAX_8K;
+				case 9: return &KeyMapper_DJMAX_9K;
+				default: return nullptr;
+			}
+		case FXT_KeyMapStyle_BeatmaniaIIDX:
+			switch (fxTap->ColumnCount)
+			{
+				case 4: return &KeyMapper_BeatmaniaIIDX_4K;
+				case 5: return &KeyMapper_BeatmaniaIIDX_5K;
+				case 6: return &KeyMapper_BeatmaniaIIDX_6K;
+				case 7: return &KeyMapper_BeatmaniaIIDX_7K;
+				case 8: return &KeyMapper_BeatmaniaIIDX_8K;
+				default: return nullptr;
+			}
+		default:
+			return nullptr;
 	}
 }

@@ -1,6 +1,6 @@
-#include <fxTap/endian-utility.h>
-#include <stdint.h>
 #include <assert.h>
+#include <stdint.h>
+#include <fxTap/endian-utility.h>
 
 void SwapBytesOfSize(void *bytes, size_t bytesCount)
 {
@@ -10,7 +10,7 @@ void SwapBytesOfSize(void *bytes, size_t bytesCount)
 
 	for (size_t lowIndex = 0, highIndex = bytesCount - 1; highIndex > lowIndex; lowIndex++, highIndex--)
 	{
-		int8_t tmp = i8Bytes[lowIndex];
+		const int8_t tmp = i8Bytes[lowIndex];
 		i8Bytes[lowIndex] = i8Bytes[highIndex];
 		i8Bytes[highIndex] = tmp;
 	}
@@ -18,6 +18,6 @@ void SwapBytesOfSize(void *bytes, size_t bytesCount)
 
 bool EnvironmentIsBigEndian()
 {
-	const int16_t One = 1;
+	constexpr int16_t One = 1;
 	return *(int8_t *) &One != 1;
 }

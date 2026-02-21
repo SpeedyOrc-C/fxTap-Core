@@ -1,10 +1,9 @@
+#include <ctype.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include <fxTap/beatmap.h>
 #include <fxTap/endian-utility.h>
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
-#include <ctype.h>
-#include <assert.h>
 
 #ifdef FXTAP_CORE_HAS_DIRENT
 #include <dirent.h>
@@ -31,7 +30,7 @@ BeatmapError Metadata_LoadFromFile(Metadata *metadata, FILE *file)
 
 	if (EnvironmentIsBigEndian())
 	{
-		for (int column = 0; column < MAX_COLUMN_COUNT; column += 1)
+		for (int column = 0; column < FXT_MaxColumnCount; column += 1)
 			SwapBytes(metadata->SizeOfColumn[column]);
 
 		SwapBytes(metadata->OverallDifficulty);
@@ -60,7 +59,7 @@ BeatmapError Beatmap_LoadFromFile(Beatmap *beatmap, FILE *file)
 	beatmap->Notes[0] = notesBuffer;
 	int accumulatedNotesCount = beatmap->Metadata.SizeOfColumn[0];
 
-	for (int column = 1; column < MAX_COLUMN_COUNT; column += 1)
+	for (int column = 1; column < FXT_MaxColumnCount; column += 1)
 	{
 		beatmap->Notes[column] = notesBuffer + accumulatedNotesCount;
 		accumulatedNotesCount += beatmap->Metadata.SizeOfColumn[column];
@@ -136,7 +135,7 @@ int Beatmap_ColumnCount(const Beatmap *beatmap)
 {
 	int fromColumn = -1;
 
-	for (int column = 0; column < MAX_COLUMN_COUNT; column += 1)
+	for (int column = 0; column < FXT_MaxColumnCount; column += 1)
 	{
 		if (beatmap->Metadata.SizeOfColumn[column] > 0)
 		{
@@ -148,9 +147,9 @@ int Beatmap_ColumnCount(const Beatmap *beatmap)
 	if (fromColumn == -1)
 		return 0;
 
-	int toColumn = MAX_COLUMN_COUNT + 1;
+	int toColumn = FXT_MaxColumnCount + 1;
 
-	for (int column = MAX_COLUMN_COUNT - 1; column >= 0; column -= 1)
+	for (int column = FXT_MaxColumnCount - 1; column >= 0; column -= 1)
 	{
 		if (beatmap->Metadata.SizeOfColumn[column] > 0)
 		{
@@ -166,7 +165,7 @@ int Beatmap_NoteCount(const Beatmap *beatmap)
 {
 	int count = 0;
 
-	for (int column = 0; column < MAX_COLUMN_COUNT; column += 1)
+	for (int column = 0; column < FXT_MaxColumnCount; column += 1)
 		count += beatmap->Metadata.SizeOfColumn[column];
 
 	return count;
@@ -222,7 +221,7 @@ BeatmapFindEntries *BeatmapFindEntries_New_InsideDirectory(const char *path, Fin
 		entries->Count += 1;
 
 		BeatmapFindEntry *extendedEntries =
-			realloc(entries->Entries, entries->Count * sizeof(BeatmapFindEntry));
+				realloc(entries->Entries, entries->Count * sizeof(BeatmapFindEntry));
 
 		if (extendedEntries == NULL)
 		{

@@ -1,17 +1,16 @@
-#include <fxTap/beatmap-casiowin.h>
+#ifdef FXTAP_CORE_USE_CASIOWIN
 
-#if defined(FXTAP_CORE_ON_GINT)
-
-#include <fxTap/endian-utility.h>
-#include <fxTap/bfile-extern.h>
 #include <stdlib.h>
+#include <fxTap/beatmap-casiowin.h>
+#include <fxTap/bfile-interface.h>
+#include <fxTap/endian-utility.h>
 
 BeatmapError Metadata_LoadFromFile_BFile(Metadata *metadata, int bfile)
 {
 	if (sizeof(Metadata) > BFile_Read(bfile, metadata, sizeof(Metadata), -1))
 		return BeatmapError_ReadMetadataFailed;
 
-	for (int column = 0; column < MAX_COLUMN_COUNT; column += 1)
+	for (int column = 0; column < FXT_MaxColumnCount; column += 1)
 		SwapBytes(metadata->SizeOfColumn[column]);
 
 	SwapBytes(metadata->OverallDifficulty);
@@ -39,7 +38,7 @@ BeatmapError Beatmap_LoadFromFile_BFile(Beatmap *beatmap, int bfile)
 	beatmap->Notes[0] = notesBuffer;
 	int accumulatedNotesCount = beatmap->Metadata.SizeOfColumn[0];
 
-	for (int column = 1; column < MAX_COLUMN_COUNT; column += 1)
+	for (int column = 1; column < FXT_MaxColumnCount; column += 1)
 	{
 		beatmap->Notes[column] = notesBuffer + accumulatedNotesCount;
 		accumulatedNotesCount += beatmap->Metadata.SizeOfColumn[column];
@@ -68,7 +67,7 @@ Beatmap *Beatmap_New_LoadFromPath_BFile(const char *path, BeatmapError *error)
 	uint16_t *pathCasiowin = fs_path_normalize_fc(path);
 
 	if (pathCasiowin == NULL)
-		return NULL;
+		return nullptr;
 
 	int bfile = BFile_Open(pathCasiowin, BFile_ReadOnly);
 
@@ -76,7 +75,7 @@ Beatmap *Beatmap_New_LoadFromPath_BFile(const char *path, BeatmapError *error)
 	{
 		free(pathCasiowin);
 		*error = BeatmapError_FileNotFound;
-		return NULL;
+		return nullptr;
 	}
 
 	Beatmap *beatmap = malloc(sizeof(Beatmap));
@@ -86,7 +85,7 @@ Beatmap *Beatmap_New_LoadFromPath_BFile(const char *path, BeatmapError *error)
 		free(pathCasiowin);
 		BFile_Close(bfile);
 		*error = BeatmapError_MallocFailed;
-		return NULL;
+		return nullptr;
 	}
 
 	*error = Beatmap_LoadFromFile_BFile(beatmap, bfile);
@@ -96,7 +95,7 @@ Beatmap *Beatmap_New_LoadFromPath_BFile(const char *path, BeatmapError *error)
 		free(pathCasiowin);
 		free(beatmap);
 		BFile_Close(bfile);
-		return NULL;
+		return nullptr;
 	}
 
 	free(pathCasiowin);

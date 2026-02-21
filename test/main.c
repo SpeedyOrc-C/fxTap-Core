@@ -33,7 +33,7 @@ bool Test_Hold()
 	FxTap fxTap;
 	FxTap_Init(&fxTap, &beatmap);
 
-	bool keys[8] = {0, 0, 0, 0, 0, 0, 0, 0};
+	bool keys[16] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 
 	FxTap_Update(&fxTap, 0, keys);
 	keys[0] = true;
@@ -70,8 +70,8 @@ bool Test_FileLoading()
 	}
 	Beatmap_Free(beatmap);
 
-	ConfigError configError;
-	Config *config = Config_New_LoadFromDisk(&configError);
+	FXT_Config_Error configError;
+	FXT_Config *config = Config_New_LoadFromDisk(&configError);
 	{
 		if (config == NULL)
 		{
@@ -112,15 +112,15 @@ bool Test_QueryBeatmaps()
 
 bool Test_Config()
 {
-	ConfigError error;
-	Config *config = Config_New_LoadFromDisk(&error);
+	FXT_Config_Error error;
+	FXT_Config *config = Config_New_LoadFromDisk(&error);
 
 	if (config == NULL)
 		return false;
 
 	printf("Notes falling time: %i ms\n", config->NotesFallingTime);
 	printf("Keys: ");
-	for (int i = 0; i < MAX_COLUMN_COUNT; i += 1)
+	for (int i = 0; i < FXT_MaxColumnCount; i += 1)
 		printf("%i ", config->PhysicalKeyOfFxTapKey[i]);
 	printf("\n");
 
@@ -156,7 +156,7 @@ bool Test_RendererController()
 		.RenderHold = &DummyRenderHold,
 	};
 
-	const bool isKeyPressed[8] = {0, 0, 0, 0, 0, 0, 0, 0};
+	const bool isKeyPressed[16] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 
 	for (int time = 0; time <= 10000; time += 5)
 	{

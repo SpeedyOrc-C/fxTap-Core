@@ -1,106 +1,71 @@
-#include <fxTap/config-casiowin.h>
-#include <fxTap/endian-utility.h>
-#include <fxTap/bfile-extern.h>
-#include <stdlib.h>
-#include <assert.h>
+#ifdef FXTAP_CORE_USE_CASIOWIN
 
-#if defined(FXTAP_CORE_ON_GINT)
+#include <fxTap/bfile-interface.h>
+#include <fxTap/config.h>
 
-Config *Config_New_LoadFromDisk_BFile(ConfigError *error)
+const uint16_t *const ConfigPath_BFile = u"\\\\fls0\\FXTAP.cfg";
+
+FXT_Config_Error FXT_Config_Load_BFile(FXT_Config *const dst)
 {
-	Config *config = malloc(sizeof(Config));
+	FXT_Config config = FXT_Config_Default;
 
-	if (config == NULL)
+	int file = BFile_Open(ConfigPath_BFile, BFile_ReadOnly);
+
+	if (file < 0)
 	{
-		*error = ConfigError_MallocFailed;
-		return NULL;
+		int size = sizeof(FXT_Config);
+
+		if (BFile_Create(ConfigPath_BFile, BFile_File, &size))
+			return FXT_ConfigError_CannotCreateFile;
+
+		file = BFile_Open(ConfigPath_BFile, BFile_WriteOnly);
+
+		if (file < 0)
+			return FXT_ConfigError_CannotOpenNewFileJustCreated;
+
+		if (sizeof(FXT_Config) > BFile_Write(file, &config, sizeof(FXT_Config)))
+		{
+			BFile_Close(file);
+			return FXT_ConfigError_CannotWriteFile;
+		}
+
+		goto win;
 	}
 
-	const int bfile = BFile_Open(FXTAP_CONFIG_BFILE_PATH, BFile_ReadOnly);
-
-	if (bfile < 0) // Create a new config if not exists
+	if (sizeof(FXT_Config) > BFile_Read(file, &config, sizeof(FXT_Config), -1))
 	{
-		int size = sizeof(Config);
-
-		assert((size & 1) == 0);
-
-		if (BFile_Create(FXTAP_CONFIG_BFILE_PATH, BFile_File, &size))
-		{
-			free(config);
-			*error = ConfigError_CannotCreateFile;
-			return NULL;
-		}
-
-		const int newBfile = BFile_Open(FXTAP_CONFIG_BFILE_PATH, BFile_WriteOnly);
-
-		if (newBfile < 0)
-		{
-			free(config);
-			*error = ConfigError_CannotOpenNewFileJustCreated;
-			return NULL;
-		}
-
-		Config_SetDefault(config);
-
-		Config littleEndianConfig = *config;
-		Config_ChangeEndian(&littleEndianConfig);
-
-		if (sizeof(Config) > BFile_Write(newBfile, &littleEndianConfig, sizeof(Config)))
-		{
-			free(config);
-			BFile_Close(newBfile);
-			*error = ConfigError_CannotWriteFile;
-			return NULL;
-		}
-
-		BFile_Close(newBfile);
-	} else // Load the config if exists
-	{
-		if (sizeof(Config) > BFile_Read(bfile, config, sizeof(Config), -1))
-		{
-			free(config);
-			BFile_Close(bfile);
-			*error = ConfigError_CannotReadFile;
-			return NULL;
-		}
-
-		Config_ChangeEndian(config);
-
-		BFile_Close(bfile);
+		BFile_Close(file);
+		return FXT_ConfigError_CannotReadFile;
 	}
 
-	*error = ConfigError_OK;
-	return config;
+win:
+	BFile_Close(file);
+	*dst = config;
+	return 0;
 }
 
-ConfigError Config_SaveToDisk_BFile(Config *config)
+FXT_Config_Error FXT_Config_Save_BFile(const FXT_Config config)
 {
-	BFile_Remove(FXTAP_CONFIG_BFILE_PATH);
+	BFile_Remove(ConfigPath_BFile);
 
-	int size = sizeof(Config);
-	assert((size & 1) == 0);
+	int size = sizeof(FXT_Config);
 
-	if (BFile_Create(FXTAP_CONFIG_BFILE_PATH, BFile_File, &size))
-		return ConfigError_CannotCreateFile;
+	if (BFile_Create(ConfigPath_BFile, BFile_File, &size))
+		return FXT_ConfigError_CannotCreateFile;
 
-	const int bfile = BFile_Open(FXTAP_CONFIG_BFILE_PATH, BFile_WriteOnly);
+	const int file = BFile_Open(ConfigPath_BFile, BFile_WriteOnly);
 
-	if (bfile < 0)
-		return ConfigError_CannotOpenFile;
+	if (file < 0)
+		return FXT_ConfigError_CannotOpenFile;
 
-	Config littleEndianConfig = *config;
-
-	Config_ChangeEndian(&littleEndianConfig);
-
-	if (sizeof(Config) > BFile_Write(bfile, &littleEndianConfig, sizeof(Config)))
+	if (sizeof(FXT_Config) > BFile_Write(file, &config, sizeof(FXT_Config)))
 	{
-		BFile_Close(bfile);
-		return ConfigError_CannotWriteFile;
+		BFile_Close(file);
+		return FXT_ConfigError_CannotWriteFile;
 	}
 
-	BFile_Close(bfile);
-
-	return ConfigError_OK;
+	BFile_Close(file);
+	return 0;
 }
 
 #endif

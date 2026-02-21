@@ -1,38 +1,37 @@
 #include <fxTap/keymap.h>
-#include <assert.h>
-#include <stdbool.h>
+#include <stddef.h>
 
-FxTapKey KeyMapper_DJMAX_1K(FxTapColumn column)
+FxTapKey KeyMapper_DJMAX_1K(const FxTapColumn column)
 {
 	switch (column)
 	{
 	case FxTapColumn_1: return FxTapKey_K5;
-	default: assert(false);
+	default: unreachable();
 	}
 }
 
-FxTapKey KeyMapper_DJMAX_2K(FxTapColumn column)
+FxTapKey KeyMapper_DJMAX_2K(const FxTapColumn column)
 {
 	switch (column)
 	{
 	case FxTapColumn_1: return FxTapKey_K4;
 	case FxTapColumn_2: return FxTapKey_K6;
-	default: assert(false);
+	default: unreachable();
 	}
 }
 
-FxTapKey KeyMapper_DJMAX_3K(FxTapColumn column)
+FxTapKey KeyMapper_DJMAX_3K(const FxTapColumn column)
 {
 	switch (column)
 	{
 	case FxTapColumn_1: return FxTapKey_K4;
 	case FxTapColumn_2: return FxTapKey_K5;
 	case FxTapColumn_3: return FxTapKey_K6;
-	default: assert(false);
+	default: unreachable();
 	}
 }
 
-FxTapKey KeyMapper_DJMAX_4K(FxTapColumn column)
+FxTapKey KeyMapper_DJMAX_4K(const FxTapColumn column)
 {
 	switch (column)
 	{
@@ -40,11 +39,11 @@ FxTapKey KeyMapper_DJMAX_4K(FxTapColumn column)
 	case FxTapColumn_2: return FxTapKey_K4;
 	case FxTapColumn_3: return FxTapKey_K6;
 	case FxTapColumn_4: return FxTapKey_K7;
-	default: assert(false);
+	default: unreachable();
 	}
 }
 
-FxTapKey KeyMapper_DJMAX_5K(FxTapColumn column)
+FxTapKey KeyMapper_DJMAX_5K(const FxTapColumn column)
 {
 	switch (column)
 	{
@@ -53,11 +52,11 @@ FxTapKey KeyMapper_DJMAX_5K(FxTapColumn column)
 	case FxTapColumn_3: return FxTapKey_K5;
 	case FxTapColumn_4: return FxTapKey_K6;
 	case FxTapColumn_5: return FxTapKey_K7;
-	default: assert(false);
+	default: unreachable();
 	}
 }
 
-FxTapKey KeyMapper_DJMAX_6K(FxTapColumn column)
+FxTapKey KeyMapper_DJMAX_6K(const FxTapColumn column)
 {
 	switch (column)
 	{
@@ -67,11 +66,11 @@ FxTapKey KeyMapper_DJMAX_6K(FxTapColumn column)
 	case FxTapColumn_4: return FxTapKey_K6;
 	case FxTapColumn_5: return FxTapKey_K7;
 	case FxTapColumn_6: return FxTapKey_K8;
-	default: assert(false);
+	default: unreachable();
 	}
 }
 
-FxTapKey KeyMapper_DJMAX_6KL(FxTapColumn column)
+FxTapKey KeyMapper_DJMAX_6KL(const FxTapColumn column)
 {
 	switch (column)
 	{
@@ -81,11 +80,11 @@ FxTapKey KeyMapper_DJMAX_6KL(FxTapColumn column)
 	case FxTapColumn_4: return FxTapKey_K5;
 	case FxTapColumn_5: return FxTapKey_K6;
 	case FxTapColumn_6: return FxTapKey_K7;
-	default: assert(false);
+	default: unreachable();
 	}
 }
 
-FxTapKey KeyMapper_DJMAX_6KR(FxTapColumn column)
+FxTapKey KeyMapper_DJMAX_6KR(const FxTapColumn column)
 {
 	switch (column)
 	{
@@ -95,11 +94,11 @@ FxTapKey KeyMapper_DJMAX_6KR(FxTapColumn column)
 	case FxTapColumn_4: return FxTapKey_K6;
 	case FxTapColumn_5: return FxTapKey_K7;
 	case FxTapColumn_6: return FxTapKey_S1;
-	default: assert(false);
+	default: unreachable();
 	}
 }
 
-FxTapKey KeyMapper_DJMAX_7K(FxTapColumn column)
+FxTapKey KeyMapper_DJMAX_7K(const FxTapColumn column)
 {
 	switch (column)
 	{
@@ -110,11 +109,11 @@ FxTapKey KeyMapper_DJMAX_7K(FxTapColumn column)
 	case FxTapColumn_5: return FxTapKey_K6;
 	case FxTapColumn_6: return FxTapKey_K7;
 	case FxTapColumn_7: return FxTapKey_K8;
-	default: assert(false);
+	default: unreachable();
 	}
 }
 
-FxTapKey KeyMapper_DJMAX_8K(FxTapColumn column)
+FxTapKey KeyMapper_DJMAX_8K(const FxTapColumn column)
 {
 	switch (column)
 	{
@@ -126,11 +125,11 @@ FxTapKey KeyMapper_DJMAX_8K(FxTapColumn column)
 	case FxTapColumn_7: return FxTapKey_K7;
 	case FxTapColumn_8: return FxTapKey_K8;
 	case FxTapColumn_9: return FxTapKey_K9;
-	default: assert(false);
+	default: unreachable();
 	}
 }
 
-FxTapKey KeyMapper_DJMAX_8KL(FxTapColumn column)
+FxTapKey KeyMapper_DJMAX_8KL(const FxTapColumn column)
 {
 	switch (column)
 	{
@@ -142,11 +141,11 @@ FxTapKey KeyMapper_DJMAX_8KL(FxTapColumn column)
 	case FxTapColumn_6: return FxTapKey_K6;
 	case FxTapColumn_7: return FxTapKey_K7;
 	case FxTapColumn_8: return FxTapKey_K8;
-	default: assert(false);
+	default: unreachable();
 	}
 }
 
-FxTapKey KeyMapper_DJMAX_8KR(FxTapColumn column)
+FxTapKey KeyMapper_DJMAX_8KR(const FxTapColumn column)
 {
 	switch (column)
 	{
@@ -158,11 +157,11 @@ FxTapKey KeyMapper_DJMAX_8KR(FxTapColumn column)
 	case FxTapColumn_6: return FxTapKey_K7;
 	case FxTapColumn_7: return FxTapKey_K8;
 	case FxTapColumn_8: return FxTapKey_S1;
-	default: assert(false);
+	default: unreachable();
 	}
 }
 
-FxTapKey KeyMapper_DJMAX_9K(FxTapColumn column)
+FxTapKey KeyMapper_DJMAX_9K(const FxTapColumn column)
 {
 	switch (column)
 	{
@@ -175,11 +174,11 @@ FxTapKey KeyMapper_DJMAX_9K(FxTapColumn column)
 	case FxTapColumn_7: return FxTapKey_K7;
 	case FxTapColumn_8: return FxTapKey_K8;
 	case FxTapColumn_9: return FxTapKey_K9;
-	default: assert(false);
+	default: unreachable();
 	}
 }
 
-const char *FxTapKey_ToString(FxTapKey key)
+const char *FxTapKey_ToString(const FxTapKey key)
 {
 	switch (key)
 	{
@@ -193,6 +192,6 @@ const char *FxTapKey_ToString(FxTapKey key)
 	case FxTapKey_K8: return "K8";
 	case FxTapKey_K9: return "K9";
 	case FxTapKey_S1: return "S1";
-	default: assert(false);
+	default: unreachable();
 	}
 }

@@ -2,7 +2,6 @@
 #define FXTAP_CORE_TEST_ENDIAN_UTILITY_H
 
 #include <stddef.h>
-#include <stdbool.h>
 
 void SwapBytesOfSize(void *bytes, size_t bytesCount);
 

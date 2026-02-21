@@ -1,5 +1,4 @@
-#ifndef FXTAP_CORE_RENDER_H
-#define FXTAP_CORE_RENDER_H
+#pragma once
 
 #include <fxTap/game.h>
 
@@ -9,16 +8,14 @@ typedef void (*HoldRenderer)(int column, double positionBottom, double positionT
 
 typedef struct RendererController
 {
-    double HeightAbove;
+	double HeightAbove;
 
-    // Time needed for note to fall onto the line after it appears from the top.
-    FxtapTime VisibleTime;
+	// Time needed for note to fall onto the line after it appears from the top.
+	FxtapTime VisibleTime;
 
-    // Render methods are injected to this controller, and will be called automatically.
-    TapRenderer RenderTap;
-    HoldRenderer RenderHold;
+	// Render methods are injected to this controller, and will be called automatically.
+	TapRenderer RenderTap;
+	HoldRenderer RenderHold;
 } RendererController;
 
 void RendererController_Run(const RendererController *controller, const FxTap *fxTap, FxtapTime timeNow);
-
-#endif //FXTAP_CORE_RENDER_H

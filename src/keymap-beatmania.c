@@ -1,6 +1,5 @@
 #include <fxTap/keymap.h>
 #include <assert.h>
-#include <stdbool.h>
 
 FxTapKey KeyMapper_BeatmaniaIIDX_4K(FxTapColumn column)
 {

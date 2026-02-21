@@ -1,54 +1,56 @@
-#ifndef FXTAP_CORE_CONFIG_H
-#define FXTAP_CORE_CONFIG_H
+#pragma once
 
 #include <stdint.h>
 #include <fxTap/beatmap.h>
 
-#define FXTAP_CONFIG_PATH "fxTap.cfg"
-#define FXTAP_CONFIG_VERSION "fxTap-config-v01"
-#define CONFIG_VERSION_LEN 16
-#define MAX_KEY_COUNT 10
+#define FXT_MaxKeyCount 10
 
-typedef enum KeyMappingStyle
+typedef enum FXT_KeyMapStyle
 {
-    KeyMappingStyle_DJMAX,
-    KeyMappingStyle_BeatmaniaIIDX,
-    KeyMappingStyle_Coop,
-} KeyMappingStyle;
+	FXT_KeyMapStyle_DJMAX,
+	FXT_KeyMapStyle_BeatmaniaIIDX,
+	FXT_KeyMapStyle_CoOp,
+} FXT_KeyMapStyle;
 
-typedef enum Language
+typedef enum FXT_Language
 {
-    EN_US, ZH_CN,
-} Language;
+	FXT_Language_EnUs,
+	FXT_Language_ZhCn,
+} FXT_Language;
 
-typedef struct Config
+typedef struct config
 {
-    int8_t Version[CONFIG_VERSION_LEN];
-    uint8_t PhysicalKeyOfFxTapKey[MAX_COLUMN_COUNT];
-    int16_t NotesFallingTime;
-    KeyMappingStyle KeyMappingStyle;
-    Language Language;
-} Config;
+	int16_t NotesFallingTime;
+	uint8_t PhysicalKeyOfFxTapKey[FXT_MaxColumnCount];
+	FXT_KeyMapStyle KeyMapStyle;
+	FXT_Language Language;
+} FXT_Config;
 
-typedef enum ConfigError
+typedef enum FXT_ConfigError
 {
-    ConfigError_OK = 0,
-    ConfigError_MallocFailed,
-    ConfigError_CannotCreateFile,
-    ConfigError_CannotWriteFile,
-    ConfigError_CannotCloseFile,
-    ConfigError_CannotReadFile,
-    ConfigError_CannotOpenFile,
-    ConfigError_CannotOpenNewFileJustCreated,
-} ConfigError;
+	FXT_ConfigError_OK = 0,
+	FXT_ConfigError_MallocFailed,
+	FXT_ConfigError_CannotCreateFile,
+	FXT_ConfigError_CannotWriteFile,
+	FXT_ConfigError_CannotReadFile,
+	FXT_ConfigError_CannotOpenFile,
+	FXT_ConfigError_CannotOpenNewFileJustCreated,
+} FXT_Config_Error;
 
-__attribute__ ((malloc))
-Config *Config_New_LoadFromDisk(ConfigError *error);
+extern const FXT_Config FXT_Config_Default;
 
-void Config_SetDefault(Config *config);
+[[nodiscard]]
+FXT_Config_Error FXT_Config_Load(FXT_Config *dst);
 
-ConfigError Config_SaveToDisk(const Config *config);
+[[nodiscard]]
+FXT_Config_Error FXT_Config_Save(FXT_Config config);
 
-void Config_ChangeEndian(Config *config);
+#ifdef FXTAP_CORE_USE_CASIOWIN
 
-#endif //FXTAP_CORE_CONFIG_H
+[[nodiscard]]
+FXT_Config_Error FXT_Config_Load_BFile(FXT_Config *dst);
+
+[[nodiscard]]
+FXT_Config_Error FXT_Config_Save_BFile(FXT_Config config);
+
+#endif
