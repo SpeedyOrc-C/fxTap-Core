@@ -9,7 +9,7 @@
 #include <dirent.h>
 #endif
 
-FXT_Tolerance FXT_Tolerance_FromOverallDifficulty(double overallDifficulty)
+FXT_Tolerance FXT_Tolerance_FromOverallDifficulty(const double overallDifficulty)
 {
 	const double od3 = 3 * overallDifficulty;
 
@@ -37,6 +37,16 @@ FXT_BeatmapError Metadata_LoadFromFile(FXT_Metadata *metadata, FILE *file)
 	}
 
 	return FXT_BeatmapError_OK;
+}
+
+int FXT_Beatmap_NoteCount(const FXT_Beatmap *beatmap)
+{
+	int count = 0;
+
+	for (int column = 0; column < FXT_MaxColumnCount; column += 1)
+		count += beatmap->Metadata.SizeOfColumn[column];
+
+	return count;
 }
 
 FXT_BeatmapError Beatmap_LoadFromFile(FXT_Beatmap *beatmap, FILE *file)
@@ -88,35 +98,37 @@ FXT_BeatmapError Beatmap_LoadFromFile(FXT_Beatmap *beatmap, FILE *file)
 
 FXT_Beatmap *FXT_Beatmap_Load(const char *path, FXT_BeatmapError *error)
 {
-	FXT_Beatmap *beatmap = malloc(sizeof(FXT_Beatmap));
-
-	if (beatmap == nullptr)
-	{
-		*error = FXT_BeatmapError_MallocFailed;
-		return nullptr;
-	}
+	FXT_Beatmap *beatmap = nullptr;
 
 	FILE *file = fopen(path, "rb");
 
 	if (file == nullptr)
 	{
-		free(beatmap);
 		*error = FXT_BeatmapError_FileNotFound;
-		return nullptr;
+		goto fail;
+	}
+
+	beatmap = malloc(sizeof(FXT_Beatmap));
+
+	if (beatmap == nullptr)
+	{
+		*error = FXT_BeatmapError_MallocFailed;
+		goto fail;
 	}
 
 	*error = Beatmap_LoadFromFile(beatmap, file);
 
 	if (*error)
-	{
-		free(beatmap);
-		fclose(file);
-		return nullptr;
-	}
+		goto fail;
 
 	fclose(file);
 	*error = FXT_BeatmapError_OK;
 	return beatmap;
+
+fail:
+	if (file != nullptr) fclose(file);
+	if (beatmap != nullptr) free(beatmap);
+	return nullptr;
 }
 
 void FXT_Beatmap_Free(FXT_Beatmap *beatmap)
@@ -153,16 +165,6 @@ int FXT_Beatmap_ColumnCount(const FXT_Beatmap *beatmap)
 	}
 
 	return toColumn - fromColumn + 1;
-}
-
-int FXT_Beatmap_NoteCount(const FXT_Beatmap *beatmap)
-{
-	int count = 0;
-
-	for (int column = 0; column < FXT_MaxColumnCount; column += 1)
-		count += beatmap->Metadata.SizeOfColumn[column];
-
-	return count;
 }
 
 #ifdef FXTAP_CORE_HAS_DIRENT

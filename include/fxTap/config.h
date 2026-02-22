@@ -26,6 +26,8 @@ typedef struct FXT_Config
 	FXT_Language Language;
 } FXT_Config;
 
+bool FXT_Config_Equal(const FXT_Config *a, const FXT_Config *b);
+
 typedef enum FXT_ConfigError
 {
 	FXT_ConfigError_OK = 0,

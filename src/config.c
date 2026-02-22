@@ -69,3 +69,14 @@ FXT_Config_Error FXT_Config_Save(const FXT_Config config)
 	fclose(file);
 	return 0;
 }
+
+bool FXT_Config_Equal(const FXT_Config *a, const FXT_Config *b)
+{
+	for (int i = 0; i < FXT_MaxColumnCount; i += 1)
+		if (a->PhysicalKeyOfFxTapKey[i] != b->PhysicalKeyOfFxTapKey[i])
+			return false;
+
+	return a->NotesFallingTime == b->NotesFallingTime
+	       && a->KeyMapStyle == b->KeyMapStyle
+	       && a->Language == b->Language;
+}

@@ -5,7 +5,7 @@
 #include <fxTap/bfile-interface.h>
 #include <fxTap/endian-utility.h>
 
-FXT_BeatmapError Metadata_LoadFromFile_BFile(FXT_Metadata *metadata, int bfile)
+FXT_BeatmapError Metadata_LoadFromFile_BFile(FXT_Metadata *metadata, const int bfile)
 {
 	if (sizeof(FXT_Metadata) > BFile_Read(bfile, metadata, sizeof(FXT_Metadata), -1))
 		return FXT_BeatmapError_ReadMetadataFailed;
@@ -18,7 +18,7 @@ FXT_BeatmapError Metadata_LoadFromFile_BFile(FXT_Metadata *metadata, int bfile)
 	return FXT_BeatmapError_OK;
 }
 
-FXT_BeatmapError Beatmap_LoadFromFile_BFile(FXT_Beatmap *beatmap, int bfile)
+FXT_BeatmapError Beatmap_LoadFromFile_BFile(FXT_Beatmap *beatmap, const int bfile)
 {
 	const FXT_BeatmapError error = Metadata_LoadFromFile_BFile(&beatmap->Metadata, bfile);
 
@@ -69,7 +69,7 @@ FXT_Beatmap *FXT_Beatmap_Load_BFile(const char *path, FXT_BeatmapError *error)
 	if (pathCasiowin == NULL)
 		return nullptr;
 
-	int bfile = BFile_Open(pathCasiowin, BFile_ReadOnly);
+	auto const bfile = BFile_Open(pathCasiowin, BFile_ReadOnly);
 
 	if (bfile < 0)
 	{

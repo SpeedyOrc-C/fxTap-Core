@@ -129,12 +129,12 @@ bool Test_Config()
 	return true;
 }
 
-void DummyRenderTap(int column, double positionBottom)
+void DummyRenderTap(const int column, const double positionBottom)
 {
 	printf("%d: %.5f\n", column + 1, positionBottom);
 }
 
-void DummyRenderHold(int column, double positionBottom, double positionTop)
+void DummyRenderHold(const int column, const double positionBottom, const double positionTop)
 {
 	printf("%d: %.5f ~ %.5f\n", column + 1, positionBottom, positionTop);
 }
@@ -149,7 +149,7 @@ bool Test_RendererController()
 	FXT_Game fxTap;
 	FXT_Game_Init(&fxTap, beatmap);
 
-	FXT_RendererController controller = {
+	const FXT_RendererController controller = {
 		.HeightAbove = 100,
 		.VisibleTime = 1000,
 		.RenderTap = &DummyRenderTap,
