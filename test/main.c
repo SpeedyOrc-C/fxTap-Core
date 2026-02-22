@@ -30,21 +30,21 @@ bool Test_Hold()
 
 	beatmap.Tolerance = FXT_Tolerance_FromOverallDifficulty(0);
 
-	FxTap fxTap;
-	FxTap_Init(&fxTap, &beatmap);
+	FXT_Game fxTap;
+	FXT_Game_Init(&fxTap, &beatmap);
 
 	bool keys[16] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 
-	FxTap_Update(&fxTap, 0, keys);
+	FXT_Game_Update(&fxTap, 0, keys);
 	keys[0] = true;
-	FxTap_Update(&fxTap, 900, keys);
+	FXT_Game_Update(&fxTap, 900, keys);
 	keys[0] = false;
-	FxTap_Update(&fxTap, 950, keys);
+	FXT_Game_Update(&fxTap, 950, keys);
 	keys[0] = true;
-	FxTap_Update(&fxTap, 1000, keys);
+	FXT_Game_Update(&fxTap, 1000, keys);
 	keys[0] = false;
-	FxTap_Update(&fxTap, 2000, keys);
-	FxTap_Update(&fxTap, 3000, keys);
+	FXT_Game_Update(&fxTap, 2000, keys);
+	FXT_Game_Update(&fxTap, 3000, keys);
 
 	if (fxTap.Grades.Perfect != 1)
 		return false;
@@ -146,10 +146,10 @@ bool Test_RendererController()
 
 	assert(beatmap != NULL);
 
-	FxTap fxTap;
-	FxTap_Init(&fxTap, beatmap);
+	FXT_Game fxTap;
+	FXT_Game_Init(&fxTap, beatmap);
 
-	RendererController controller = {
+	FXT_RendererController controller = {
 		.HeightAbove = 100,
 		.VisibleTime = 1000,
 		.RenderTap = &DummyRenderTap,
@@ -161,8 +161,8 @@ bool Test_RendererController()
 	for (int time = 0; time <= 10000; time += 5)
 	{
 		printf("> %d\n", time);
-		FxTap_Update(&fxTap, time, isKeyPressed);
-		RendererController_Run(&controller, &fxTap, time);
+		FXT_Game_Update(&fxTap, time, isKeyPressed);
+		FXT_RendererController_Run(&controller, &fxTap, time);
 	}
 
 	FXT_Beatmap_Free(beatmap);

@@ -2,11 +2,11 @@
 
 #include <fxTap/game.h>
 
-typedef void (*TapRenderer)(int column, double positionBottom);
+typedef void (*FXT_TapRenderer)(int column, double positionBottom);
 
-typedef void (*HoldRenderer)(int column, double positionBottom, double positionTop);
+typedef void (*FXT_HoldRenderer)(int column, double positionBottom, double positionTop);
 
-typedef struct RendererController
+typedef struct FXT_RendererController
 {
 	double HeightAbove;
 
@@ -14,8 +14,8 @@ typedef struct RendererController
 	FxtapTime VisibleTime;
 
 	// Render methods are injected to this controller, and will be called automatically.
-	TapRenderer RenderTap;
-	HoldRenderer RenderHold;
-} RendererController;
+	FXT_TapRenderer RenderTap;
+	FXT_HoldRenderer RenderHold;
+} FXT_RendererController;
 
-void RendererController_Run(const RendererController *controller, const FxTap *fxTap, FxtapTime timeNow);
+void FXT_RendererController_Run(const FXT_RendererController *controller, const FXT_Game *game, FxtapTime timeNow);

@@ -1,10 +1,10 @@
 #include <stdio.h>
 #include <fxTap/config.h>
 
-const auto ConfigPath = "fxTap.cfg";
+static const auto ConfigPath = "fxTap.cfg";
 
-// ReSharper disable once CppUseAuto
-const FXT_Config FXT_Config_Default = (FXT_Config){
+
+const FXT_Config FXT_Config_Default = {
 	.NotesFallingTime = 1000,
 	.KeyMapStyle = FXT_KeyMapStyle_DJMAX,
 	.Language = FXT_Language_EnUs,

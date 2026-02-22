@@ -10,55 +10,53 @@
 // Unit: millisecond (ms)
 typedef int32_t FxtapTime;
 
-typedef enum Grade
+typedef enum FXT_Grade
 {
-	Grade_Null,
-	Grade_Miss,
-	Grade_Meh,
-	Grade_Ok,
-	Grade_Good,
-	Grade_Great,
-	Grade_Perfect,
-} Grade;
+	FXT_Grade_Null,
+	FXT_Grade_Miss,
+	FXT_Grade_Meh,
+	FXT_Grade_Ok,
+	FXT_Grade_Good,
+	FXT_Grade_Great,
+	FXT_Grade_Perfect,
+} FXT_Grade;
 
-typedef struct HoldState
+typedef struct FXT_HoldState
 {
 	bool HeadIsValid;
 	bool TailIsValid;
 	int32_t HeadDelta;
 	int32_t TailDelta;
-} HoldState;
+} FXT_HoldState;
 
-void HoldState_SetDefault(HoldState *holdState);
-
-typedef struct ColumnState
+typedef struct FXT_ColumnState
 {
 	FxtapTime AccumulatedTimeMs;
 	int32_t FocusedNoteNo;
-	HoldState HoldState;
-} ColumnState;
+	FXT_HoldState HoldState;
+} FXT_ColumnState;
 
-typedef struct FxTap
+typedef struct FXT_Game
 {
 	const FXT_Beatmap *Beatmap;
 
 	int ColumnCount;
-	ColumnState ColumnsStates[FXT_MaxColumnCount];
+	FXT_ColumnState ColumnsStates[FXT_MaxColumnCount];
 	int32_t LastUpdateTimeMs;
 	bool LastUpdatePressedColumn[FXT_MaxColumnCount];
 	FXT_Grades Grades;
 	unsigned int Combo;
-} FxTap;
+} FXT_Game;
 
-typedef enum FxTapUpdateResult
+typedef enum FXT_GameUpdateResult
 {
 	FxTapUpdateResult_Ended,
 	FxTapUpdateResult_OK,
 	FxTapUpdateResult_Error_RewoundTime,
-} FxTapUpdateResult;
+} FXT_GameUpdateResult;
 
-void FxTap_Init(FxTap *fxTap, const FXT_Beatmap *beatmap);
+void FXT_Game_Init(FXT_Game *game, const FXT_Beatmap *beatmap);
 
-FxTapUpdateResult FxTap_Update(FxTap *fxTap, FxtapTime timeNowMs, const bool isPressingColumn[FXT_MaxColumnCount]);
+FXT_GameUpdateResult FXT_Game_Update(FXT_Game *game, FxtapTime timeNowMs, const bool isPressingColumn[FXT_MaxColumnCount]);
 
-KeyMapper FxTap_FetchKeyMapper(const FxTap *fxTap, const FXT_Config *config);
+KeyMapper FXT_Game_FetchKeyMapper(const FXT_Game *game, const FXT_Config *config);

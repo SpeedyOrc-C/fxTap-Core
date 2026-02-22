@@ -3,22 +3,22 @@
 #include <fxTap/bfile-interface.h>
 #include <fxTap/config.h>
 
-const uint16_t *const ConfigPath_BFile = u"\\\\fls0\\FXTAP.cfg";
+static const uint16_t *const ConfigPath = u"\\\\fls0\\FXTAP.cfg";
 
 FXT_Config_Error FXT_Config_Load_BFile(FXT_Config *const dst)
 {
 	FXT_Config config = FXT_Config_Default;
 
-	int file = BFile_Open(ConfigPath_BFile, BFile_ReadOnly);
+	int file = BFile_Open(ConfigPath, BFile_ReadOnly);
 
 	if (file < 0)
 	{
 		int size = sizeof(FXT_Config);
 
-		if (BFile_Create(ConfigPath_BFile, BFile_File, &size))
+		if (BFile_Create(ConfigPath, BFile_File, &size))
 			return FXT_ConfigError_CannotCreateFile;
 
-		file = BFile_Open(ConfigPath_BFile, BFile_WriteOnly);
+		file = BFile_Open(ConfigPath, BFile_WriteOnly);
 
 		if (file < 0)
 			return FXT_ConfigError_CannotOpenNewFileJustCreated;
@@ -46,14 +46,14 @@ win:
 
 FXT_Config_Error FXT_Config_Save_BFile(const FXT_Config config)
 {
-	BFile_Remove(ConfigPath_BFile);
+	BFile_Remove(ConfigPath);
 
 	int size = sizeof(FXT_Config);
 
-	if (BFile_Create(ConfigPath_BFile, BFile_File, &size))
+	if (BFile_Create(ConfigPath, BFile_File, &size))
 		return FXT_ConfigError_CannotCreateFile;
 
-	const int file = BFile_Open(ConfigPath_BFile, BFile_WriteOnly);
+	const int file = BFile_Open(ConfigPath, BFile_WriteOnly);
 
 	if (file < 0)
 		return FXT_ConfigError_CannotOpenFile;

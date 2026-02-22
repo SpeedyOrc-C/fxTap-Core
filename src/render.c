@@ -2,73 +2,83 @@
 #include <fxTap/game.h>
 #include <fxTap/render.h>
 
-void RendererController_Run(
-	const RendererController *controller,
-	const FxTap *fxTap,
+void FXT_RendererController_Run(
+	const FXT_RendererController *controller,
+	const FXT_Game *game,
 	const FxtapTime timeNow)
 {
-	const double TimeScale = controller->HeightAbove / controller->VisibleTime;
-	const FXT_Metadata *Metadata = &fxTap->Beatmap->Metadata;
+	const double timeScale = controller->HeightAbove / controller->VisibleTime;
+	const FXT_Metadata *metadata = &game->Beatmap->Metadata;
 
-	for (int column = 0; column < fxTap->ColumnCount && Metadata->SizeOfColumn[column] > 0; column += 1)
+	for (int column = 0; column < game->ColumnCount && metadata->SizeOfColumn[column] > 0; column += 1)
 	{
-		const FxtapTime InitialAccumulatedStartTime = fxTap->ColumnsStates[column].AccumulatedTimeMs;
-		const int32_t FocusedNoteNo = fxTap->ColumnsStates[column].FocusedNoteNo;
-		const uint16_t SizeOfColumn = Metadata->SizeOfColumn[column];
+		const FxtapTime initialAccumulatedStartTime = game->ColumnsStates[column].AccumulatedTimeMs;
+		const int32_t focusedNoteNo = game->ColumnsStates[column].FocusedNoteNo;
+		const uint16_t sizeOfColumn = metadata->SizeOfColumn[column];
 
 		// Render notes above the line
-		FxtapTime controllerAccumulatedStartTime = InitialAccumulatedStartTime;
+		FxtapTime controllerAccumulatedStartTime = initialAccumulatedStartTime;
 
-		for (int noteNo = FocusedNoteNo; noteNo < SizeOfColumn; noteNo += 1)
+		for (int noteNo = focusedNoteNo; noteNo < sizeOfColumn; noteNo += 1)
 		{
-			const FXT_Note *note = &fxTap->Beatmap->Notes[column][noteNo];
-			const FxtapTime NoteAccumulatedStartTime = note->AccumulatedStartTime;
-			const FxtapTime NoteStartTime = controllerAccumulatedStartTime + NoteAccumulatedStartTime;
-			const FxtapTime HeadTimeDelta = NoteStartTime - timeNow;
-			const FxtapTime TailTimeDelta = HeadTimeDelta + note->Duration;
+			const FXT_Note note = game->Beatmap->Notes[column][noteNo];
+			const FxtapTime noteAccumulatedStartTime = note.AccumulatedStartTime;
+			const FxtapTime headTime = controllerAccumulatedStartTime + noteAccumulatedStartTime;
+			const FxtapTime headTimeToBottom = headTime - timeNow;
+			const FxtapTime tailTimeToBottom = headTimeToBottom + note.Duration;
 
-			controllerAccumulatedStartTime += NoteAccumulatedStartTime;
+			controllerAccumulatedStartTime += noteAccumulatedStartTime;
 
 			// Stop if the head is above the screen top
-			if (HeadTimeDelta > controller->VisibleTime)
+			if (headTimeToBottom > controller->VisibleTime)
 				break;
 
-			if (TailTimeDelta < 0)
+			const bool isTap = note.Duration == 0;
+
+			// Stop if the tail is below the line,
+			// but allow taps render for an extra 100ms.
+			if (isTap && tailTimeToBottom < -100 || !isTap && tailTimeToBottom < 0)
 				continue;
 
-			const double PositionBottom = TimeScale * HeadTimeDelta;
+			const double PositionBottom = timeScale * headTimeToBottom;
 
-			if (note->Duration == 0)
+			if (note.Duration == 0)
 				controller->RenderTap(column, PositionBottom);
 			else
 			{
-				const double PositionTop = TimeScale * (HeadTimeDelta + note->Duration);
+				const double PositionTop = timeScale * (headTimeToBottom + note.Duration);
 				controller->RenderHold(column, PositionBottom, PositionTop);
 			}
 		}
 
-		// Render hold notes below the line
-		controllerAccumulatedStartTime = InitialAccumulatedStartTime;
+		// Render notes below the line
+		controllerAccumulatedStartTime = initialAccumulatedStartTime;
 
-		for (int noteNo = FocusedNoteNo - 1; noteNo >= 0; noteNo -= 1)
+		for (int noteNo = focusedNoteNo - 1; noteNo >= 0; noteNo -= 1)
 		{
-			const FXT_Note *note = &fxTap->Beatmap->Notes[column][noteNo];
-			const FxtapTime NoteAccumulatedStartTime = note->AccumulatedStartTime;
-			const FxtapTime NoteEndTime = controllerAccumulatedStartTime + note->Duration;
-			const FxtapTime TailTimeDelta = NoteEndTime - timeNow;
+			const FXT_Note note = game->Beatmap->Notes[column][noteNo];
+			const FxtapTime noteAccumulatedStartTime = note.AccumulatedStartTime;
+			const FxtapTime tailTime = controllerAccumulatedStartTime + note.Duration;
+			const FxtapTime tailTimeToBottom = tailTime - timeNow;
 
-			controllerAccumulatedStartTime -= NoteAccumulatedStartTime;
+			controllerAccumulatedStartTime -= noteAccumulatedStartTime;
 
-			// Stop if the tail is below the line
-			if (TailTimeDelta < 0)
+			const bool isTap = note.Duration == 0;
+
+			// Stop if the tail is below the line,
+			// but allow taps render for an extra 100ms.
+			if (isTap && tailTimeToBottom < -100 || !isTap && tailTimeToBottom < 0)
 				break;
 
-			// Skip if this is a tap note
-			if (note->Duration == 0)
-				continue;
+			const double PositionBottom = timeScale * (tailTimeToBottom - note.Duration);
 
-			const double PositionTop = TimeScale * TailTimeDelta;
-			const double PositionBottom = TimeScale * (TailTimeDelta - note->Duration);
+			if (isTap)
+			{
+				controller->RenderTap(column, PositionBottom);
+				continue;
+			}
+
+			const double PositionTop = timeScale * tailTimeToBottom;
 
 			controller->RenderHold(column, PositionBottom, PositionTop);
 		}
