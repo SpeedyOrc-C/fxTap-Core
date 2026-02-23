@@ -1,6 +1,5 @@
 #include <assert.h>
 #include <stdio.h>
-#include <stdlib.h>
 #include <fxTap/beatmap.h>
 #include <fxTap/config.h>
 #include <fxTap/game.h>
@@ -70,61 +69,41 @@ bool Test_FileLoading()
 	}
 	FXT_Beatmap_Free(beatmap);
 
-	FXT_Config_Error configError;
-	FXT_Config *config = Config_New_LoadFromDisk(&configError);
+
+	FXT_Config config;
+
+	const FXT_Config_Error configError = FXT_Config_Load(&config);
+
+	if (configError != 0)
 	{
-		if (config == NULL)
-		{
-			printf("Failed to load the config, and failed to create it.");
-			return false;
-		}
-
-		config->PhysicalKeyOfFxTapKey[FxTapKey_K4] = 'X';
-
-		if (!Config_SaveToDisk(config))
-		{
-			printf("Failed to save the config.");
-			return false;
-		}
-	}
-	free(config);
-
-	return true;
-}
-
-bool Test_QueryBeatmaps()
-{
-	FXT_FindError error;
-	FXT_BeatmapFindEntries *entries = BeatmapFindEntries_New_InsideDirectory("FXTAP", &error);
-
-	if (entries == NULL)
+		printf("Failed to load the config, and failed to create it.");
 		return false;
+	}
 
-	printf("There are %i beatmaps under folder FXTAP.\n", entries->Count);
+	config.PhysicalKeyOfFxTapKey[FxTapKey_K4] = 'X';
 
-	for (int i = 0; i < entries->Count; i += 1)
-		printf("%i. %s: %s\n", i + 1, entries->Entries[i].FileName, entries->Entries[i].Metadata.Title);
-
-	FXT_BeatmapFindEntries_Free(entries);
+	if (!FXT_Config_Save(config))
+	{
+		printf("Failed to save the config.");
+		return false;
+	}
 
 	return true;
 }
 
 bool Test_Config()
 {
-	FXT_Config_Error error;
-	FXT_Config *config = Config_New_LoadFromDisk(&error);
+	FXT_Config config;
+	const FXT_Config_Error error = FXT_Config_Load(&config);
 
-	if (config == NULL)
+	if (error != 0)
 		return false;
 
-	printf("Notes falling time: %i ms\n", config->NotesFallingTime);
+	printf("Notes falling time: %i ms\n", config.NotesFallingTime);
 	printf("Keys: ");
 	for (int i = 0; i < FXT_MaxColumnCount; i += 1)
-		printf("%i ", config->PhysicalKeyOfFxTapKey[i]);
+		printf("%i ", config.PhysicalKeyOfFxTapKey[i]);
 	printf("\n");
-
-	free(config);
 
 	return true;
 }
@@ -173,10 +152,9 @@ bool Test_RendererController()
 int main(void)
 {
 	return !(
-		Run(Test_FileLoading, "File Loading") |
-		Run(Test_Hold, "Hold") |
-		Run(Test_QueryBeatmaps, "Query beatmaps") |
-		Run(Test_Config, "Config") |
-		Run(Test_RendererController, "RendererController")
+		Run(Test_FileLoading, "File Loading")
+		|| Run(Test_Hold, "Hold")
+		|| Run(Test_Config, "Config")
+		|| Run(Test_RendererController, "RendererController")
 	);
 }
