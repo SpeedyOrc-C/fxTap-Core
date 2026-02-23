@@ -75,7 +75,7 @@ typedef enum FXT_FindError
 } FXT_FindError;
 
 [[nodiscard]]
-FXT_Beatmap *FXT_Beatmap_Load(const char *path, FXT_BeatmapError *error);
+FXT_BeatmapError FXT_Beatmap_Load(FXT_Beatmap *dst, const char *path);
 
 void FXT_Beatmap_Free(FXT_Beatmap *beatmap);
 
@@ -88,7 +88,7 @@ FXT_Tolerance FXT_Tolerance_FromOverallDifficulty(double overallDifficulty);
 #ifdef FXTAP_CORE_USE_CASIOWIN
 
 [[nodiscard]]
-FXT_Beatmap *FXT_Beatmap_Load_BFile(const char *path, FXT_BeatmapError *error);
+FXT_BeatmapError FXT_Beatmap_Load_BFile(FXT_Beatmap *dst, const char *path);
 
 #endif
 

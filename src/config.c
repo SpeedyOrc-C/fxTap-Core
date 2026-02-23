@@ -13,7 +13,7 @@ const FXT_Config FXT_Config_Default = {
 
 FXT_Config_Error FXT_Config_Load(FXT_Config *dst)
 {
-	FXT_Config_Error error = FXT_ConfigError_OK;
+	FXT_Config_Error error = 0;
 	FXT_Config config = FXT_Config_Default;
 
 	FILE *file = fopen(ConfigPath, "rb");
@@ -25,30 +25,24 @@ FXT_Config_Error FXT_Config_Load(FXT_Config *dst)
 		if (file == nullptr)
 		{
 			error = FXT_ConfigError_CannotCreateFile;
-			goto fail;
+			goto done;
 		}
 
 		if (!fwrite(&config, sizeof(FXT_Config), 1, file))
 		{
 			error = FXT_ConfigError_CannotWriteFile;
-			goto fail;
+			goto done;
 		}
-
-		goto win;
 	}
-
-	if (!fread(&config, sizeof(FXT_Config), 1, file))
+	else if (!fread(&config, sizeof(FXT_Config), 1, file))
 	{
 		error = FXT_ConfigError_CannotReadFile;
-		goto fail;
+		goto done;
 	}
 
-win:
-	fclose(file);
 	*dst = config;
-	return 0;
 
-fail:
+done:
 	if (file != nullptr) fclose(file);
 	return error;
 }

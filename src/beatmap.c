@@ -36,7 +36,7 @@ FXT_BeatmapError Metadata_LoadFromFile(FXT_Metadata *metadata, FILE *file)
 		SwapBytes(metadata->OverallDifficulty);
 	}
 
-	return FXT_BeatmapError_OK;
+	return 0;
 }
 
 int FXT_Beatmap_NoteCount(const FXT_Beatmap *beatmap)
@@ -96,39 +96,19 @@ FXT_BeatmapError Beatmap_LoadFromFile(FXT_Beatmap *beatmap, FILE *file)
 	return 0;
 }
 
-FXT_Beatmap *FXT_Beatmap_Load(const char *path, FXT_BeatmapError *error)
+FXT_BeatmapError FXT_Beatmap_Load(FXT_Beatmap *dst, const char *path)
 {
-	FXT_Beatmap *beatmap = nullptr;
+	FXT_BeatmapError error = 0;
 
 	FILE *file = fopen(path, "rb");
 
 	if (file == nullptr)
-	{
-		*error = FXT_BeatmapError_FileNotFound;
-		goto fail;
-	}
+		return FXT_BeatmapError_FileNotFound;
 
-	beatmap = malloc(sizeof(FXT_Beatmap));
-
-	if (beatmap == nullptr)
-	{
-		*error = FXT_BeatmapError_MallocFailed;
-		goto fail;
-	}
-
-	*error = Beatmap_LoadFromFile(beatmap, file);
-
-	if (*error)
-		goto fail;
-
+	error = Beatmap_LoadFromFile(dst, file);
 	fclose(file);
-	*error = FXT_BeatmapError_OK;
-	return beatmap;
 
-fail:
-	if (file != nullptr) fclose(file);
-	if (beatmap != nullptr) free(beatmap);
-	return nullptr;
+	return error;
 }
 
 void FXT_Beatmap_Free(FXT_Beatmap *beatmap)
