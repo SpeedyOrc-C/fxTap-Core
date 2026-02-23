@@ -1,5 +1,6 @@
 #include <assert.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <fxTap/beatmap.h>
 #include <fxTap/config.h>
 #include <fxTap/game.h>
@@ -53,21 +54,21 @@ bool Test_Hold()
 
 bool Test_FileLoading()
 {
-	FXT_BeatmapError error;
-	FXT_Beatmap *beatmap = FXT_Beatmap_Load("FXTAP/WELUVLAM.fxt", &error);
-	{
-		if (error)
-		{
-			printf("Failed to load the beatmap. Error: %d", error);
-			return false;
-		}
+	FXT_Beatmap beatmap;
+	const FXT_BeatmapError error = FXT_Beatmap_Load(&beatmap, "FXTAP/WELUVLAM.fxt");
 
-		printf("Title: %s\n", beatmap->Metadata.Title);
-		printf("Artist: %s\n", beatmap->Metadata.Artist);
-		printf("Overall Difficulty: %lf\n", beatmap->Metadata.OverallDifficulty);
-		printf("Number of Columns: %i\n", FXT_Beatmap_ColumnCount(beatmap));
+	if (error)
+	{
+		printf("Failed to load the beatmap. Error: %d", error);
+		return false;
 	}
-	FXT_Beatmap_Free(beatmap);
+
+	printf("Title: %s\n", beatmap.Metadata.Title);
+	printf("Artist: %s\n", beatmap.Metadata.Artist);
+	printf("Overall Difficulty: %lf\n", beatmap.Metadata.OverallDifficulty);
+	printf("Number of Columns: %i\n", FXT_Beatmap_ColumnCount(&beatmap));
+
+	free(beatmap.Notes[0]);
 
 
 	FXT_Config config;
@@ -120,13 +121,13 @@ void DummyRenderHold(const int column, const double positionBottom, const double
 
 bool Test_RendererController()
 {
-	FXT_BeatmapError error;
-	FXT_Beatmap *beatmap = FXT_Beatmap_Load("FXTAP/WELUVLAM.fxt", &error);
+	FXT_Beatmap beatmap;
+	const FXT_BeatmapError error = FXT_Beatmap_Load(&beatmap, "FXTAP/WELUVLAM.fxt");
 
-	assert(beatmap != NULL);
+	assert(error == 0);
 
 	FXT_Game fxTap;
-	FXT_Game_Init(&fxTap, beatmap);
+	FXT_Game_Init(&fxTap, &beatmap);
 
 	const FXT_RendererController controller = {
 		.HeightAbove = 100,
@@ -144,7 +145,7 @@ bool Test_RendererController()
 		FXT_RendererController_Run(&controller, &fxTap, time);
 	}
 
-	FXT_Beatmap_Free(beatmap);
+	free(beatmap.Notes[0]);
 
 	return true;
 }
