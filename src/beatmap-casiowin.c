@@ -32,7 +32,7 @@ FXT_BeatmapError Beatmap_LoadFromFile_BFile(FXT_Beatmap *beatmap, const int bfil
 
 	FXT_Note *notesBuffer = calloc(TotalNotesCount, sizeof(FXT_Note));
 
-	if (notesBuffer == NULL)
+	if (notesBuffer == nullptr)
 		return FXT_BeatmapError_MallocFailed;
 
 	beatmap->Notes[0] = notesBuffer;
@@ -66,7 +66,7 @@ FXT_Beatmap *FXT_Beatmap_Load_BFile(const char *path, FXT_BeatmapError *error)
 {
 	uint16_t *pathCasiowin = fs_path_normalize_fc(path);
 
-	if (pathCasiowin == NULL)
+	if (pathCasiowin == nullptr)
 		return nullptr;
 
 	auto const bfile = BFile_Open(pathCasiowin, BFile_ReadOnly);
@@ -80,7 +80,7 @@ FXT_Beatmap *FXT_Beatmap_Load_BFile(const char *path, FXT_BeatmapError *error)
 
 	FXT_Beatmap *beatmap = malloc(sizeof(FXT_Beatmap));
 
-	if (beatmap == NULL)
+	if (beatmap == nullptr)
 	{
 		free(pathCasiowin);
 		BFile_Close(bfile);
