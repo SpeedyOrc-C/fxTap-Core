@@ -1,104 +1,104 @@
 #include <assert.h>
 #include <fxTap/keymap.h>
 
-FxTapKey KeyMapper_BeatmaniaIIDX_4K(const FxTapColumn column)
+FXT_Key KeyMapper_BeatmaniaIIDX_4K(const FXT_Column column)
 {
 	switch (column)
 	{
-	case FxTapColumn_1: return FxTapKey_K1;
-	case FxTapColumn_2: return FxTapKey_K2;
-	case FxTapColumn_3: return FxTapKey_K4;
-	case FxTapColumn_4: return FxTapKey_K5;
+	case FXT_Column_1: return FXT_Key_K1;
+	case FXT_Column_2: return FXT_Key_K2;
+	case FXT_Column_3: return FXT_Key_K4;
+	case FXT_Column_4: return FXT_Key_K5;
 	default: assert(false);
 	}
 }
 
-FxTapKey KeyMapper_BeatmaniaIIDX_5K(const FxTapColumn column)
+FXT_Key KeyMapper_BeatmaniaIIDX_5K(const FXT_Column column)
 {
 	switch (column)
 	{
-	case FxTapColumn_1: return FxTapKey_K1;
-	case FxTapColumn_2: return FxTapKey_K2;
-	case FxTapColumn_3: return FxTapKey_K3;
-	case FxTapColumn_4: return FxTapKey_K4;
-	case FxTapColumn_5: return FxTapKey_K5;
+	case FXT_Column_1: return FXT_Key_K1;
+	case FXT_Column_2: return FXT_Key_K2;
+	case FXT_Column_3: return FXT_Key_K3;
+	case FXT_Column_4: return FXT_Key_K4;
+	case FXT_Column_5: return FXT_Key_K5;
 	default: assert(false);
 	}
 }
 
-FxTapKey KeyMapper_BeatmaniaIIDX_6K(const FxTapColumn column)
+FXT_Key KeyMapper_BeatmaniaIIDX_6K(const FXT_Column column)
 {
 	switch (column)
 	{
-	case FxTapColumn_1: return FxTapKey_K1;
-	case FxTapColumn_2: return FxTapKey_K2;
-	case FxTapColumn_3: return FxTapKey_K3;
-	case FxTapColumn_4: return FxTapKey_K4;
-	case FxTapColumn_5: return FxTapKey_K5;
-	case FxTapColumn_6: return FxTapKey_K6;
+	case FXT_Column_1: return FXT_Key_K1;
+	case FXT_Column_2: return FXT_Key_K2;
+	case FXT_Column_3: return FXT_Key_K3;
+	case FXT_Column_4: return FXT_Key_K4;
+	case FXT_Column_5: return FXT_Key_K5;
+	case FXT_Column_6: return FXT_Key_K6;
 	default: assert(false);
 	}
 }
 
-FxTapKey KeyMapper_BeatmaniaIIDX_7K(const FxTapColumn column)
+FXT_Key KeyMapper_BeatmaniaIIDX_7K(const FXT_Column column)
 {
 	switch (column)
 	{
-	case FxTapColumn_1: return FxTapKey_K1;
-	case FxTapColumn_2: return FxTapKey_K2;
-	case FxTapColumn_3: return FxTapKey_K3;
-	case FxTapColumn_4: return FxTapKey_K4;
-	case FxTapColumn_5: return FxTapKey_K5;
-	case FxTapColumn_6: return FxTapKey_K6;
-	case FxTapColumn_7: return FxTapKey_K7;
+	case FXT_Column_1: return FXT_Key_K1;
+	case FXT_Column_2: return FXT_Key_K2;
+	case FXT_Column_3: return FXT_Key_K3;
+	case FXT_Column_4: return FXT_Key_K4;
+	case FXT_Column_5: return FXT_Key_K5;
+	case FXT_Column_6: return FXT_Key_K6;
+	case FXT_Column_7: return FXT_Key_K7;
 	default: assert(false);
 	}
 }
 
-FxTapKey KeyMapper_BeatmaniaIIDX_8K(const FxTapColumn column)
+FXT_Key KeyMapper_BeatmaniaIIDX_8K(const FXT_Column column)
 {
 	switch (column)
 	{
-	case FxTapColumn_1: return FxTapKey_K1;
-	case FxTapColumn_2: return FxTapKey_K2;
-	case FxTapColumn_3: return FxTapKey_K3;
-	case FxTapColumn_4: return FxTapKey_K4;
-	case FxTapColumn_5: return FxTapKey_K5;
-	case FxTapColumn_6: return FxTapKey_K6;
-	case FxTapColumn_7: return FxTapKey_K7;
-	case FxTapColumn_8: return FxTapKey_K8;
+	case FXT_Column_1: return FXT_Key_K1;
+	case FXT_Column_2: return FXT_Key_K2;
+	case FXT_Column_3: return FXT_Key_K3;
+	case FXT_Column_4: return FXT_Key_K4;
+	case FXT_Column_5: return FXT_Key_K5;
+	case FXT_Column_6: return FXT_Key_K6;
+	case FXT_Column_7: return FXT_Key_K7;
+	case FXT_Column_8: return FXT_Key_K8;
 	default: assert(false);
 	}
 }
 
-FxTapKey KeyMapper_BeatmaniaIIDX_8KL(const FxTapColumn column)
+FXT_Key KeyMapper_BeatmaniaIIDX_8KL(const FXT_Column column)
 {
 	switch (column)
 	{
-	case FxTapColumn_1: return FxTapKey_S1;
-	case FxTapColumn_2: return FxTapKey_K1;
-	case FxTapColumn_3: return FxTapKey_K2;
-	case FxTapColumn_4: return FxTapKey_K3;
-	case FxTapColumn_5: return FxTapKey_K4;
-	case FxTapColumn_6: return FxTapKey_K5;
-	case FxTapColumn_7: return FxTapKey_K6;
-	case FxTapColumn_8: return FxTapKey_K7;
+	case FXT_Column_1: return FXT_Key_S1;
+	case FXT_Column_2: return FXT_Key_K1;
+	case FXT_Column_3: return FXT_Key_K2;
+	case FXT_Column_4: return FXT_Key_K3;
+	case FXT_Column_5: return FXT_Key_K4;
+	case FXT_Column_6: return FXT_Key_K5;
+	case FXT_Column_7: return FXT_Key_K6;
+	case FXT_Column_8: return FXT_Key_K7;
 	default: assert(false);
 	}
 }
 
-FxTapKey KeyMapper_BeatmaniaIIDX_8KR(const FxTapColumn column)
+FXT_Key KeyMapper_BeatmaniaIIDX_8KR(const FXT_Column column)
 {
 	switch (column)
 	{
-	case FxTapColumn_1: return FxTapKey_K1;
-	case FxTapColumn_2: return FxTapKey_K2;
-	case FxTapColumn_3: return FxTapKey_K3;
-	case FxTapColumn_4: return FxTapKey_K4;
-	case FxTapColumn_5: return FxTapKey_K5;
-	case FxTapColumn_6: return FxTapKey_K6;
-	case FxTapColumn_7: return FxTapKey_K7;
-	case FxTapColumn_8: return FxTapKey_S1;
+	case FXT_Column_1: return FXT_Key_K1;
+	case FXT_Column_2: return FXT_Key_K2;
+	case FXT_Column_3: return FXT_Key_K3;
+	case FXT_Column_4: return FXT_Key_K4;
+	case FXT_Column_5: return FXT_Key_K5;
+	case FXT_Column_6: return FXT_Key_K6;
+	case FXT_Column_7: return FXT_Key_K7;
+	case FXT_Column_8: return FXT_Key_S1;
 	default: assert(false);
 	}
 }

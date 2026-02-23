@@ -1,72 +1,72 @@
 #pragma once
 
-typedef enum FxTapColumn
+typedef enum FXT_Column
 {
-	FxTapColumn_1,
-	FxTapColumn_2,
-	FxTapColumn_3,
-	FxTapColumn_4,
-	FxTapColumn_5,
-	FxTapColumn_6,
-	FxTapColumn_7,
-	FxTapColumn_8,
-	FxTapColumn_9,
-} FxTapColumn;
+	FXT_Column_1,
+	FXT_Column_2,
+	FXT_Column_3,
+	FXT_Column_4,
+	FXT_Column_5,
+	FXT_Column_6,
+	FXT_Column_7,
+	FXT_Column_8,
+	FXT_Column_9,
+} FXT_Column;
 
-typedef enum FxTapKey
+typedef enum FXT_Key
 {
-	FxTapKey_K1,
-	FxTapKey_K2,
-	FxTapKey_K3,
-	FxTapKey_K4,
-	FxTapKey_K5,
-	FxTapKey_K6,
-	FxTapKey_K7,
-	FxTapKey_K8,
-	FxTapKey_K9,
-	FxTapKey_S1,
-} FxTapKey;
+	FXT_Key_K1,
+	FXT_Key_K2,
+	FXT_Key_K3,
+	FXT_Key_K4,
+	FXT_Key_K5,
+	FXT_Key_K6,
+	FXT_Key_K7,
+	FXT_Key_K8,
+	FXT_Key_K9,
+	FXT_Key_S1,
+} FXT_Key;
 
-typedef FxTapKey (*KeyMapper)(FxTapColumn);
+typedef FXT_Key (*KeyMapper)(FXT_Column);
 
-FxTapKey KeyMapper_DJMAX_1K(FxTapColumn column);
+FXT_Key KeyMapper_DJMAX_1K(FXT_Column column);
 
-FxTapKey KeyMapper_DJMAX_2K(FxTapColumn column);
+FXT_Key KeyMapper_DJMAX_2K(FXT_Column column);
 
-FxTapKey KeyMapper_DJMAX_3K(FxTapColumn column);
+FXT_Key KeyMapper_DJMAX_3K(FXT_Column column);
 
-FxTapKey KeyMapper_DJMAX_4K(FxTapColumn column);
+FXT_Key KeyMapper_DJMAX_4K(FXT_Column column);
 
-FxTapKey KeyMapper_DJMAX_5K(FxTapColumn column);
+FXT_Key KeyMapper_DJMAX_5K(FXT_Column column);
 
-FxTapKey KeyMapper_DJMAX_6K(FxTapColumn column);
+FXT_Key KeyMapper_DJMAX_6K(FXT_Column column);
 
-FxTapKey KeyMapper_DJMAX_6KL(FxTapColumn column);
+FXT_Key KeyMapper_DJMAX_6KL(FXT_Column column);
 
-FxTapKey KeyMapper_DJMAX_6KR(FxTapColumn column);
+FXT_Key KeyMapper_DJMAX_6KR(FXT_Column column);
 
-FxTapKey KeyMapper_DJMAX_7K(FxTapColumn column);
+FXT_Key KeyMapper_DJMAX_7K(FXT_Column column);
 
-FxTapKey KeyMapper_DJMAX_8K(FxTapColumn column);
+FXT_Key KeyMapper_DJMAX_8K(FXT_Column column);
 
-FxTapKey KeyMapper_DJMAX_8KL(FxTapColumn column);
+FXT_Key KeyMapper_DJMAX_8KL(FXT_Column column);
 
-FxTapKey KeyMapper_DJMAX_8KR(FxTapColumn column);
+FXT_Key KeyMapper_DJMAX_8KR(FXT_Column column);
 
-FxTapKey KeyMapper_DJMAX_9K(FxTapColumn column);
+FXT_Key KeyMapper_DJMAX_9K(FXT_Column column);
 
-FxTapKey KeyMapper_BeatmaniaIIDX_4K(FxTapColumn column);
+FXT_Key KeyMapper_BeatmaniaIIDX_4K(FXT_Column column);
 
-FxTapKey KeyMapper_BeatmaniaIIDX_5K(FxTapColumn column);
+FXT_Key KeyMapper_BeatmaniaIIDX_5K(FXT_Column column);
 
-FxTapKey KeyMapper_BeatmaniaIIDX_6K(FxTapColumn column);
+FXT_Key KeyMapper_BeatmaniaIIDX_6K(FXT_Column column);
 
-FxTapKey KeyMapper_BeatmaniaIIDX_7K(FxTapColumn column);
+FXT_Key KeyMapper_BeatmaniaIIDX_7K(FXT_Column column);
 
-FxTapKey KeyMapper_BeatmaniaIIDX_8K(FxTapColumn column);
+FXT_Key KeyMapper_BeatmaniaIIDX_8K(FXT_Column column);
 
-FxTapKey KeyMapper_BeatmaniaIIDX_8KL(FxTapColumn column);
+FXT_Key KeyMapper_BeatmaniaIIDX_8KL(FXT_Column column);
 
-FxTapKey KeyMapper_BeatmaniaIIDX_8KR(FxTapColumn column);
+FXT_Key KeyMapper_BeatmaniaIIDX_8KR(FXT_Column column);
 
-const char *FxTapKey_ToString(FxTapKey key);
+const char *FXT_Key_ToString(FXT_Key key);

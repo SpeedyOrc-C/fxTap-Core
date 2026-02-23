@@ -80,7 +80,7 @@ bool Test_FileLoading()
 		return false;
 	}
 
-	config.PhysicalKeyOfFxTapKey[FxTapKey_K4] = 'X';
+	config.PhysicalKeyOfFxTapKey[FXT_Key_K4] = 'X';
 
 	if (!FXT_Config_Save(config))
 	{
