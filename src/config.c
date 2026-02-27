@@ -47,14 +47,14 @@ done:
 	return error;
 }
 
-FXT_Config_Error FXT_Config_Save(const FXT_Config config)
+FXT_Config_Error FXT_Config_Save(const FXT_Config *config)
 {
 	FILE *file = fopen(ConfigPath, "wb");
 
 	if (file == nullptr)
 		return FXT_ConfigError_CannotOpenFile;
 
-	if (!fwrite(&config, sizeof(FXT_Config), 1, file))
+	if (!fwrite(config, sizeof(FXT_Config), 1, file))
 	{
 		fclose(file);
 		return FXT_ConfigError_CannotWriteFile;

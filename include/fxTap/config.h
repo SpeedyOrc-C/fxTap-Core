@@ -45,7 +45,7 @@ extern const FXT_Config FXT_Config_Default;
 FXT_Config_Error FXT_Config_Load(FXT_Config *dst);
 
 [[nodiscard]]
-FXT_Config_Error FXT_Config_Save(FXT_Config config);
+FXT_Config_Error FXT_Config_Save(const FXT_Config *config);
 
 #ifdef FXTAP_CORE_USE_CASIOWIN
 
