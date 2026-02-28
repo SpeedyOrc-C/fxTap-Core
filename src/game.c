@@ -10,7 +10,7 @@ void FXT_HoldState_SetDefault(FXT_HoldState *holdState)
 void FXT_Game_Init(FXT_Game *game, const FXT_Beatmap *beatmap)
 {
 	game->Beatmap = beatmap;
-	game->LastUpdateTimeMs = 0;
+	game->LastUpdateTime = 0;
 	game->ColumnCount = FXT_Beatmap_ColumnCount(beatmap);
 	game->Combo = 0;
 
@@ -24,7 +24,7 @@ void FXT_Game_Init(FXT_Game *game, const FXT_Beatmap *beatmap)
 	for (int column = 0; column < FXT_MaxColumnCount; column += 1)
 	{
 		game->LastUpdatePressedColumn[column] = false;
-		game->ColumnsStates[column].AccumulatedTimeMs = 0;
+		game->ColumnsStates[column].AccumulatedTime = 0;
 
 		if (beatmap->Metadata.SizeOfColumn[column] > 0)
 		{
@@ -40,13 +40,13 @@ void FXT_Game_Init(FXT_Game *game, const FXT_Beatmap *beatmap)
 
 FXT_Grade GradeTapNote(
 	const FXT_Tolerance *tolerance,
-	const int32_t timeNowMs,
+	const FXT_TimeMs timeNow,
 	const bool keyIsDown,
-	const int32_t noteStartMs)
+	const FXT_TimeMs noteStart)
 {
 	// Negative: early
 	// Positive: late
-	const int32_t delta = timeNowMs - noteStartMs;
+	const FXT_TimeMs delta = timeNow - noteStart;
 
 	// After the grading area, MISS!
 	if (delta > tolerance->Ok) return FXT_Grade_Miss;
@@ -69,9 +69,9 @@ FXT_Grade GradeTapNote(
 
 FXT_Grade GradeHoldNoteDefinite(const FXT_Tolerance *tolerance, const FXT_HoldState *holdState)
 {
-	const int32_t headError = abs(holdState->HeadDelta);
-	const int32_t tailError = abs(holdState->TailDelta);
-	const int32_t totalError = headError + tailError;
+	const auto headError = abs(holdState->HeadDelta);
+	const auto tailError = abs(holdState->TailDelta);
+	const auto totalError = headError + tailError;
 
 	if (headError <= tolerance->Perfect * 1.2 && totalError <= tolerance->Perfect * 2.4)
 		return FXT_Grade_Perfect;
@@ -87,19 +87,19 @@ FXT_Grade GradeHoldNoteDefinite(const FXT_Tolerance *tolerance, const FXT_HoldSt
 
 FXT_Grade GradeHoldNote(
 	const FXT_Tolerance *tolerance,
-	const int32_t timeNowMs,
+	const FXT_TimeMs timeNow,
 	const bool keyIsDown,
 	const bool keyIsUp,
 	FXT_HoldState *holdState,
-	const int32_t noteStartMs,
-	const int32_t noteEndMs)
+	const FXT_TimeMs noteStart,
+	const FXT_TimeMs noteEnd)
 {
 	// Before the grading area
-	if (timeNowMs < -tolerance->Miss + noteStartMs)
+	if (timeNow < -tolerance->Miss + noteStart)
 		return FXT_Grade_Null;
 
 	// After the grading area
-	if (noteEndMs + tolerance->Meh < timeNowMs)
+	if (noteEnd + tolerance->Meh < timeNow)
 	{
 		// There's a valid hold, stop!
 		if (holdState->HeadIsValid &&
@@ -118,7 +118,7 @@ FXT_Grade GradeHoldNote(
 	if (keyIsDown)
 	{
 		// Record the head delta
-		holdState->HeadDelta = timeNowMs - noteStartMs;
+		holdState->HeadDelta = timeNow - noteStart;
 		holdState->HeadIsValid = true;
 		holdState->TailIsValid = false;
 		return FXT_Grade_Null;
@@ -127,10 +127,10 @@ FXT_Grade GradeHoldNote(
 	if (keyIsUp && holdState->HeadIsValid)
 	{
 		// Record the tail delta
-		holdState->TailDelta = timeNowMs - noteEndMs;
+		holdState->TailDelta = timeNow - noteEnd;
 
 		// Inside the confirmation area, stop!
-		if (-tolerance->Meh + noteEndMs <= timeNowMs)
+		if (-tolerance->Meh + noteEnd <= timeNow)
 			return GradeHoldNoteDefinite(tolerance, holdState);
 
 		// Outside the confirmation area
@@ -143,10 +143,10 @@ FXT_Grade GradeHoldNote(
 
 FXT_GameUpdateResult FXT_Game_Update(
 	FXT_Game *game,
-	const FxtapTime timeNowMs,
+	const FXT_TimeMs timeNow,
 	const bool isPressingColumn[16])
 {
-	if (timeNowMs < game->LastUpdateTimeMs)
+	if (timeNow < game->LastUpdateTime)
 		return FxTapUpdateResult_Error_RewoundTime;
 
 	bool ended = true;
@@ -164,7 +164,7 @@ FXT_GameUpdateResult FXT_Game_Update(
 		ended = false;
 
 		const FXT_Note note = game->Beatmap->Notes[columnIndex][column->FocusedNoteNo];
-		const int32_t noteStartMs = column->AccumulatedTimeMs + note.AccumulatedStartTime;
+		const FXT_TimeMs noteStart = column->AccumulatedTime + note.AccumulatedStartTime;
 		const bool lastUpdatePressed = game->LastUpdatePressedColumn[columnIndex];
 		const bool isPressing = isPressingColumn[columnIndex];
 		const bool keyIsDown = !lastUpdatePressed && isPressing;
@@ -172,9 +172,9 @@ FXT_GameUpdateResult FXT_Game_Update(
 
 		const FXT_Grade grade =
 				note.Duration == 0
-					? GradeTapNote(&game->Beatmap->Tolerance, timeNowMs, keyIsDown, noteStartMs)
-					: GradeHoldNote(&game->Beatmap->Tolerance, timeNowMs, keyIsDown, keyIsUp,
-					                &column->HoldState, noteStartMs, noteStartMs + note.Duration);
+					? GradeTapNote(&game->Beatmap->Tolerance, timeNow, keyIsDown, noteStart)
+					: GradeHoldNote(&game->Beatmap->Tolerance, timeNow, keyIsDown, keyIsUp,
+					                &column->HoldState, noteStart, noteStart + note.Duration);
 
 		switch (grade)
 		{
@@ -199,7 +199,7 @@ FXT_GameUpdateResult FXT_Game_Update(
 			game->Combo = 0;
 
 		column->FocusedNoteNo += 1;
-		column->AccumulatedTimeMs += note.AccumulatedStartTime;
+		column->AccumulatedTime += note.AccumulatedStartTime;
 		FXT_HoldState_SetDefault(&game->ColumnsStates[columnIndex].HoldState);
 	}
 

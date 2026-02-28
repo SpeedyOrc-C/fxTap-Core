@@ -11,11 +11,11 @@ typedef struct FXT_RendererController
 	double HeightAbove;
 
 	// Time needed for note to fall onto the line after it appears from the top.
-	FxtapTime VisibleTime;
+	FXT_TimeMs VisibleTime;
 
 	// Render methods are injected to this controller, and will be called automatically.
 	FXT_TapRenderer RenderTap;
 	FXT_HoldRenderer RenderHold;
 } FXT_RendererController;
 
-void FXT_RendererController_Run(const FXT_RendererController *controller, const FXT_Game *game, FxtapTime timeNow);
+void FXT_RendererController_Run(const FXT_RendererController *controller, const FXT_Game *game, FXT_TimeMs timeNow);

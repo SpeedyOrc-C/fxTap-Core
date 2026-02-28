@@ -7,8 +7,7 @@
 
 static constexpr auto FXT_EndOfColumn = -1;
 
-// Unit: millisecond (ms)
-typedef int32_t FxtapTime;
+typedef int32_t FXT_TimeMs;
 
 typedef enum FXT_Grade
 {
@@ -31,7 +30,7 @@ typedef struct FXT_HoldState
 
 typedef struct FXT_ColumnState
 {
-	FxtapTime AccumulatedTimeMs;
+	FXT_TimeMs AccumulatedTime;
 	int32_t FocusedNoteNo;
 	FXT_HoldState HoldState;
 } FXT_ColumnState;
@@ -42,7 +41,7 @@ typedef struct FXT_Game
 
 	int ColumnCount;
 	FXT_ColumnState ColumnsStates[FXT_MaxColumnCount];
-	int32_t LastUpdateTimeMs;
+	FXT_TimeMs LastUpdateTime;
 	bool LastUpdatePressedColumn[FXT_MaxColumnCount];
 	FXT_Grades Grades;
 	unsigned int Combo;
@@ -57,6 +56,7 @@ typedef enum FXT_GameUpdateResult
 
 void FXT_Game_Init(FXT_Game *game, const FXT_Beatmap *beatmap);
 
-FXT_GameUpdateResult FXT_Game_Update(FXT_Game *game, FxtapTime timeNowMs, const bool isPressingColumn[FXT_MaxColumnCount]);
+FXT_GameUpdateResult FXT_Game_Update(FXT_Game *game, FXT_TimeMs timeNow,
+                                     const bool isPressingColumn[FXT_MaxColumnCount]);
 
 KeyMapper FXT_Game_FetchKeyMapper(const FXT_Game *game, const FXT_Config *config);

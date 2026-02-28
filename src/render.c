@@ -5,27 +5,27 @@
 void FXT_RendererController_Run(
 	const FXT_RendererController *controller,
 	const FXT_Game *game,
-	const FxtapTime timeNow)
+	const FXT_TimeMs timeNow)
 {
 	const double timeScale = controller->HeightAbove / controller->VisibleTime;
 	const FXT_Metadata *metadata = &game->Beatmap->Metadata;
 
 	for (int column = 0; column < game->ColumnCount && metadata->SizeOfColumn[column] > 0; column += 1)
 	{
-		const FxtapTime initialAccumulatedStartTime = game->ColumnsStates[column].AccumulatedTimeMs;
+		const FXT_TimeMs initialAccumulatedStartTime = game->ColumnsStates[column].AccumulatedTime;
 		const int32_t focusedNoteNo = game->ColumnsStates[column].FocusedNoteNo;
 		const uint16_t sizeOfColumn = metadata->SizeOfColumn[column];
 
 		// Render notes above the line
-		FxtapTime controllerAccumulatedStartTime = initialAccumulatedStartTime;
+		FXT_TimeMs controllerAccumulatedStartTime = initialAccumulatedStartTime;
 
 		for (int noteNo = focusedNoteNo; noteNo < sizeOfColumn; noteNo += 1)
 		{
 			const FXT_Note note = game->Beatmap->Notes[column][noteNo];
-			const FxtapTime noteAccumulatedStartTime = note.AccumulatedStartTime;
-			const FxtapTime headTime = controllerAccumulatedStartTime + noteAccumulatedStartTime;
-			const FxtapTime headTimeToBottom = headTime - timeNow;
-			const FxtapTime tailTimeToBottom = headTimeToBottom + note.Duration;
+			const FXT_TimeMs noteAccumulatedStartTime = note.AccumulatedStartTime;
+			const FXT_TimeMs headTime = controllerAccumulatedStartTime + noteAccumulatedStartTime;
+			const FXT_TimeMs headTimeToBottom = headTime - timeNow;
+			const FXT_TimeMs tailTimeToBottom = headTimeToBottom + note.Duration;
 
 			controllerAccumulatedStartTime += noteAccumulatedStartTime;
 
@@ -57,9 +57,9 @@ void FXT_RendererController_Run(
 		for (int noteNo = focusedNoteNo - 1; noteNo >= 0; noteNo -= 1)
 		{
 			const FXT_Note note = game->Beatmap->Notes[column][noteNo];
-			const FxtapTime noteAccumulatedStartTime = note.AccumulatedStartTime;
-			const FxtapTime tailTime = controllerAccumulatedStartTime + note.Duration;
-			const FxtapTime tailTimeToBottom = tailTime - timeNow;
+			const FXT_TimeMs noteAccumulatedStartTime = note.AccumulatedStartTime;
+			const FXT_TimeMs tailTime = controllerAccumulatedStartTime + note.Duration;
+			const FXT_TimeMs tailTimeToBottom = tailTime - timeNow;
 
 			controllerAccumulatedStartTime -= noteAccumulatedStartTime;
 
