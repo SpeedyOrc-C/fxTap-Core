@@ -15,6 +15,7 @@ typedef enum FXT_Column
 
 typedef enum FXT_Key
 {
+	FXT_Key_Invalid = -1,
 	FXT_Key_K1,
 	FXT_Key_K2,
 	FXT_Key_K3,
