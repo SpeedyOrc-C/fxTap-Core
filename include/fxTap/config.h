@@ -3,7 +3,7 @@
 #include <stdint.h>
 #include <fxTap/beatmap.h>
 
-#define FXT_MaxKeyCount 10
+static constexpr size_t FXT_MaxKeyCount = 10;
 
 typedef enum FXT_KeyMapStyle
 {

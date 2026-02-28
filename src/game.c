@@ -33,7 +33,7 @@ void FXT_Game_Init(FXT_Game *game, const FXT_Beatmap *beatmap)
 		}
 		else
 		{
-			game->ColumnsStates[column].FocusedNoteNo = END_OF_COLUMN;
+			game->ColumnsStates[column].FocusedNoteNo = FXT_EndOfColumn;
 		}
 	}
 }
@@ -158,7 +158,7 @@ FXT_GameUpdateResult FXT_Game_Update(
 		if (column->FocusedNoteNo >= game->Beatmap->Metadata.SizeOfColumn[columnIndex])
 			continue;
 
-		if (column->FocusedNoteNo == END_OF_COLUMN)
+		if (column->FocusedNoteNo == FXT_EndOfColumn)
 			continue;
 
 		ended = false;

@@ -5,7 +5,7 @@
 #include <fxTap/config.h>
 #include <fxTap/keymap.h>
 
-#define END_OF_COLUMN (-1)
+static constexpr auto FXT_EndOfColumn = -1;
 
 // Unit: millisecond (ms)
 typedef int32_t FxtapTime;

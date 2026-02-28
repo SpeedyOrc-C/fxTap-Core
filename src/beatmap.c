@@ -9,6 +9,13 @@
 #include <dirent.h>
 #endif
 
+static constexpr auto BASE_TOLERANCE_PERFECT = 16;
+static constexpr auto BASE_TOLERANCE_GREAT = 64;
+static constexpr auto BASE_TOLERANCE_GOOD = 97;
+static constexpr auto BASE_TOLERANCE_OK = 127;
+static constexpr auto BASE_TOLERANCE_MEH = 151;
+static constexpr auto BASE_TOLERANCE_MISS = 188;
+
 FXT_Tolerance FXT_Tolerance_FromOverallDifficulty(const double overallDifficulty)
 {
 	const double od3 = 3 * overallDifficulty;

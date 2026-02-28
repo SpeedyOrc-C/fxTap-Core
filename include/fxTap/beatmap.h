@@ -1,15 +1,10 @@
 #pragma once
 
+#include <stddef.h>
 #include <stdint.h>
 #include <fxTap/lib-config.h>
 
-#define FXT_MaxColumnCount 16
-#define BASE_TOLERANCE_PERFECT 16
-#define BASE_TOLERANCE_GREAT 64
-#define BASE_TOLERANCE_GOOD 97
-#define BASE_TOLERANCE_OK 127
-#define BASE_TOLERANCE_MEH 151
-#define BASE_TOLERANCE_MISS 188
+static constexpr size_t FXT_MaxColumnCount = 16;
 
 typedef struct FXT_Metadata
 {
