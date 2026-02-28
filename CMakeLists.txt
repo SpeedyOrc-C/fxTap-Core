@@ -5,12 +5,13 @@ set(CMAKE_C_STANDARD 23)
 
 add_library(fxTap-Core
         src/config.c
+        src/config-casiowin.c
         src/beatmap.c
+        src/beatmap-casiowin.c
         src/game.c
         src/endian-utility.c
         src/render.c
-        src/beatmap-casiowin.c
-        src/config-casiowin.c
+        src/keymap.c
         src/keymap-djmax.c
         src/keymap-beatmania.c
 )
