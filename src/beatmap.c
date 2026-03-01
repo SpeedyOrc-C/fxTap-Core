@@ -32,6 +32,11 @@ FXT_Tolerance FXT_Tolerance_FromOverallDifficulty(const double overallDifficulty
 
 FXT_BeatmapError Metadata_LoadFromFile(FXT_Metadata *metadata, FILE *file)
 {
+	char header[16];
+
+	if (1 > fread(header, sizeof(header), 1, file))
+		return FXT_BeatmapError_ReadMetadataFailed;
+
 	if (1 > fread(metadata, sizeof(FXT_Metadata), 1, file))
 		return FXT_BeatmapError_ReadMetadataFailed;
 

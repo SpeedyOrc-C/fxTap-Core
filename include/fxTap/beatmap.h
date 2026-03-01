@@ -8,7 +8,6 @@ static constexpr size_t FXT_MaxColumnCount = 16;
 
 typedef struct FXT_Metadata
 {
-	char Header[16];
 	char Title[32];
 	char Artist[32];
 	uint16_t SizeOfColumn[FXT_MaxColumnCount];

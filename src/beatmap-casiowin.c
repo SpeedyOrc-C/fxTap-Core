@@ -7,6 +7,11 @@
 
 FXT_BeatmapError Metadata_LoadFromBFile(FXT_Metadata *dst, const int bfile)
 {
+	char header[16];
+
+	if (sizeof(header) > BFile_Read(bfile, header, sizeof(header), -1))
+		return FXT_BeatmapError_ReadMetadataFailed;
+
 	if (sizeof(FXT_Metadata) > BFile_Read(bfile, dst, sizeof(FXT_Metadata), -1))
 		return FXT_BeatmapError_ReadMetadataFailed;
 
