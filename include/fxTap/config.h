@@ -8,7 +8,7 @@ static constexpr size_t FXT_MaxKeyCount = 10;
 typedef enum FXT_KeyMapStyle
 {
 	FXT_KeyMapStyle_DJMAX,
-	FXT_KeyMapStyle_BeatmaniaIIDX,
+	FXT_KeyMapStyle_Beatmania,
 	FXT_KeyMapStyle_CoOp,
 } FXT_KeyMapStyle;
 

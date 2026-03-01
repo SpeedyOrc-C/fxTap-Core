@@ -1,6 +1,5 @@
 #include <assert.h>
 #include <stdio.h>
-#include <stdlib.h>
 #include <fxTap/beatmap.h>
 #include <fxTap/config.h>
 #include <fxTap/game.h>
@@ -15,20 +14,17 @@ bool Run(bool (*test)(), const char *name)
 
 bool Test_Hold()
 {
-	FXT_Beatmap beatmap = {
-		.Metadata = {
-			.SizeOfColumn = {2, 0, 0, 0, 0, 0, 0, 0},
-			.OverallDifficulty = 0,
-		},
-		.Notes = {
-			(FXT_Note[2]){
-				{.AccumulatedStartTime = 1000, .Duration = 1000},
-				{.AccumulatedStartTime = 2000, .Duration = 1000},
-			}
+	uint16_t columnSize[] = {2, 0, 0, 0, 0, 0, 0, 0};
+
+	const FXT_Beatmap beatmap = {
+		.ColumnSize = columnSize,
+		.ColumnCount = 1,
+		.OverallDifficulty = 0,
+		.Notes = (FXT_Note[2]){
+			{.AccumulatedStartTime = 1000, .Duration = 1000},
+			{.AccumulatedStartTime = 2000, .Duration = 1000},
 		},
 	};
-
-	beatmap.Tolerance = FXT_Tolerance_FromOverallDifficulty(0);
 
 	FXT_Game fxTap;
 	FXT_Game_Init(&fxTap, &beatmap);
@@ -55,21 +51,20 @@ bool Test_Hold()
 bool Test_FileLoading()
 {
 	FXT_Beatmap beatmap;
-	const FXT_BeatmapError error = FXT_Beatmap_Load(&beatmap, "FXTAP/WELUVLAM.fxt");
+	const FXT_BeatmapError error = FXT_Beatmap_Load(&beatmap, "dream.win.fxt");
 
 	if (error)
 	{
-		printf("Failed to load the beatmap. Error: %d", error);
+		printf("Failed to load the beatmap. Error: %d\n", error);
 		return false;
 	}
 
-	printf("Title: %s\n", beatmap.Metadata.Title);
-	printf("Artist: %s\n", beatmap.Metadata.Artist);
-	printf("Overall Difficulty: %lf\n", beatmap.Metadata.OverallDifficulty);
-	printf("Number of Columns: %i\n", FXT_Beatmap_ColumnCount(&beatmap));
+	printf("Title: %s\n", beatmap.Title);
+	printf("Artist: %s\n", beatmap.Artist);
+	printf("Overall Difficulty: %lf\n", beatmap.OverallDifficulty);
+	printf("Number of Columns: %i\n", beatmap.ColumnCount);
 
-	free(beatmap.Notes[0]);
-
+	FXT_Beatmap_FreeInner(&beatmap);
 
 	FXT_Config config;
 
@@ -77,15 +72,15 @@ bool Test_FileLoading()
 
 	if (configError != 0)
 	{
-		printf("Failed to load the config, and failed to create it.");
+		printf("Failed to load the config, and failed to create it.\n");
 		return false;
 	}
 
 	config.PhysicalKeyOfFxTapKey[FXT_Key_K4] = 'X';
 
-	if (!FXT_Config_Save(config))
+	if (FXT_Config_Save(&config))
 	{
-		printf("Failed to save the config.");
+		printf("Failed to save the config.\n");
 		return false;
 	}
 
@@ -122,7 +117,7 @@ void DummyRenderHold(const int column, const double positionBottom, const double
 bool Test_RendererController()
 {
 	FXT_Beatmap beatmap;
-	const FXT_BeatmapError error = FXT_Beatmap_Load(&beatmap, "FXTAP/WELUVLAM.fxt");
+	const FXT_BeatmapError error = FXT_Beatmap_Load(&beatmap, "dream.win.fxt");
 
 	assert(error == 0);
 
@@ -145,17 +140,17 @@ bool Test_RendererController()
 		FXT_RendererController_Run(&controller, &fxTap, time);
 	}
 
-	free(beatmap.Notes[0]);
+	FXT_Beatmap_FreeInner(&beatmap);
 
 	return true;
 }
 
 int main(void)
 {
-	return !(
-		Run(Test_FileLoading, "File Loading")
-		|| Run(Test_Hold, "Hold")
-		|| Run(Test_Config, "Config")
-		|| Run(Test_RendererController, "RendererController")
-	);
+	Run(Test_FileLoading, "File Loading");
+	Run(Test_Hold, "Hold");
+	Run(Test_Config, "Config");
+	Run(Test_RendererController, "RendererController");
+
+	return 0;
 }

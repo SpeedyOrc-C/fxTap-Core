@@ -38,8 +38,8 @@ typedef struct FXT_ColumnState
 typedef struct FXT_Game
 {
 	const FXT_Beatmap *Beatmap;
-
-	int ColumnCount;
+	FXT_Tolerance Tolerance;
+	uint16_t ColumnOffset[FXT_MaxColumnCount];
 	FXT_ColumnState ColumnsStates[FXT_MaxColumnCount];
 	FXT_TimeMs LastUpdateTime;
 	bool LastUpdatePressedColumn[FXT_MaxColumnCount];
@@ -56,7 +56,10 @@ typedef enum FXT_GameUpdateResult
 
 void FXT_Game_Init(FXT_Game *game, const FXT_Beatmap *beatmap);
 
-FXT_GameUpdateResult FXT_Game_Update(FXT_Game *game, FXT_TimeMs timeNow,
-                                     const bool isPressingColumn[FXT_MaxColumnCount]);
+FXT_GameUpdateResult FXT_Game_Update(
+	FXT_Game *game,
+	FXT_TimeMs timeNow,
+	const bool isPressingColumn[FXT_MaxColumnCount]
+);
 
 KeyMapper FXT_Game_FetchKeyMapper(const FXT_Game *game, const FXT_Config *config);

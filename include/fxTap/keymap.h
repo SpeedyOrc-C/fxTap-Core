@@ -56,18 +56,18 @@ FXT_Key KeyMapper_DJMAX_8KR(FXT_Column column);
 
 FXT_Key KeyMapper_DJMAX_9K(FXT_Column column);
 
-FXT_Key KeyMapper_BeatmaniaIIDX_4K(FXT_Column column);
+FXT_Key KeyMapper_Beatmania_4K(FXT_Column column);
 
-FXT_Key KeyMapper_BeatmaniaIIDX_5K(FXT_Column column);
+FXT_Key KeyMapper_Beatmania_5K(FXT_Column column);
 
-FXT_Key KeyMapper_BeatmaniaIIDX_6K(FXT_Column column);
+FXT_Key KeyMapper_Beatmania_6K(FXT_Column column);
 
-FXT_Key KeyMapper_BeatmaniaIIDX_7K(FXT_Column column);
+FXT_Key KeyMapper_Beatmania_7K(FXT_Column column);
 
-FXT_Key KeyMapper_BeatmaniaIIDX_8K(FXT_Column column);
+FXT_Key KeyMapper_Beatmania_8K(FXT_Column column);
 
-FXT_Key KeyMapper_BeatmaniaIIDX_8KL(FXT_Column column);
+FXT_Key KeyMapper_Beatmania_8KL(FXT_Column column);
 
-FXT_Key KeyMapper_BeatmaniaIIDX_8KR(FXT_Column column);
+FXT_Key KeyMapper_Beatmania_8KR(FXT_Column column);
 
 const char *FXT_Key_ToString(FXT_Key key);

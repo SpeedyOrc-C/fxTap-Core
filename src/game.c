@@ -10,8 +10,8 @@ void FXT_HoldState_SetDefault(FXT_HoldState *holdState)
 void FXT_Game_Init(FXT_Game *game, const FXT_Beatmap *beatmap)
 {
 	game->Beatmap = beatmap;
+	game->Tolerance = FXT_Tolerance_FromOverallDifficulty(beatmap->OverallDifficulty);
 	game->LastUpdateTime = 0;
-	game->ColumnCount = FXT_Beatmap_ColumnCount(beatmap);
 	game->Combo = 0;
 
 	game->Grades.Perfect = 0;
@@ -21,12 +21,17 @@ void FXT_Game_Init(FXT_Game *game, const FXT_Beatmap *beatmap)
 	game->Grades.Meh = 0;
 	game->Grades.Miss = 0;
 
+	int columnOffset = 0;
+
 	for (int column = 0; column < FXT_MaxColumnCount; column += 1)
 	{
+		game->ColumnOffset[column] = columnOffset;
 		game->LastUpdatePressedColumn[column] = false;
 		game->ColumnsStates[column].AccumulatedTime = 0;
 
-		if (beatmap->Metadata.SizeOfColumn[column] > 0)
+		columnOffset += beatmap->ColumnSize[column];
+
+		if (beatmap->ColumnSize[column] > 0)
 		{
 			game->ColumnsStates[column].FocusedNoteNo = 0;
 			FXT_HoldState_SetDefault(&game->ColumnsStates[column].HoldState);
@@ -151,11 +156,11 @@ FXT_GameUpdateResult FXT_Game_Update(
 
 	bool ended = true;
 
-	for (int columnIndex = 0; columnIndex < game->ColumnCount; columnIndex += 1)
+	for (int columnIndex = 0; columnIndex < game->Beatmap->ColumnCount; columnIndex += 1)
 	{
 		FXT_ColumnState *column = &game->ColumnsStates[columnIndex];
 
-		if (column->FocusedNoteNo >= game->Beatmap->Metadata.SizeOfColumn[columnIndex])
+		if (column->FocusedNoteNo >= game->Beatmap->ColumnSize[columnIndex])
 			continue;
 
 		if (column->FocusedNoteNo == FXT_EndOfColumn)
@@ -163,7 +168,7 @@ FXT_GameUpdateResult FXT_Game_Update(
 
 		ended = false;
 
-		const FXT_Note note = game->Beatmap->Notes[columnIndex][column->FocusedNoteNo];
+		const FXT_Note note = game->Beatmap->Notes[column->FocusedNoteNo + game->ColumnOffset[columnIndex]];
 		const FXT_TimeMs noteStart = column->AccumulatedTime + note.AccumulatedStartTime;
 		const bool lastUpdatePressed = game->LastUpdatePressedColumn[columnIndex];
 		const bool isPressing = isPressingColumn[columnIndex];
@@ -172,8 +177,8 @@ FXT_GameUpdateResult FXT_Game_Update(
 
 		const FXT_Grade grade =
 				note.Duration == 0
-					? GradeTapNote(&game->Beatmap->Tolerance, timeNow, keyIsDown, noteStart)
-					: GradeHoldNote(&game->Beatmap->Tolerance, timeNow, keyIsDown, keyIsUp,
+					? GradeTapNote(&game->Tolerance, timeNow, keyIsDown, noteStart)
+					: GradeHoldNote(&game->Tolerance, timeNow, keyIsDown, keyIsUp,
 					                &column->HoldState, noteStart, noteStart + note.Duration);
 
 		switch (grade)
@@ -217,7 +222,7 @@ KeyMapper FXT_Game_FetchKeyMapper(const FXT_Game *game, const FXT_Config *config
 	switch (config->KeyMapStyle)
 	{
 	case FXT_KeyMapStyle_DJMAX:
-		switch (game->ColumnCount)
+		switch (game->Beatmap->ColumnCount)
 		{
 		case 1: return &KeyMapper_DJMAX_1K;
 		case 2: return &KeyMapper_DJMAX_2K;
@@ -230,14 +235,14 @@ KeyMapper FXT_Game_FetchKeyMapper(const FXT_Game *game, const FXT_Config *config
 		case 9: return &KeyMapper_DJMAX_9K;
 		default: return nullptr;
 		}
-	case FXT_KeyMapStyle_BeatmaniaIIDX:
-		switch (game->ColumnCount)
+	case FXT_KeyMapStyle_Beatmania:
+		switch (game->Beatmap->ColumnCount)
 		{
-		case 4: return &KeyMapper_BeatmaniaIIDX_4K;
-		case 5: return &KeyMapper_BeatmaniaIIDX_5K;
-		case 6: return &KeyMapper_BeatmaniaIIDX_6K;
-		case 7: return &KeyMapper_BeatmaniaIIDX_7K;
-		case 8: return &KeyMapper_BeatmaniaIIDX_8K;
+		case 4: return &KeyMapper_Beatmania_4K;
+		case 5: return &KeyMapper_Beatmania_5K;
+		case 6: return &KeyMapper_Beatmania_6K;
+		case 7: return &KeyMapper_Beatmania_7K;
+		case 8: return &KeyMapper_Beatmania_8K;
 		default: return nullptr;
 		}
 	default:
