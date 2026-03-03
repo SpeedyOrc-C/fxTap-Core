@@ -13,6 +13,7 @@ add_library(fxTap-Core
         src/keymap.c
         src/keymap-djmax.c
         src/keymap-beatmania.c
+        src/database.c
 )
 
 target_include_directories(fxTap-Core PUBLIC include)
