@@ -19,11 +19,11 @@ FXT_Tolerance FXT_Tolerance_FromOverallDifficulty(const double overallDifficulty
 
 	return (FXT_Tolerance){
 		.Perfect = BASE_TOLERANCE_PERFECT,
-		.Great = (int32_t) ((double) BASE_TOLERANCE_GREAT - od3),
-		.Good = (int32_t) ((double) BASE_TOLERANCE_GOOD - od3),
-		.Ok = (int32_t) ((double) BASE_TOLERANCE_OK - od3),
-		.Meh = (int32_t) ((double) BASE_TOLERANCE_MEH - od3),
-		.Miss = (int32_t) ((double) BASE_TOLERANCE_MISS - od3),
+		.Great = (int16_t) ((double) BASE_TOLERANCE_GREAT - od3),
+		.Good = (int16_t) ((double) BASE_TOLERANCE_GOOD - od3),
+		.Ok = (int16_t) ((double) BASE_TOLERANCE_OK - od3),
+		.Meh = (int16_t) ((double) BASE_TOLERANCE_MEH - od3),
+		.Miss = (int16_t) ((double) BASE_TOLERANCE_MISS - od3),
 	};
 }
 

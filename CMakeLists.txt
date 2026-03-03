@@ -9,7 +9,6 @@ add_library(fxTap-Core
         src/beatmap.c
         src/beatmap-casiowin.c
         src/game.c
-        src/endian-utility.c
         src/render.c
         src/keymap.c
         src/keymap-djmax.c

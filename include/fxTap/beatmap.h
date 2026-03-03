@@ -8,7 +8,7 @@ static constexpr size_t FXT_MaxColumnCount = 16;
 
 typedef struct FXT_Tolerance
 {
-	int32_t Perfect, Great, Good, Ok, Meh, Miss;
+	int16_t Perfect, Great, Good, Ok, Meh, Miss;
 } FXT_Tolerance, FXT_Grades;
 
 typedef struct FXT_Note
@@ -24,6 +24,7 @@ typedef struct FXT_Beatmap
 	double OverallDifficulty;
 	uint8_t ColumnCount;
 	uint16_t *ColumnSize;
+
 	FXT_Note *Notes;
 } FXT_Beatmap;
 
