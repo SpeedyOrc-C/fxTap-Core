@@ -49,9 +49,9 @@ typedef struct FXT_Game
 
 typedef enum FXT_GameUpdateResult
 {
-	FxTapUpdateResult_Ended,
-	FxTapUpdateResult_OK,
-	FxTapUpdateResult_Error_RewoundTime,
+	FXT_GameUpdateResult_Ended,
+	FXT_GameUpdateResult_OK,
+	FXT_GameUpdateResult_RewoundTimeError,
 } FXT_GameUpdateResult;
 
 void FXT_Game_Init(FXT_Game *game, const FXT_Beatmap *beatmap);

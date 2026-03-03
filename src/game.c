@@ -152,7 +152,7 @@ FXT_GameUpdateResult FXT_Game_Update(
 	const bool isPressingColumn[16])
 {
 	if (timeNow < game->LastUpdateTime)
-		return FxTapUpdateResult_Error_RewoundTime;
+		return FXT_GameUpdateResult_RewoundTimeError;
 
 	bool ended = true;
 
@@ -209,12 +209,12 @@ FXT_GameUpdateResult FXT_Game_Update(
 	}
 
 	if (ended)
-		return FxTapUpdateResult_Ended;
+		return FXT_GameUpdateResult_Ended;
 
 	for (int column = 0; column < FXT_MaxColumnCount; column += 1)
 		game->LastUpdatePressedColumn[column] = isPressingColumn[column];
 
-	return FxTapUpdateResult_OK;
+	return FXT_GameUpdateResult_OK;
 }
 
 KeyMapper FXT_Game_FetchKeyMapper(const FXT_Game *game, const FXT_Config *config)

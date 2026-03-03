@@ -33,8 +33,6 @@ typedef enum FXT_BeatmapError
 	FXT_BeatmapError_OK,
 	FXT_BeatmapError_MallocFailed,
 	FXT_BeatmapError_FileNotFound,
-	FXT_BeatmapError_CannotCloseFile,
-	FXT_BeatmapError_ReadMetadataFailed,
 	FXT_BeatmapError_ReadNotesFailed,
 } FXT_BeatmapError;
 
