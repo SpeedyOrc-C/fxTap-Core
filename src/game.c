@@ -57,7 +57,7 @@ FXT_Grade GradeTapNote(
 	if (delta > tolerance->Ok) return FXT_Grade_Miss;
 
 	// Before the grading area and it's idle
-	if (!keyIsDown || delta < -tolerance->Miss) return FXT_Grade_Null;
+	if (! keyIsDown || delta < -tolerance->Miss) return FXT_Grade_Null;
 
 	// Give a grade
 	if (delta < -tolerance->Meh) return FXT_Grade_Miss;
@@ -172,8 +172,8 @@ FXT_GameUpdateResult FXT_Game_Update(
 		const FXT_TimeMs noteStart = column->AccumulatedTime + note.AccumulatedStartTime;
 		const bool lastUpdatePressed = game->LastUpdatePressedColumn[columnIndex];
 		const bool isPressing = isPressingColumn[columnIndex];
-		const bool keyIsDown = !lastUpdatePressed && isPressing;
-		const bool keyIsUp = lastUpdatePressed && !isPressing;
+		const bool keyIsDown = ! lastUpdatePressed && isPressing;
+		const bool keyIsUp = lastUpdatePressed && ! isPressing;
 
 		const FXT_Grade grade =
 				note.Duration == 0
@@ -248,4 +248,51 @@ KeyMapper FXT_Game_FetchKeyMapper(const FXT_Game *game, const FXT_Config *config
 	default:
 		return nullptr;
 	}
+}
+
+FXT_TimeMs FXT_Game_FirstNoteStartTime(const FXT_Game *game)
+{
+	FXT_TimeMs time = INT32_MAX;
+
+	auto const columnOffsets = game->ColumnOffset;
+	auto const beatmap = game->Beatmap;
+	auto const columnCount = beatmap->ColumnCount;
+	auto const notes = beatmap->Notes;
+
+	for (size_t column = 0; column < columnCount; column += 1)
+	{
+		auto const columnOffset = columnOffsets[column];
+		auto const thisTime = notes[columnOffset].AccumulatedStartTime;
+
+		if (thisTime < time)
+			time = thisTime;
+	}
+
+	return time;
+}
+
+FXT_TimeMs FXT_Game_LastNoteEndTime(const FXT_Game *game)
+{
+	FXT_TimeMs time = 0;
+
+	auto const beatmap = game->Beatmap;
+	auto const notes = beatmap->Notes;
+	auto const columnOffsets = game->ColumnOffset;
+	auto const columnSizes = beatmap->ColumnSize;
+
+	for (size_t column = 0; column < beatmap->ColumnCount; column += 1)
+	{
+		FXT_TimeMs thisTime = 0;
+
+		for (size_t note = 0; note < columnSizes[column]; note += 1)
+			thisTime += notes[columnOffsets[column] + note].AccumulatedStartTime;
+
+		thisTime += notes[columnOffsets[column] + columnSizes[column]].
+				Duration;
+
+		if (thisTime > time)
+			time = thisTime;
+	}
+
+	return time;
 }

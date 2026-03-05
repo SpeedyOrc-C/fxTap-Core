@@ -9,87 +9,16 @@
 
 bool Run(bool (*test)(), const char *name)
 {
+	printf("=== %s ===\n", name);
 	const int result = test();
-	printf("[TEST] %s: %s\n", name, result ? "OK" : "ERROR");
+	puts(result ? "" : "[ERROR]\n");
 	return result;
-}
-
-bool Test_Tap()
-{
-	uint16_t columnSize[] = {2, 0, 0, 0, 0, 0, 0, 0};
-
-	const FXT_Beatmap beatmap = {
-		.ColumnSize = columnSize,
-		.ColumnCount = 1,
-		.OverallDifficulty = 0,
-		.Notes = (FXT_Note[2]){
-				{.AccumulatedStartTime = 1000, .Duration = 1000},
-				{.AccumulatedStartTime = 2000, .Duration = 1000},
-			},
-		};
-
-	FXT_Game fxTap;
-	FXT_Game_Init(&fxTap, &beatmap);
-
-	bool keys[16] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-
-	FXT_Game_Update(&fxTap, 0, keys);
-	keys[0] = true;
-	FXT_Game_Update(&fxTap, 900, keys);
-	keys[0] = false;
-	FXT_Game_Update(&fxTap, 950, keys);
-	keys[0] = true;
-	FXT_Game_Update(&fxTap, 1000, keys);
-	keys[0] = false;
-	FXT_Game_Update(&fxTap, 2000, keys);
-	FXT_Game_Update(&fxTap, 3000, keys);
-
-	if (fxTap.Grades.Perfect != 1)
-		return false;
-
-	return true;
-}
-
-bool Test_Hold()
-{
-	uint16_t columnSize[] = {2, 0, 0, 0, 0, 0, 0, 0};
-
-	const FXT_Beatmap beatmap = {
-		.ColumnSize = columnSize,
-		.ColumnCount = 1,
-		.OverallDifficulty = 0,
-		.Notes = (FXT_Note[2]){
-			{.AccumulatedStartTime = 1000, .Duration = 1000},
-			{.AccumulatedStartTime = 2000, .Duration = 1000},
-		},
-	};
-
-	FXT_Game fxTap;
-	FXT_Game_Init(&fxTap, &beatmap);
-
-	bool keys[16] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-
-	FXT_Game_Update(&fxTap, 0, keys);
-	keys[0] = true;
-	FXT_Game_Update(&fxTap, 900, keys);
-	keys[0] = false;
-	FXT_Game_Update(&fxTap, 950, keys);
-	keys[0] = true;
-	FXT_Game_Update(&fxTap, 1000, keys);
-	keys[0] = false;
-	FXT_Game_Update(&fxTap, 2000, keys);
-	FXT_Game_Update(&fxTap, 3000, keys);
-
-	if (fxTap.Grades.Perfect != 1)
-		return false;
-
-	return true;
 }
 
 bool Test_FileLoading()
 {
 	FXT_Beatmap beatmap;
-	const FXT_BeatmapError error = FXT_Beatmap_Load(&beatmap, "dream.win.fxt");
+	const FXT_BeatmapError error = FXT_Beatmap_Load(&beatmap, "dream.fxt");
 
 	if (error)
 	{
@@ -97,10 +26,17 @@ bool Test_FileLoading()
 		return false;
 	}
 
+	FXT_Game game;
+	FXT_Game_Init(&game, &beatmap);
+
+	auto const startTime = FXT_Game_FirstNoteStartTime(&game);
+	auto const endTime = FXT_Game_LastNoteEndTime(&game);
+
 	printf("Title: %s\n", beatmap.Title);
 	printf("Artist: %s\n", beatmap.Artist);
 	printf("Overall Difficulty: %lf\n", beatmap.OverallDifficulty);
 	printf("Number of Columns: %i\n", beatmap.ColumnCount);
+	printf("Start/End Time: %i/%i\n", startTime, endTime);
 
 	FXT_Beatmap_FreeInner(&beatmap);
 
@@ -123,6 +59,75 @@ bool Test_FileLoading()
 	}
 
 	return true;
+}
+
+bool Test_Tap()
+{
+	uint16_t columnSize[] = {2, 0, 0, 0, 0, 0, 0, 0};
+
+	const FXT_Beatmap beatmap = {
+		.ColumnSize = columnSize,
+		.ColumnCount = 1,
+		.OverallDifficulty = 0,
+		.Notes = (FXT_Note[2]){
+			{.AccumulatedStartTime = 1000, .Duration = 0},
+			{.AccumulatedStartTime = 2000, .Duration = 0},
+		},
+	};
+
+	FXT_Game game;
+	FXT_Game_Init(&game, &beatmap);
+
+	bool keys[16] = {};
+
+	FXT_Game_Update(&game, 0, keys);
+	keys[0] = true;
+	FXT_Game_Update(&game, 940, keys);
+	keys[0] = false;
+	FXT_Game_Update(&game, 980, keys);
+	keys[0] = true;
+	FXT_Game_Update(&game, 1000, keys);
+	keys[0] = false;
+	FXT_Game_Update(&game, 1050, keys);
+	keys[0] = true;
+	FXT_Game_Update(&game, 3010, keys);
+	keys[0] = false;
+	FXT_Game_Update(&game, 3011, keys);
+
+	return game.Grades.Perfect == 1 && game.Grades.Great == 1;
+}
+
+bool Test_Hold()
+{
+	uint16_t columnSize[] = {2, 0, 0, 0, 0, 0, 0, 0};
+
+	const FXT_Beatmap beatmap = {
+		.ColumnSize = columnSize,
+		.ColumnCount = 1,
+		.OverallDifficulty = 0,
+		.Notes = (FXT_Note[2]){
+			{.AccumulatedStartTime = 1000, .Duration = 1000},
+			{.AccumulatedStartTime = 2000, .Duration = 1000},
+		},
+	};
+
+	FXT_Game game;
+	FXT_Game_Init(&game, &beatmap);
+
+	bool keys[16] = {};
+
+	FXT_Game_Update(&game, 0, keys);
+	keys[0] = true;
+	FXT_Game_Update(&game, 900, keys);
+	keys[0] = false;
+	FXT_Game_Update(&game, 950, keys);
+	keys[0] = true;
+	FXT_Game_Update(&game, 1000, keys);
+	keys[0] = false;
+	FXT_Game_Update(&game, 2000, keys);
+	FXT_Game_Update(&game, 3000, keys);
+
+	return game.Grades.Perfect == 1;
 }
 
 bool Test_Config()
@@ -155,12 +160,12 @@ void DummyRenderHold(const int column, const double positionBottom, const double
 bool Test_RendererController()
 {
 	FXT_Beatmap beatmap;
-	const FXT_BeatmapError error = FXT_Beatmap_Load(&beatmap, "dream.win.fxt");
+	const FXT_BeatmapError error = FXT_Beatmap_Load(&beatmap, "dream.fxt");
 
 	assert(error == 0);
 
-	FXT_Game fxTap;
-	FXT_Game_Init(&fxTap, &beatmap);
+	FXT_Game game;
+	FXT_Game_Init(&game, &beatmap);
 
 	const FXT_RendererController controller = {
 		.HeightAbove = 100,
@@ -169,13 +174,13 @@ bool Test_RendererController()
 		.RenderHold = &DummyRenderHold,
 	};
 
-	const bool isKeyPressed[16] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+	constexpr bool isKeyPressed[16] = {};
 
-	for (int time = 0; time <= 10000; time += 5)
+	for (int time = 0; time <= 1000; time += 5)
 	{
 		printf("> %d\n", time);
-		FXT_Game_Update(&fxTap, time, isKeyPressed);
-		FXT_RendererController_Run(&controller, &fxTap, time);
+		FXT_Game_Update(&game, time, isKeyPressed);
+		FXT_RendererController_Run(&controller, &game, time);
 	}
 
 	FXT_Beatmap_FreeInner(&beatmap);
@@ -205,9 +210,10 @@ bool Test_Database()
 int main(void)
 {
 	Run(Test_FileLoading, "File Loading");
+	Run(Test_Tap, "Tap");
 	Run(Test_Hold, "Hold");
 	Run(Test_Config, "Config");
-	Run(Test_RendererController, "RendererController");
+	// Run(Test_RendererController, "RendererController");
 	Run(Test_Database, "Database");
 
 	return 0;

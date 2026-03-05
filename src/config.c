@@ -6,7 +6,7 @@ static const auto ConfigPath = "fxTap.cfg";
 
 const FXT_Config FXT_Config_Default = {
 	.NotesFallingTime = 1000,
-	.KeyMapStyle = FXT_KeyMapStyle_DJMAX,
+	.KeyMapStyle = FXT_KeyMapStyle_Beatmania,
 	.Language = FXT_Language_EnUs,
 	.PhysicalKeyOfFxTapKey = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
 };
