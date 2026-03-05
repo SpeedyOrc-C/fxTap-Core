@@ -47,6 +47,9 @@ typedef enum FXT_FindError
 [[nodiscard]]
 FXT_BeatmapError FXT_Beatmap_Load(FXT_Beatmap *dst, const char *path);
 
+[[nodiscard]]
+FXT_BeatmapError FXT_Beatmap_LoadMetadata(FXT_Beatmap *dst, const char *path);
+
 void FXT_Beatmap_FreeInner(const FXT_Beatmap *beatmap);
 
 void FXT_Beatmap_Free(FXT_Beatmap *beatmap);

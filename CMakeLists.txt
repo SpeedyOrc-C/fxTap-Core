@@ -14,9 +14,11 @@ add_library(fxTap-Core
         src/keymap-djmax.c
         src/keymap-beatmania.c
         src/database.c
+		src/stb_ds.c
 )
 
 target_include_directories(fxTap-Core PUBLIC include)
+target_compile_definitions(fxTap-Core PUBLIC STB_DS_IMPLEMENTATION)
 
 enable_testing()
 

@@ -1,31 +1,34 @@
 #pragma once
 
-#include <stddef.h>
 #include <fxTap/beatmap.h>
 
-typedef struct FXT_Database_Record
+typedef struct FXT_DatabaseRecord
 {
-	char *Path;
 	FXT_Grades *LastGrades; // nullptr: Player hasn't played this
-
 	// Same as beatmap's but without its notes
 	char *Title;
 	char *Artist;
 	double OverallDifficulty;
 	uint8_t ColumnCount;
 	uint16_t *ColumnSize;
-} FXT_Database_Record;
+} FXT_DatabaseRecord;
+
+static constexpr FXT_DatabaseRecord FXT_DatabaseRecord_Null = {};
 
 typedef struct FXT_Database
 {
-	size_t Size;
-	FXT_Database_Record *Records[];
-} FXT_Database;
+	char *key;
+	FXT_DatabaseRecord value;
+} *FXT_Database;
 
 typedef enum FXT_DatabaseError
 {
 	FXT_DatabaseError_OK = 0,
+	FXT_DatabaseError_MallocFailed,
+	FXT_DatabaseError_CannotOpenDir,
 } FXT_DatabaseError;
+
+void FXT_Database_Init(FXT_Database *dst);
 
 [[nodiscard]]
 FXT_DatabaseError FXT_Database_Load(FXT_Database *dst);
@@ -44,3 +47,5 @@ FXT_DatabaseError FXT_Database_UpdateGrades(FXT_Database *database, const char *
 // Add new songs, remove deleted songs, and updating existing song metadata.
 [[nodiscard]]
 FXT_DatabaseError FXT_Database_SyncFromFileSystem(FXT_Database *database);
+
+bool FXT_DatabaseRecord_IsNull(FXT_DatabaseRecord record);

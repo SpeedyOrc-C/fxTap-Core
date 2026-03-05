@@ -1,15 +1,53 @@
 #include <assert.h>
+#include <stb_ds.h>
 #include <stdio.h>
 #include <fxTap/beatmap.h>
 #include <fxTap/config.h>
 #include <fxTap/game.h>
 #include <fxTap/render.h>
+#include "fxTap/database.h"
 
 bool Run(bool (*test)(), const char *name)
 {
 	const int result = test();
 	printf("[TEST] %s: %s\n", name, result ? "OK" : "ERROR");
 	return result;
+}
+
+bool Test_Tap()
+{
+	uint16_t columnSize[] = {2, 0, 0, 0, 0, 0, 0, 0};
+
+	const FXT_Beatmap beatmap = {
+		.ColumnSize = columnSize,
+		.ColumnCount = 1,
+		.OverallDifficulty = 0,
+		.Notes = (FXT_Note[2]){
+				{.AccumulatedStartTime = 1000, .Duration = 1000},
+				{.AccumulatedStartTime = 2000, .Duration = 1000},
+			},
+		};
+
+	FXT_Game fxTap;
+	FXT_Game_Init(&fxTap, &beatmap);
+
+	bool keys[16] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+
+	FXT_Game_Update(&fxTap, 0, keys);
+	keys[0] = true;
+	FXT_Game_Update(&fxTap, 900, keys);
+	keys[0] = false;
+	FXT_Game_Update(&fxTap, 950, keys);
+	keys[0] = true;
+	FXT_Game_Update(&fxTap, 1000, keys);
+	keys[0] = false;
+	FXT_Game_Update(&fxTap, 2000, keys);
+	FXT_Game_Update(&fxTap, 3000, keys);
+
+	if (fxTap.Grades.Perfect != 1)
+		return false;
+
+	return true;
 }
 
 bool Test_Hold()
@@ -145,12 +183,32 @@ bool Test_RendererController()
 	return true;
 }
 
+bool Test_Database()
+{
+	FXT_Database db = nullptr;
+	sh_new_strdup(db);
+	shdefault(db, FXT_DatabaseRecord_Null);
+
+	const auto error = FXT_Database_SyncFromFileSystem(&db);
+
+	if (error)
+		return false;
+
+	for (int i = 0; i < shlen(db); i += 1)
+		printf("[%s]: %.2f - %s - %s\n", db[i].key, db[i].value.OverallDifficulty, db[i].value.Title, db[i].value.Artist);
+
+	shfree(db);
+
+	return true;
+}
+
 int main(void)
 {
 	Run(Test_FileLoading, "File Loading");
 	Run(Test_Hold, "Hold");
 	Run(Test_Config, "Config");
 	Run(Test_RendererController, "RendererController");
+	Run(Test_Database, "Database");
 
 	return 0;
 }

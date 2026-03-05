@@ -37,7 +37,7 @@ int FXT_Beatmap_NoteCount(const FXT_Beatmap *beatmap)
 	return count;
 }
 
-FXT_BeatmapError Beatmap_LoadFromFile(FXT_Beatmap *dst, FILE *file)
+FXT_BeatmapError Beatmap_LoadFromFile(FXT_Beatmap *dst, FILE *file, const bool readNotes)
 {
 	char header[8];
 	uint8_t titleLength;
@@ -49,13 +49,13 @@ FXT_BeatmapError Beatmap_LoadFromFile(FXT_Beatmap *dst, FILE *file)
 	uint16_t *sizeOfColumn = nullptr;
 	FXT_Note *notes = nullptr;
 
-	if (!fread(header, sizeof(header), 1, file))
+	if (! fread(header, sizeof(header), 1, file))
 		goto fail;
 
-	if (!fread(&overallDifficulty, sizeof(overallDifficulty), 1, file))
+	if (! fread(&overallDifficulty, sizeof(overallDifficulty), 1, file))
 		goto fail;
 
-	if (!fread(&titleLength, sizeof(titleLength), 1, file))
+	if (! fread(&titleLength, sizeof(titleLength), 1, file))
 		goto fail;
 
 	title = malloc(titleLength + 1);
@@ -63,22 +63,22 @@ FXT_BeatmapError Beatmap_LoadFromFile(FXT_Beatmap *dst, FILE *file)
 	if (title == nullptr)
 		goto fail;
 
-	if (!fread(title, titleLength, 1, file))
+	if (! fread(title, titleLength, 1, file))
 		goto fail;
 
 	title[titleLength] = 0;
 
-	if (!fread(&artistLength, sizeof(artistLength), 1, file))
+	if (! fread(&artistLength, sizeof(artistLength), 1, file))
 		goto fail;
 
 	artist = malloc(artistLength + 1);
 
-	if (!fread(artist, artistLength, 1, file))
+	if (! fread(artist, artistLength, 1, file))
 		goto fail;
 
 	artist[artistLength] = 0;
 
-	if (!fread(&columnCount, sizeof(columnCount), 1, file))
+	if (! fread(&columnCount, sizeof(columnCount), 1, file))
 		goto fail;
 
 	sizeOfColumn = malloc(2 * columnCount);
@@ -86,21 +86,24 @@ FXT_BeatmapError Beatmap_LoadFromFile(FXT_Beatmap *dst, FILE *file)
 	if (sizeOfColumn == nullptr)
 		goto fail;
 
-	if (!fread(sizeOfColumn, 2 * columnCount, 1, file))
+	if (! fread(sizeOfColumn, 2 * columnCount, 1, file))
 		goto fail;
 
-	int noteCount = 0;
+	if (readNotes)
+	{
+		int noteCount = 0;
 
-	for (int i = 0; i < columnCount; i += 1)
-		noteCount += sizeOfColumn[i];
+		for (int i = 0; i < columnCount; i += 1)
+			noteCount += sizeOfColumn[i];
 
-	notes = malloc(sizeof(FXT_Note) * noteCount);
+		notes = malloc(sizeof(FXT_Note) * noteCount);
 
-	if (notes == nullptr)
-		goto fail;
+		if (notes == nullptr)
+			goto fail;
 
-	if (fread(notes, sizeof(FXT_Note), noteCount, file) < noteCount)
-		goto fail;
+		if (fread(notes, sizeof(FXT_Note), noteCount, file) < noteCount)
+			goto fail;
+	}
 
 	dst->Title = title;
 	dst->Artist = artist;
@@ -120,7 +123,7 @@ fail:
 	return FXT_BeatmapError_ReadNotesFailed;
 }
 
-FXT_BeatmapError FXT_Beatmap_Load(FXT_Beatmap *dst, const char *path)
+FXT_BeatmapError Beatmap_Load(FXT_Beatmap *dst, const char *path, const bool readNotes)
 {
 	FXT_BeatmapError error = 0;
 
@@ -129,10 +132,20 @@ FXT_BeatmapError FXT_Beatmap_Load(FXT_Beatmap *dst, const char *path)
 	if (file == nullptr)
 		return FXT_BeatmapError_FileNotFound;
 
-	error = Beatmap_LoadFromFile(dst, file);
+	error = Beatmap_LoadFromFile(dst, file, readNotes);
 	fclose(file);
 
 	return error;
+}
+
+FXT_BeatmapError FXT_Beatmap_Load(FXT_Beatmap *dst, const char *path)
+{
+	return Beatmap_Load(dst, path, true);
+}
+
+FXT_BeatmapError FXT_Beatmap_LoadMetadata(FXT_Beatmap *dst, const char *path)
+{
+	return Beatmap_Load(dst, path, false);
 }
 
 void FXT_Beatmap_FreeInner(const FXT_Beatmap *beatmap)
@@ -140,7 +153,8 @@ void FXT_Beatmap_FreeInner(const FXT_Beatmap *beatmap)
 	free(beatmap->Title);
 	free(beatmap->Artist);
 	free(beatmap->ColumnSize);
-	free(beatmap->Notes);
+	if (beatmap->Notes != nullptr)
+		free(beatmap->Notes);
 }
 
 void FXT_Beatmap_Free(FXT_Beatmap *beatmap)

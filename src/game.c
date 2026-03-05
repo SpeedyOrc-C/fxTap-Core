@@ -11,7 +11,7 @@ void FXT_Game_Init(FXT_Game *game, const FXT_Beatmap *beatmap)
 {
 	game->Beatmap = beatmap;
 	game->Tolerance = FXT_Tolerance_FromOverallDifficulty(beatmap->OverallDifficulty);
-	game->LastUpdateTime = 0;
+	game->LastUpdateTime = -1000;
 	game->Combo = 0;
 
 	game->Grades.Perfect = 0;
