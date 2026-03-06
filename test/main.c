@@ -191,8 +191,7 @@ bool Test_RendererController()
 bool Test_Database()
 {
 	FXT_Database db = nullptr;
-	sh_new_strdup(db);
-	shdefault(db, FXT_DatabaseRecord_Null);
+	FXT_Database_Init(&db);
 
 	const auto error = FXT_Database_SyncFromFileSystem(&db);
 
