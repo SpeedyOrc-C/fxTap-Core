@@ -104,3 +104,23 @@ bool FXT_DatabaseRecord_IsNull(const FXT_DatabaseRecord record)
 {
 	return record.Title == nullptr;
 }
+
+int FXT_Database_Compare(const struct FXT_Database *a, const struct FXT_Database *b)
+{
+	return strcmp(a->value.Title, b->value.Title);
+}
+
+int FXT_Database_Compare_Reverse(const struct FXT_Database *a, const struct FXT_Database *b)
+{
+	return strcmp(b->value.Title, a->value.Title);
+}
+
+int FXT_Database_Compare_Void(const void *a, const void *b)
+{
+	return FXT_Database_Compare(*(void **) a, *(void **) b);
+}
+
+int FXT_Database_Compare_Reverse_Void(const void *a, const void *b)
+{
+	return FXT_Database_Compare_Reverse(*(void **) a, *(void **) b);
+}

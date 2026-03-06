@@ -195,11 +195,52 @@ bool Test_Database()
 
 	const auto error = FXT_Database_SyncFromFileSystem(&db);
 
+	auto const size = shlenu(db);
+
+	const struct FXT_Database *viewOrderByNameAsc[size] = {};
+	const struct FXT_Database *viewOrderByNameDsc[size] = {};
+
+	for (size_t i = 0; i < size; i += 1)
+	{
+		viewOrderByNameAsc[i] = &db[i];
+		viewOrderByNameDsc[i] = &db[i];
+	}
+
+	qsort(viewOrderByNameAsc, size, sizeof(FXT_Database), FXT_Database_Compare_Reverse_Void);
+	qsort(viewOrderByNameDsc, size, sizeof(FXT_Database), FXT_Database_Compare_Void);
+
 	if (error)
 		return false;
 
-	for (int i = 0; i < shlen(db); i += 1)
-		printf("[%s]: %.2f - %s - %s\n", db[i].key, db[i].value.OverallDifficulty, db[i].value.Title, db[i].value.Artist);
+	puts("== Original ==");
+	for (size_t i = 0; i < size; i += 1)
+		printf(
+			"[%s]: %.2f - %s - %s\n",
+			db[i].key,
+			db[i].value.OverallDifficulty,
+			db[i].value.Title,
+			db[i].value.Artist
+		);
+
+	puts("== Descending ==");
+	for (size_t i = 0; i < size; i += 1)
+	{
+		auto const x = viewOrderByNameDsc[i];
+		printf(
+			"[%s]: %.2f - %s - %s\n",
+			x->key, x->value.OverallDifficulty, x->value.Title, x->value.Artist
+		);
+	}
+
+	puts("== Ascending ==");
+	for (size_t i = 0; i < size; i += 1)
+	{
+		auto const x = viewOrderByNameAsc[i];
+		printf(
+			"[%s]: %.2f - %s - %s\n",
+			x->key, x->value.OverallDifficulty, x->value.Title, x->value.Artist
+		);
+	}
 
 	shfree(db);
 

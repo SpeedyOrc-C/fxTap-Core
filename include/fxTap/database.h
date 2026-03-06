@@ -49,3 +49,11 @@ FXT_DatabaseError FXT_Database_UpdateGrades(FXT_Database *database, const char *
 FXT_DatabaseError FXT_Database_SyncFromFileSystem(FXT_Database *database);
 
 bool FXT_DatabaseRecord_IsNull(FXT_DatabaseRecord record);
+
+int FXT_Database_Compare(const struct FXT_Database *a, const struct FXT_Database *b);
+
+int FXT_Database_Compare_Reverse(const struct FXT_Database *a, const struct FXT_Database *b);
+
+int FXT_Database_Compare_Void(const void *a, const void *b);
+
+int FXT_Database_Compare_Reverse_Void(const void *a, const void *b);
