@@ -62,8 +62,6 @@ FXT_GameUpdateResult FXT_Game_Update(
 	const bool isPressingColumn[FXT_MaxColumnCount]
 );
 
-KeyMapper FXT_Game_FetchKeyMapper(const FXT_Game *game, const FXT_Config *config);
-
 FXT_TimeMs FXT_Game_FirstNoteStartTime(const FXT_Game *game);
 
 FXT_TimeMs FXT_Game_LastNoteEndTime(const FXT_Game *game);

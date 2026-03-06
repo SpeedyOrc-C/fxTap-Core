@@ -1,5 +1,8 @@
 #pragma once
 
+#include <fxTap/beatmap.h>
+#include <fxTap/config.h>
+
 typedef enum FXT_Column
 {
 	FXT_Column_1,
@@ -29,6 +32,10 @@ typedef enum FXT_Key
 } FXT_Key;
 
 typedef FXT_Key (*KeyMapper)(FXT_Column);
+
+KeyMapper FXT_FetchKeyMapper(const FXT_Beatmap *beatmap, const FXT_Config *config);
+
+const char *FXT_Key_ToString(FXT_Key key);
 
 FXT_Key KeyMapper_DJMAX_1K(FXT_Column column);
 
@@ -69,5 +76,3 @@ FXT_Key KeyMapper_Beatmania_8K(FXT_Column column);
 FXT_Key KeyMapper_Beatmania_8KL(FXT_Column column);
 
 FXT_Key KeyMapper_Beatmania_8KR(FXT_Column column);
-
-const char *FXT_Key_ToString(FXT_Key key);

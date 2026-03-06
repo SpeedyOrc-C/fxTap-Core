@@ -217,39 +217,6 @@ FXT_GameUpdateResult FXT_Game_Update(
 	return FXT_GameUpdateResult_OK;
 }
 
-KeyMapper FXT_Game_FetchKeyMapper(const FXT_Game *game, const FXT_Config *config)
-{
-	switch (config->KeyMapStyle)
-	{
-	case FXT_KeyMapStyle_DJMAX:
-		switch (game->Beatmap->ColumnCount)
-		{
-		case 1: return &KeyMapper_DJMAX_1K;
-		case 2: return &KeyMapper_DJMAX_2K;
-		case 3: return &KeyMapper_DJMAX_3K;
-		case 4: return &KeyMapper_DJMAX_4K;
-		case 5: return &KeyMapper_DJMAX_5K;
-		case 6: return &KeyMapper_DJMAX_6K;
-		case 7: return &KeyMapper_DJMAX_7K;
-		case 8: return &KeyMapper_DJMAX_8K;
-		case 9: return &KeyMapper_DJMAX_9K;
-		default: return nullptr;
-		}
-	case FXT_KeyMapStyle_Beatmania:
-		switch (game->Beatmap->ColumnCount)
-		{
-		case 4: return &KeyMapper_Beatmania_4K;
-		case 5: return &KeyMapper_Beatmania_5K;
-		case 6: return &KeyMapper_Beatmania_6K;
-		case 7: return &KeyMapper_Beatmania_7K;
-		case 8: return &KeyMapper_Beatmania_8K;
-		default: return nullptr;
-		}
-	default:
-		return nullptr;
-	}
-}
-
 FXT_TimeMs FXT_Game_FirstNoteStartTime(const FXT_Game *game)
 {
 	FXT_TimeMs time = INT32_MAX;
