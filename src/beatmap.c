@@ -6,24 +6,25 @@
 #include <dirent.h>
 #endif
 
-static constexpr auto BASE_TOLERANCE_PERFECT = 16;
-static constexpr auto BASE_TOLERANCE_GREAT = 64;
-static constexpr auto BASE_TOLERANCE_GOOD = 97;
-static constexpr auto BASE_TOLERANCE_OK = 127;
-static constexpr auto BASE_TOLERANCE_MEH = 151;
-static constexpr auto BASE_TOLERANCE_MISS = 188;
 
 FXT_Tolerance FXT_Tolerance_FromOverallDifficulty(const double overallDifficulty)
 {
+	static constexpr int16_t BaseTolerancePerfect = 16;
+	static constexpr int16_t BaseToleranceGreat = 64;
+	static constexpr int16_t BaseToleranceGood = 97;
+	static constexpr int16_t BaseToleranceOk = 127;
+	static constexpr int16_t BaseToleranceMeh = 151;
+	static constexpr int16_t BaseToleranceMiss = 188;
+
 	const double od3 = 3 * overallDifficulty;
 
 	return (FXT_Tolerance){
-		.Perfect = BASE_TOLERANCE_PERFECT,
-		.Great = (int16_t) ((double) BASE_TOLERANCE_GREAT - od3),
-		.Good = (int16_t) ((double) BASE_TOLERANCE_GOOD - od3),
-		.Ok = (int16_t) ((double) BASE_TOLERANCE_OK - od3),
-		.Meh = (int16_t) ((double) BASE_TOLERANCE_MEH - od3),
-		.Miss = (int16_t) ((double) BASE_TOLERANCE_MISS - od3),
+		.Perfect = BaseTolerancePerfect,
+		.Great = (int16_t) ((double) BaseToleranceGreat - od3),
+		.Good = (int16_t) ((double) BaseToleranceGood - od3),
+		.Ok = (int16_t) ((double) BaseToleranceOk - od3),
+		.Meh = (int16_t) ((double) BaseToleranceMeh - od3),
+		.Miss = (int16_t) ((double) BaseToleranceMiss - od3),
 	};
 }
 
