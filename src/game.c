@@ -287,7 +287,7 @@ FXT_TimeMs FXT_Game_LastNoteEndTime(const FXT_Game *game)
 		for (size_t note = 0; note < columnSizes[column]; note += 1)
 			thisTime += notes[columnOffsets[column] + note].AccumulatedStartTime;
 
-		thisTime += notes[columnOffsets[column] + columnSizes[column]].
+		thisTime += notes[columnOffsets[column] + columnSizes[column] - 1].
 				Duration;
 
 		if (thisTime > time)
