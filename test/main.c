@@ -1,11 +1,11 @@
-#include <assert.h>
 #include <stb_ds.h>
 #include <stdio.h>
 #include <fxTap/beatmap.h>
 #include <fxTap/config.h>
+#include <fxTap/database.h>
 #include <fxTap/game.h>
+#include <fxTap/keymap.h>
 #include <fxTap/render.h>
-#include "fxTap/database.h"
 
 bool Run(bool (*test)(), const char *name)
 {

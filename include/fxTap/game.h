@@ -2,8 +2,6 @@
 
 #include <stdint.h>
 #include <fxTap/beatmap.h>
-#include <fxTap/config.h>
-#include <fxTap/keymap.h>
 
 static constexpr auto FXT_EndOfColumn = -1;
 
