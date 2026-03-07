@@ -44,7 +44,7 @@ typedef struct FXT_Game
 	FXT_TimeMs LastUpdateTime;
 	bool LastUpdatePressedColumn[FXT_MaxColumnCount];
 	FXT_Grades Grades;
-	unsigned int Combo;
+	uint16_t Combo;
 } FXT_Game;
 
 typedef enum FXT_GameUpdateResult

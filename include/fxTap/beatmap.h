@@ -9,7 +9,12 @@ static constexpr size_t FXT_MaxColumnCount = 16;
 typedef struct FXT_Tolerance
 {
 	int16_t Perfect, Great, Good, Ok, Meh, Miss;
-} FXT_Tolerance, FXT_Grades;
+} FXT_Tolerance;
+
+typedef struct FXT_Grades
+{
+	uint16_t Perfect, Great, Good, Ok, Meh, Miss;
+} FXT_Grades;
 
 typedef struct FXT_Note
 {
