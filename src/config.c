@@ -9,6 +9,8 @@ const FXT_Config FXT_Config_Default = {
 	.KeyMapStyle = FXT_KeyMapStyle_Beatmania,
 	.Language = FXT_Language_EnUs,
 	.PhysicalKeyOfFxTapKey = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+	.ColumnWidth = 10,
+	.TapNoteHeight = 4,
 };
 
 FXT_Config_Error FXT_Config_Load(FXT_Config *dst)
@@ -54,7 +56,7 @@ FXT_Config_Error FXT_Config_Save(const FXT_Config *config)
 	if (file == nullptr)
 		return FXT_ConfigError_CannotOpenFile;
 
-	if (!fwrite(config, sizeof(FXT_Config), 1, file))
+	if (! fwrite(config, sizeof(FXT_Config), 1, file))
 	{
 		fclose(file);
 		return FXT_ConfigError_CannotWriteFile;
@@ -72,5 +74,7 @@ bool FXT_Config_Equal(const FXT_Config *a, const FXT_Config *b)
 
 	return a->NotesFallingTime == b->NotesFallingTime
 	       && a->KeyMapStyle == b->KeyMapStyle
-	       && a->Language == b->Language;
+	       && a->Language == b->Language
+	       && a->ColumnWidth == b->ColumnWidth
+	       && a->TapNoteHeight == b->TapNoteHeight;
 }
