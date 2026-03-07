@@ -28,6 +28,32 @@ FXT_Tolerance FXT_Tolerance_FromOverallDifficulty(const double overallDifficulty
 	};
 }
 
+float FXT_Grades_ScoreV1(const FXT_Grades grades)
+{
+	const float max = grades.Perfect;
+	const float n300 = grades.Great;
+	const float n200 = grades.Good;
+	const float n100 = grades.Ok;
+	const float n50 = grades.Meh;
+	const float miss = grades.Miss;
+
+	return (300 * (max + n300) + 200 * n200 + 100 * n100 + 50 * n50)
+	       / (300 * (max + n300 + n200 + n100 + n50 + miss));
+}
+
+float FXT_Grades_ScoreV2(const FXT_Grades grades)
+{
+	const float max = grades.Perfect;
+	const float n300 = grades.Great;
+	const float n200 = grades.Good;
+	const float n100 = grades.Ok;
+	const float n50 = grades.Meh;
+	const float miss = grades.Miss;
+
+	return (305 * max + 300 * n300 + 200 * n200 + 100 * n100 + 50 * n50)
+	       / (305 * (max + n300 + n200 + n100 + n50 + miss));
+}
+
 int FXT_Beatmap_NoteCount(const FXT_Beatmap *beatmap)
 {
 	int count = 0;

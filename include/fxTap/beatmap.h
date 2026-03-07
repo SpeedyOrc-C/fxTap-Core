@@ -63,6 +63,12 @@ int FXT_Beatmap_NoteCount(const FXT_Beatmap *beatmap);
 
 FXT_Tolerance FXT_Tolerance_FromOverallDifficulty(double overallDifficulty);
 
+// Based on https://osu.ppy.sh/wiki/Gameplay/Accuracy
+float FXT_Grades_ScoreV1(FXT_Grades grades);
+
+// Based on https://osu.ppy.sh/wiki/Gameplay/Accuracy
+float FXT_Grades_ScoreV2(FXT_Grades grades);
+
 #ifdef FXTAP_CORE_USE_CASIOWIN
 
 [[nodiscard]]
