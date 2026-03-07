@@ -30,13 +30,13 @@ FXT_Config_Error FXT_Config_Load(FXT_Config *dst)
 			goto done;
 		}
 
-		if (!fwrite(&config, sizeof(FXT_Config), 1, file))
+		if (! fwrite(&config, sizeof(FXT_Config), 1, file))
 		{
 			error = FXT_ConfigError_CannotWriteFile;
 			goto done;
 		}
 	}
-	else if (!fread(&config, sizeof(FXT_Config), 1, file))
+	else if (! fread(&config, sizeof(FXT_Config), 1, file))
 	{
 		error = FXT_ConfigError_CannotReadFile;
 		goto done;
