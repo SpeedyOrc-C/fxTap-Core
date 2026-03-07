@@ -1,8 +1,7 @@
 #include <dirent.h>
 #include <stb_ds.h>
+#include <stdio.h>
 #include <fxTap/database.h>
-
-static auto const DatabasePath = "fxTap.db";
 
 void FXT_Database_Init(FXT_Database *dst)
 {
@@ -33,9 +32,6 @@ void FXT_Database_Free(FXT_Database *database)
 
 FXT_DatabaseError FXT_Database_SyncFromFileSystem(FXT_Database *database)
 {
-	// TODO)) Removing deleted beatmaps
-
-	// Add new beatmaps
 	auto db = *database;
 
 	auto const dir = opendir(".");
@@ -51,41 +47,67 @@ FXT_DatabaseError FXT_Database_SyncFromFileSystem(FXT_Database *database)
 		if (dirent == nullptr)
 			break;
 
-		// Not a beatmap
 		auto const pathLength = strlen(dirent->d_name);
-		if (pathLength <= 4 || strcmp(dirent->d_name + pathLength - 4, ".fxt") != 0)
+
+		// Doesn't have file extension
+		if (pathLength <= 4)
 			continue;
 
-		auto const path = dirent->d_name;
+		// Found a beatmap
+		if (strcmp(dirent->d_name + pathLength - 4, ".fxt") != 0)
+			continue;
+
+		auto const beatmapPath = dirent->d_name;
 
 		FXT_Beatmap beatmap = {};
 
-		if (FXT_Beatmap_LoadMetadata(&beatmap, path))
+		if (FXT_Beatmap_LoadMetadata(&beatmap, beatmapPath))
 			continue;
 
-		if (FXT_DatabaseRecord_IsNull(shget(db, path)))
-		{
-			auto const record = (FXT_DatabaseRecord){
-				.LastGrades = nullptr,
-				.Title = beatmap.Title,
-				.Artist = beatmap.Artist,
-				.OverallDifficulty = beatmap.OverallDifficulty,
-				.ColumnCount = beatmap.ColumnCount,
-				.ColumnSize = beatmap.ColumnSize,
-			};
+		if (! FXT_DatabaseRecord_IsNull(shget(db, beatmapPath)))
+			continue;
 
-			shput(db, path, record);
-		}
-		else
-		{
-			auto const oldIndex = shgeti(db, path);
+		auto record = (FXT_DatabaseRecord){
+			.LastGrades = nullptr,
+			.Title = beatmap.Title,
+			.Artist = beatmap.Artist,
+			.OverallDifficulty = beatmap.OverallDifficulty,
+			.ColumnCount = beatmap.ColumnCount,
+			.ColumnSize = beatmap.ColumnSize,
+		};
 
-			db[oldIndex].value.Title = beatmap.Title;
-			db[oldIndex].value.Artist = beatmap.Artist;
-			db[oldIndex].value.OverallDifficulty = beatmap.OverallDifficulty;
-			db[oldIndex].value.ColumnCount = beatmap.ColumnCount;
-			db[oldIndex].value.ColumnSize = beatmap.ColumnSize;
+		// Also check .tbg file for player's best grade
+		char bestGradesPath[pathLength + 1] = {};
+		{
+			strcpy(bestGradesPath, beatmapPath);
+			bestGradesPath[pathLength - 3] = 't';
+			bestGradesPath[pathLength - 2] = 'b';
+			bestGradesPath[pathLength - 1] = 'g';
 		}
+
+		auto const bestGradesFile = fopen(bestGradesPath, "rb");
+		FXT_Grades *bestGrades = nullptr;
+
+		if (bestGradesFile == nullptr)
+			goto one_entry_done;
+
+		bestGrades = malloc(sizeof(FXT_Grades));
+
+		if (bestGrades == nullptr)
+			goto one_entry_done;
+
+		if (! fread(bestGrades, sizeof(FXT_Grades), 1, bestGradesFile))
+			goto one_entry_done;
+
+		record.LastGrades = bestGrades;
+		shput(db, beatmapPath, record);
+		fclose(bestGradesFile);
+		continue;
+
+	one_entry_done:
+		if (bestGradesFile != nullptr) fclose(bestGradesFile);
+		if (bestGrades != nullptr) free(bestGrades);
+		shput(db, beatmapPath, record);
 	}
 
 	closedir(dir);

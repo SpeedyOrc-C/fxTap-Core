@@ -190,6 +190,14 @@ bool Test_RendererController()
 
 bool Test_Database()
 {
+	auto const bestGradesFile = fopen("wll.tbg", "wb");
+
+	assert(bestGradesFile != nullptr);
+
+	const FXT_Grades bestGrades = {.Perfect = 1, .Great = 2, .Good = 3, .Ok = 4, .Meh = 5, .Miss = 6};
+	fwrite(&bestGrades, sizeof(FXT_Grades), 1, bestGradesFile);
+	fclose(bestGradesFile);
+
 	FXT_Database db = nullptr;
 	FXT_Database_Init(&db);
 
