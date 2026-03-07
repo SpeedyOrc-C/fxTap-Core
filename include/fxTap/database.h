@@ -31,9 +31,6 @@ typedef enum FXT_DatabaseError
 void FXT_Database_Init(FXT_Database *dst);
 
 [[nodiscard]]
-FXT_DatabaseError FXT_Database_Load(FXT_Database *dst);
-
-[[nodiscard]]
 FXT_DatabaseError FXT_Database_Save(const FXT_Database *database);
 
 void FXT_Database_FreeInner(FXT_Database *database);

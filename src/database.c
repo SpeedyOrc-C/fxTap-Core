@@ -11,13 +11,6 @@ void FXT_Database_Init(FXT_Database *dst)
 	shdefault(*dst, FXT_DatabaseRecord_Null);
 }
 
-FXT_DatabaseError FXT_Database_Load(FXT_Database *dst)
-{
-	auto _dst = *dst;
-	*dst = _dst;
-	return 0;
-}
-
 void FXT_Database_FreeInner(FXT_Database *database)
 {
 	auto const db = *database;
