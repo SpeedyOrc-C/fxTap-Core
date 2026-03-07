@@ -8,7 +8,7 @@ const FXT_Config FXT_Config_Default = {
 	.NotesFallingTime = 1000,
 	.KeyMapStyle = FXT_KeyMapStyle_Beatmania,
 	.Language = FXT_Language_EnUs,
-	.PhysicalKeyOfFxTapKey = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+	.PhysicalKeyOfFxTapKey = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
 };
 
 FXT_Config_Error FXT_Config_Load(FXT_Config *dst)

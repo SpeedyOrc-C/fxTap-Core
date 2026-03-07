@@ -4,7 +4,7 @@
 #include <stdint.h>
 #include <fxTap/lib-config.h>
 
-static constexpr size_t FXT_MaxColumnCount = 16;
+static constexpr size_t FXT_MaxColumnCount = 10;
 
 typedef struct FXT_Tolerance
 {
