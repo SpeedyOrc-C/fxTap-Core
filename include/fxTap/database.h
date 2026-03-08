@@ -26,6 +26,8 @@ typedef enum FXT_DatabaseError
 	FXT_DatabaseError_OK = 0,
 	FXT_DatabaseError_MallocFailed,
 	FXT_DatabaseError_CannotOpenDir,
+	FXT_DatabaseError_CannotStartSavingGrades,
+	FXT_DatabaseError_CannotSaveGrades,
 } FXT_DatabaseError;
 
 void FXT_Database_Init(FXT_Database *dst);
@@ -54,3 +56,6 @@ int FXT_Database_Compare_Reverse(const struct FXT_Database *a, const struct FXT_
 int FXT_Database_Compare_Void(const void *a, const void *b);
 
 int FXT_Database_Compare_Reverse_Void(const void *a, const void *b);
+
+[[nodiscard]]
+FXT_DatabaseError FXT_SaveGradesAlongBeatmap(const char *beatmapPath, const FXT_Grades *grades);
