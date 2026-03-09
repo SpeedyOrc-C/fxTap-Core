@@ -4,7 +4,11 @@
 
 typedef struct FXT_DatabaseRecord
 {
-	FXT_Grades *LastGrades; // nullptr: Player hasn't played this
+	struct
+	{
+		bool Exist;
+		FXT_Grades Value;
+	} LastGrades;
 	// Same as beatmap's but without its notes
 	char *Title;
 	char *Artist;

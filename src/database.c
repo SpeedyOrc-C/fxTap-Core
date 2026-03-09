@@ -19,7 +19,6 @@ void FXT_Database_FreeInner(FXT_Database *database)
 		free(db[i].value.Title);
 		free(db[i].value.Artist);
 		free(db[i].value.ColumnSize);
-		free(db[i].value.LastGrades);
 	}
 
 	*database = db;
@@ -68,7 +67,7 @@ FXT_DatabaseError FXT_Database_SyncFromFileSystem(FXT_Database *database)
 			continue;
 
 		auto record = (FXT_DatabaseRecord){
-			.LastGrades = nullptr,
+			.LastGrades = {.Exist = false},
 			.Title = beatmap.Title,
 			.Artist = beatmap.Artist,
 			.OverallDifficulty = beatmap.OverallDifficulty,
@@ -99,7 +98,8 @@ FXT_DatabaseError FXT_Database_SyncFromFileSystem(FXT_Database *database)
 		if (! fread(bestGrades, sizeof(FXT_Grades), 1, bestGradesFile))
 			goto one_entry_done;
 
-		record.LastGrades = bestGrades;
+		record.LastGrades.Exist = true;
+		record.LastGrades.Value = *bestGrades;
 		shput(db, beatmapPath, record);
 		fclose(bestGradesFile);
 		continue;
