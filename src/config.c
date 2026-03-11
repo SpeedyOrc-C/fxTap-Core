@@ -13,9 +13,9 @@ const FXT_Config FXT_Config_Default = {
 	.TapNoteHeight = 4,
 };
 
-FXT_Config_Error FXT_Config_Load(FXT_Config *dst)
+FXT_ConfigError FXT_Config_Load(FXT_Config *dst)
 {
-	FXT_Config_Error error = 0;
+	FXT_ConfigError error = 0;
 	FXT_Config config = FXT_Config_Default;
 
 	FILE *file = fopen(ConfigPath, "rb");
@@ -49,7 +49,7 @@ done:
 	return error;
 }
 
-FXT_Config_Error FXT_Config_Save(const FXT_Config *config)
+FXT_ConfigError FXT_Config_Save(const FXT_Config *config)
 {
 	FILE *file = fopen(ConfigPath, "wb");
 

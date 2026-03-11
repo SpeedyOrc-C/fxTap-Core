@@ -39,22 +39,22 @@ typedef enum FXT_ConfigError
 	FXT_ConfigError_CannotReadFile,
 	FXT_ConfigError_CannotOpenFile,
 	FXT_ConfigError_CannotOpenNewFileJustCreated,
-} FXT_Config_Error;
+} FXT_ConfigError;
 
 extern const FXT_Config FXT_Config_Default;
 
 [[nodiscard]]
-FXT_Config_Error FXT_Config_Load(FXT_Config *dst);
+FXT_ConfigError FXT_Config_Load(FXT_Config *dst);
 
 [[nodiscard]]
-FXT_Config_Error FXT_Config_Save(const FXT_Config *config);
+FXT_ConfigError FXT_Config_Save(const FXT_Config *config);
 
 #ifdef FXTAP_CORE_USE_CASIOWIN
 
 [[nodiscard]]
-FXT_Config_Error FXT_Config_Load_BFile(FXT_Config *dst);
+FXT_ConfigError FXT_Config_Load_BFile(FXT_Config *dst);
 
 [[nodiscard]]
-FXT_Config_Error FXT_Config_Save_BFile(FXT_Config config);
+FXT_ConfigError FXT_Config_Save_BFile(FXT_Config config);
 
 #endif

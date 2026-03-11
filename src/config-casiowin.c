@@ -5,7 +5,7 @@
 
 static const uint16_t *const ConfigPath = u"\\\\fls0\\FXTAP.cfg";
 
-FXT_Config_Error FXT_Config_Load_BFile(FXT_Config *const dst)
+FXT_ConfigError FXT_Config_Load_BFile(FXT_Config *const dst)
 {
 	FXT_Config config = FXT_Config_Default;
 
@@ -44,7 +44,7 @@ win:
 	return 0;
 }
 
-FXT_Config_Error FXT_Config_Save_BFile(const FXT_Config config)
+FXT_ConfigError FXT_Config_Save_BFile(const FXT_Config config)
 {
 	BFile_Remove(ConfigPath);
 

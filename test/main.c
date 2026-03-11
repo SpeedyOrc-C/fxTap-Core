@@ -42,7 +42,7 @@ bool Test_FileLoading()
 
 	FXT_Config config;
 
-	const FXT_Config_Error configError = FXT_Config_Load(&config);
+	const FXT_ConfigError configError = FXT_Config_Load(&config);
 
 	if (configError != 0)
 	{
@@ -133,7 +133,7 @@ bool Test_Hold()
 bool Test_Config()
 {
 	FXT_Config config;
-	const FXT_Config_Error error = FXT_Config_Load(&config);
+	const FXT_ConfigError error = FXT_Config_Load(&config);
 
 	if (error != 0)
 		return false;
