@@ -74,4 +74,7 @@ float FXT_Grades_ScoreV2(FXT_Grades grades);
 [[nodiscard]]
 FXT_BeatmapError FXT_Beatmap_Load_BFile(FXT_Beatmap *dst, const char *path);
 
+[[nodiscard]]
+FXT_BeatmapError FXT_Beatmap_LoadMetadata_BFile(FXT_Beatmap *dst, const char *path);
+
 #endif
