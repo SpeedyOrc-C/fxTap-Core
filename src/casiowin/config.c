@@ -3,10 +3,11 @@
 #include <fxTap/bfile-interface.h>
 #include <fxTap/config.h>
 
-static const uint16_t *const ConfigPath = u"\\\\fls0\\FXTAP.cfg";
+static const uint16_t *const ConfigPath = u"\\\\fls0\\fxTap.cfg";
 
 FXT_ConfigError FXT_Config_Load_BFile(FXT_Config *const dst)
 {
+	FXT_ConfigError error = 0;
 	FXT_Config config = FXT_Config_Default;
 
 	int file = BFile_Open(ConfigPath, BFile_ReadOnly);
@@ -16,35 +17,39 @@ FXT_ConfigError FXT_Config_Load_BFile(FXT_Config *const dst)
 		int size = sizeof(FXT_Config);
 
 		if (BFile_Create(ConfigPath, BFile_File, &size))
-			return FXT_ConfigError_CannotCreateFile;
+		{
+			error = FXT_ConfigError_CannotCreateFile;
+			goto done;
+		}
 
 		file = BFile_Open(ConfigPath, BFile_WriteOnly);
 
 		if (file < 0)
-			return FXT_ConfigError_CannotOpenNewFileJustCreated;
+		{
+			error = FXT_ConfigError_CannotOpenNewFileJustCreated;
+			goto done;
+		}
 
 		if (sizeof(FXT_Config) > BFile_Write(file, &config, sizeof(FXT_Config)))
 		{
-			BFile_Close(file);
-			return FXT_ConfigError_CannotWriteFile;
+			error = FXT_ConfigError_CannotWriteFile;
+			goto done;
 		}
-
-		goto win;
 	}
-
-	if (sizeof(FXT_Config) > BFile_Read(file, &config, sizeof(FXT_Config), -1))
+	else if (sizeof(FXT_Config) > BFile_Read(file, &config, sizeof(FXT_Config), -1))
 	{
-		BFile_Close(file);
-		return FXT_ConfigError_CannotReadFile;
+		error = FXT_ConfigError_CannotReadFile;
+		goto done;
 	}
 
-win:
-	BFile_Close(file);
 	*dst = config;
-	return 0;
+
+done:
+	if (file >= 0) BFile_Close(file);
+	return error;
 }
 
-FXT_ConfigError FXT_Config_Save_BFile(const FXT_Config config)
+FXT_ConfigError FXT_Config_Save_BFile(const FXT_Config *config)
 {
 	BFile_Remove(ConfigPath);
 
@@ -58,7 +63,7 @@ FXT_ConfigError FXT_Config_Save_BFile(const FXT_Config config)
 	if (file < 0)
 		return FXT_ConfigError_CannotOpenFile;
 
-	if (sizeof(FXT_Config) > BFile_Write(file, &config, sizeof(FXT_Config)))
+	if (sizeof(FXT_Config) > BFile_Write(file, config, sizeof(FXT_Config)))
 	{
 		BFile_Close(file);
 		return FXT_ConfigError_CannotWriteFile;

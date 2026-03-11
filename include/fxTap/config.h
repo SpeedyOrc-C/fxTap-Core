@@ -55,6 +55,6 @@ FXT_ConfigError FXT_Config_Save(const FXT_Config *config);
 FXT_ConfigError FXT_Config_Load_BFile(FXT_Config *dst);
 
 [[nodiscard]]
-FXT_ConfigError FXT_Config_Save_BFile(FXT_Config config);
+FXT_ConfigError FXT_Config_Save_BFile(const FXT_Config *config);
 
 #endif
