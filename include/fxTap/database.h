@@ -56,3 +56,13 @@ int FXT_Database_Compare_Reverse_Void(const void *a, const void *b);
 
 [[nodiscard]]
 FXT_DatabaseError FXT_SaveGradesAlongBeatmap(const char *beatmapPath, const FXT_Grades *grades);
+
+#ifdef FXTAP_CORE_USE_CASIOWIN
+
+[[nodiscard]]
+FXT_DatabaseError FXT_Database_SyncFromFileSystem_BFile(FXT_Database *database);
+
+[[nodiscard]]
+FXT_DatabaseError FXT_SaveGradesAlongBeatmap_BFile(const char *beatmapPath, const FXT_Grades *grades);
+
+#endif
