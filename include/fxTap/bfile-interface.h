@@ -1,5 +1,7 @@
 #pragma once
 
+#ifdef FXTAP_CORE_USE_CASIOWIN
+
 #include <stdint.h>
 
 #ifndef GINT_BFILE
@@ -29,3 +31,5 @@ extern int BFile_Create(uint16_t const *path, int type, int *size);
 extern int BFile_Write(int fd, void const *data, int even_size);
 
 extern uint16_t *fs_path_normalize_fc(char const *path);
+
+#endif
