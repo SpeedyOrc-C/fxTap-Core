@@ -36,16 +36,9 @@ typedef enum FXT_DatabaseError
 
 void FXT_Database_Init(FXT_Database *dst);
 
-[[nodiscard]]
-FXT_DatabaseError FXT_Database_Save(const FXT_Database *database);
-
 void FXT_Database_FreeInner(FXT_Database *database);
 
 void FXT_Database_Free(FXT_Database *database);
-
-// If there's no grades, save. If new grades are higher, replace existing.
-[[nodiscard]]
-FXT_DatabaseError FXT_Database_UpdateGrades(FXT_Database *database, const char *path, const FXT_Grades *grades);
 
 // Add new songs, remove deleted songs, and updating existing song metadata.
 [[nodiscard]]
