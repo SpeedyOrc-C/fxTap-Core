@@ -5,9 +5,9 @@ set(CMAKE_C_STANDARD 23)
 
 add_library(fxTap-Core
         src/config.c
-        src/config-casiowin.c
+		src/casiowin/config.c
         src/beatmap.c
-        src/beatmap-casiowin.c
+		src/casiowin/beatmap.c
         src/game.c
         src/render.c
         src/keymap.c
