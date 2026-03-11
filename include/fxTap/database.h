@@ -40,7 +40,7 @@ void FXT_Database_FreeInner(FXT_Database *database);
 
 void FXT_Database_Free(FXT_Database *database);
 
-// Add new songs, remove deleted songs, and updating existing song metadata.
+// Find all beatmaps in the root directory, read their metadata, and put them into the database.
 [[nodiscard]]
 FXT_DatabaseError FXT_Database_SyncFromFileSystem(FXT_Database *database);
 
