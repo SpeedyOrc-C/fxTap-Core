@@ -15,10 +15,15 @@ add_library(fxTap-Core
         src/keymap-beatmania.c
         src/database.c
 		src/stb_ds.c
+		src/casiowin/database.c
 )
 
 target_include_directories(fxTap-Core PUBLIC include)
 target_compile_definitions(fxTap-Core PUBLIC STB_DS_IMPLEMENTATION)
+
+if (DEFINED GINT_PATH)
+	target_compile_definitions(fxTap-Core PUBLIC FXTAP_CORE_USE_GINT)
+endif ()
 
 enable_testing()
 

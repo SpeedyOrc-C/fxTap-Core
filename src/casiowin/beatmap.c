@@ -1,8 +1,9 @@
-#ifdef FXTAP_CORE_USE_CASIOWIN
+#ifdef FXTAP_CORE_USE_GINT
 
 #include <stdlib.h>
 #include <fxTap/beatmap.h>
-#include <fxTap/bfile-interface.h>
+#include <gint/bfile.h>
+#include <gint/fs.h>
 
 FXT_BeatmapError Beatmap_LoadFromFile_BFile(FXT_Beatmap *dst, const int file, const bool readNotes)
 {

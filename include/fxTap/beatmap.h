@@ -69,7 +69,7 @@ float FXT_Grades_ScoreV1(FXT_Grades grades);
 // Based on https://osu.ppy.sh/wiki/Gameplay/Accuracy
 float FXT_Grades_ScoreV2(FXT_Grades grades);
 
-#ifdef FXTAP_CORE_USE_CASIOWIN
+#ifdef FXTAP_CORE_USE_GINT
 
 [[nodiscard]]
 FXT_BeatmapError FXT_Beatmap_Load_BFile(FXT_Beatmap *dst, const char *path);

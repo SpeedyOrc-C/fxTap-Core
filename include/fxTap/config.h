@@ -49,7 +49,7 @@ FXT_ConfigError FXT_Config_Load(FXT_Config *dst);
 [[nodiscard]]
 FXT_ConfigError FXT_Config_Save(const FXT_Config *config);
 
-#ifdef FXTAP_CORE_USE_CASIOWIN
+#ifdef FXTAP_CORE_USE_GINT
 
 [[nodiscard]]
 FXT_ConfigError FXT_Config_Load_BFile(FXT_Config *dst);

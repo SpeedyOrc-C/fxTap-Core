@@ -1,7 +1,7 @@
-#ifdef FXTAP_CORE_USE_CASIOWIN
+#ifdef FXTAP_CORE_USE_GINT
 
-#include <fxTap/bfile-interface.h>
 #include <fxTap/config.h>
+#include <gint/bfile.h>
 
 static const uint16_t *const ConfigPath = u"\\\\fls0\\fxTap.cfg";
 
