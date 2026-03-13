@@ -27,13 +27,12 @@ It's also very likely that this library will be used on an embedded system,
 not PC, since there are already tons of rhythm games on PC.
 So you need to choose what features you platform supports by defining these macros:
 
-* `FXTAP_CORE_USE_CASIOWIN` for CASIO G and GII models' old file system.
 * `FXTAP_CORE_HAS_DIRENT` if your platform supports walking the file system.
 
 And then define this macro in your `CMakeLists.txt` such as:
 
 ```cmake
-target_compile_definitions(fxTap-Core PRIVATE FXTAP_CORE_USE_CASIOWIN)
+target_compile_definitions(fxTap-Core PRIVATE FXTAP_CORE_HAS_DIRENT)
 ```
 
 Finally, link the library to your project:
