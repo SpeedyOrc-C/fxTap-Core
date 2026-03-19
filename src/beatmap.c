@@ -2,10 +2,6 @@
 #include <stdlib.h>
 #include <fxTap/beatmap.h>
 
-#ifdef FXTAP_CORE_HAS_DIRENT
-#include <dirent.h>
-#endif
-
 
 FXT_Tolerance FXT_Tolerance_FromOverallDifficulty(const double overallDifficulty)
 {
