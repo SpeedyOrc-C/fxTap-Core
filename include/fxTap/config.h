@@ -20,12 +20,14 @@ typedef enum FXT_Language
 
 typedef struct FXT_Config
 {
-	FXT_KeyMapStyle KeyMapStyle;
-	FXT_Language Language;
 	uint8_t PhysicalKeyOfFxTapKey[FXT_MaxColumnCount];
 	int16_t NotesFallingTime;
 	uint8_t ColumnWidth;
 	uint8_t TapNoteHeight;
+	uint8_t CustomOverallDifficulty10;
+	FXT_Language Language:8;
+	FXT_KeyMapStyle KeyMapStyle:8;
+	bool OverrideDefaultOverDifficulty:1;
 } FXT_Config;
 
 bool FXT_Config_Equal(const FXT_Config *a, const FXT_Config *b);

@@ -11,6 +11,8 @@ const FXT_Config FXT_Config_Default = {
 	.PhysicalKeyOfFxTapKey = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
 	.ColumnWidth = 10,
 	.TapNoteHeight = 4,
+	.OverrideDefaultOverDifficulty = false,
+	.CustomOverallDifficulty10 = 70,
 };
 
 FXT_ConfigError FXT_Config_Load(FXT_Config *dst)
@@ -76,5 +78,7 @@ bool FXT_Config_Equal(const FXT_Config *a, const FXT_Config *b)
 	       && a->KeyMapStyle == b->KeyMapStyle
 	       && a->Language == b->Language
 	       && a->ColumnWidth == b->ColumnWidth
-	       && a->TapNoteHeight == b->TapNoteHeight;
+	       && a->TapNoteHeight == b->TapNoteHeight
+	       && a->OverrideDefaultOverDifficulty == b->OverrideDefaultOverDifficulty
+	       && a->CustomOverallDifficulty10 == b->CustomOverallDifficulty10;
 }
