@@ -5,7 +5,7 @@
 
 FXT_Tolerance FXT_Tolerance_FromOverallDifficulty(const double overallDifficulty)
 {
-	static constexpr int16_t BaseTolerancePerfect = 16;
+	static constexpr int16_t BaseTolerancePerfect = 24;
 	static constexpr int16_t BaseToleranceGreat = 64;
 	static constexpr int16_t BaseToleranceGood = 97;
 	static constexpr int16_t BaseToleranceOk = 127;
@@ -15,7 +15,7 @@ FXT_Tolerance FXT_Tolerance_FromOverallDifficulty(const double overallDifficulty
 	const double od3 = 3 * overallDifficulty;
 
 	return (FXT_Tolerance){
-		.Perfect = BaseTolerancePerfect,
+		.Perfect = (int16_t) ((double) BaseTolerancePerfect - overallDifficulty),
 		.Great = (int16_t) ((double) BaseToleranceGreat - od3),
 		.Good = (int16_t) ((double) BaseToleranceGood - od3),
 		.Ok = (int16_t) ((double) BaseToleranceOk - od3),
