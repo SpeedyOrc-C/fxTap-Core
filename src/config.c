@@ -79,6 +79,9 @@ bool FXT_Config_Equal(const FXT_Config *a, const FXT_Config *b)
 	       && a->Language == b->Language
 	       && a->ColumnWidth == b->ColumnWidth
 	       && a->TapNoteHeight == b->TapNoteHeight
-	       && a->OverrideDefaultOverDifficulty == b->OverrideDefaultOverDifficulty
-	       && a->CustomOverallDifficulty10 == b->CustomOverallDifficulty10;
+	       && (a->OverrideDefaultOverDifficulty
+	           && b->OverrideDefaultOverDifficulty
+	           && a->CustomOverallDifficulty10 == b->CustomOverallDifficulty10
+	           || ! a->OverrideDefaultOverDifficulty
+	           && ! b->OverrideDefaultOverDifficulty);
 }
