@@ -27,7 +27,7 @@ typedef struct FXT_Config
 	uint8_t CustomOverallDifficulty10;
 	FXT_Language Language:8;
 	FXT_KeyMapStyle KeyMapStyle:8;
-	bool OverrideDefaultOverDifficulty:1;
+	bool OverrideDefaultOverallDifficulty:1;
 } FXT_Config;
 
 bool FXT_Config_Equal(const FXT_Config *a, const FXT_Config *b);
