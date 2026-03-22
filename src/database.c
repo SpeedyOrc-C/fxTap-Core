@@ -140,19 +140,9 @@ int FXT_Database_Compare_Reverse_Void(const void *a, const void *b)
 	return FXT_Database_Compare_Reverse(*(void **) a, *(void **) b);
 }
 
-FXT_DatabaseError FXT_SaveGradesAlongBeatmap(const char *beatmapPath, const FXT_Grades *grades)
+static FXT_DatabaseError SaveBestGrades(const char *path, const FXT_Grades *grades)
 {
-	auto const pathLength = strlen(beatmapPath);
-
-	char bestGradesPath[pathLength + 1] = {};
-	{
-		strcpy(bestGradesPath, beatmapPath);
-		bestGradesPath[pathLength - 3] = 't';
-		bestGradesPath[pathLength - 2] = 'b';
-		bestGradesPath[pathLength - 1] = 'g';
-	}
-
-	auto const file = fopen(bestGradesPath, "wb");
+	auto const file = fopen(path, "wb");
 
 	if (file == nullptr)
 		return FXT_DatabaseError_CannotStartSavingGrades;
@@ -166,4 +156,19 @@ FXT_DatabaseError FXT_SaveGradesAlongBeatmap(const char *beatmapPath, const FXT_
 	fclose(file);
 
 	return 0;
+}
+
+FXT_DatabaseError FXT_SaveGradesAlongBeatmap(const char *beatmapPath, const FXT_Grades *grades)
+{
+	auto const pathLength = strlen(beatmapPath);
+
+	char bestGradesPath[pathLength + 1] = {};
+	{
+		strcpy(bestGradesPath, beatmapPath);
+		bestGradesPath[pathLength - 3] = 't';
+		bestGradesPath[pathLength - 2] = 'b';
+		bestGradesPath[pathLength - 1] = 'g';
+	}
+
+	return SaveBestGrades(bestGradesPath, grades);
 }
