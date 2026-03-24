@@ -1,7 +1,7 @@
 #include <stdlib.h>
 #include <fxTap/game.h>
 
-void FXT_HoldState_SetDefault(FXT_HoldState *holdState)
+static void FXT_HoldState_SetDefault(FXT_HoldState *holdState)
 {
 	holdState->HeadIsValid = false;
 	holdState->TailIsValid = false;
@@ -43,7 +43,7 @@ void FXT_Game_Init(FXT_Game *game, const FXT_Beatmap *beatmap)
 	}
 }
 
-FXT_Grade GradeTapNote(
+static FXT_Grade GradeTapNote(
 	const FXT_Tolerance *tolerance,
 	const FXT_TimeMs timeNow,
 	const bool keyIsDown,
@@ -72,7 +72,7 @@ FXT_Grade GradeTapNote(
 	return FXT_Grade_Miss;
 }
 
-FXT_Grade GradeHoldNoteDefinite(const FXT_Tolerance *tolerance, const FXT_HoldState *holdState)
+static FXT_Grade GradeHoldNoteDefinite(const FXT_Tolerance *tolerance, const FXT_HoldState *holdState)
 {
 	const auto headError = abs(holdState->HeadDelta);
 	const auto tailError = abs(holdState->TailDelta);
@@ -90,7 +90,7 @@ FXT_Grade GradeHoldNoteDefinite(const FXT_Tolerance *tolerance, const FXT_HoldSt
 	return FXT_Grade_Meh;
 }
 
-FXT_Grade GradeHoldNote(
+static FXT_Grade GradeHoldNote(
 	const FXT_Tolerance *tolerance,
 	const FXT_TimeMs timeNow,
 	const bool keyIsDown,

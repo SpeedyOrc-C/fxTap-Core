@@ -60,7 +60,7 @@ int FXT_Beatmap_NoteCount(const FXT_Beatmap *beatmap)
 	return count;
 }
 
-FXT_BeatmapError Beatmap_LoadFromFile(FXT_Beatmap *dst, FILE *file, const bool readNotes)
+static FXT_BeatmapError Beatmap_LoadFromFile(FXT_Beatmap *dst, FILE *file, const bool readNotes)
 {
 	char header[8];
 	uint8_t titleLength;
@@ -146,7 +146,7 @@ fail:
 	return FXT_BeatmapError_ReadNotesFailed;
 }
 
-FXT_BeatmapError Beatmap_Load(FXT_Beatmap *dst, const char *path, const bool readNotes)
+static FXT_BeatmapError Beatmap_Load(FXT_Beatmap *dst, const char *path, const bool readNotes)
 {
 	FXT_BeatmapError error = 0;
 

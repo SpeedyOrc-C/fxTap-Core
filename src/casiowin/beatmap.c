@@ -5,7 +5,7 @@
 #include <gint/bfile.h>
 #include <gint/fs.h>
 
-FXT_BeatmapError Beatmap_LoadFromFile_BFile(FXT_Beatmap *dst, const int file, const bool readNotes)
+static FXT_BeatmapError Beatmap_LoadFromFile_BFile(FXT_Beatmap *dst, const int file, const bool readNotes)
 {
 	char header[8];
 	uint8_t titleLength;
@@ -91,7 +91,7 @@ fail:
 	return FXT_BeatmapError_ReadNotesFailed;
 }
 
-FXT_BeatmapError Beatmap_Load_BFile(FXT_Beatmap *dst, const char *path, const bool readNotes)
+static FXT_BeatmapError Beatmap_Load_BFile(FXT_Beatmap *dst, const char *path, const bool readNotes)
 {
 	FXT_BeatmapError error = 0;
 	int file = -1;
