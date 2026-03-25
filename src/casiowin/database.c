@@ -1,13 +1,72 @@
 #ifdef FXTAP_CORE_USE_GINT
 
+#include <stb_ds.h>
 #include <string.h>
 #include <fxTap/database.h>
 #include <gint/bfile.h>
 #include <gint/fs.h>
 
-FXT_DatabaseError FXT_Database_SyncFromFileSystem_BFile(FXT_Database*database)
+FXT_DatabaseError FXT_Database_SyncFromFileSystem_BFile(FXT_Database *database)
 {
-	// TODO))
+	auto db = *database;
+
+	int handle;
+	uint16_t beatmapPath16[64] = {};
+	struct BFile_FileInfo foundFile;
+
+	auto notFound =
+			BFile_FindFirst(u"\\\\fls0\\*.fxt", &handle, beatmapPath16, &foundFile);
+
+	if (notFound)
+	{
+		BFile_FindClose(handle);
+		return 0;
+	}
+
+	do
+	{
+		size_t pathLength = 0;
+
+		for (int i = 0; i < 64; i += 1)
+		{
+			if (beatmapPath16[i] == 0)
+			{
+				pathLength = i;
+				break;
+			}
+		}
+
+		char beatmapPath[pathLength + 1] = {};
+		{
+			for (int i = 0; i < pathLength; i += 1)
+				beatmapPath[i] = (char) beatmapPath16[i];
+		}
+
+		FXT_Beatmap beatmap = {};
+
+		if (FXT_Beatmap_LoadMetadata_BFile(&beatmap, beatmapPath))
+			continue;
+
+		if (! FXT_DatabaseRecord_IsNull(shget(db, beatmapPath)))
+			continue;
+
+		auto record = (FXT_DatabaseRecord){
+			.LastGrades = {.Exist = false},
+			.Title = beatmap.Title,
+			.Artist = beatmap.Artist,
+			.OverallDifficulty = beatmap.OverallDifficulty,
+			.ColumnCount = beatmap.ColumnCount,
+			.ColumnSize = beatmap.ColumnSize,
+		};
+
+		shput(db, beatmapPath, record);
+
+		notFound = BFile_FindNext(handle, beatmapPath16, &foundFile);
+	}
+	while (! notFound);
+
+	BFile_FindClose(handle);
+	*database = db;
 	return 0;
 }
 
