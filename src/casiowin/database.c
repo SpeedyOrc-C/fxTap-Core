@@ -14,8 +14,8 @@ FXT_DatabaseError FXT_Database_SyncFromFileSystem_BFile(FXT_Database *database)
 	uint16_t beatmapPath16[64] = {};
 	struct BFile_FileInfo foundFile;
 
-	auto notFound =
-			BFile_FindFirst(u"\\\\fls0\\*.fxt", &handle, beatmapPath16, &foundFile);
+	auto notFound = BFile_FindFirst(
+		u"\\\\fls0\\*.fxt", &handle, beatmapPath16, &foundFile);
 
 	if (notFound)
 	{
@@ -28,19 +28,16 @@ FXT_DatabaseError FXT_Database_SyncFromFileSystem_BFile(FXT_Database *database)
 		size_t pathLength = 0;
 
 		for (int i = 0; i < 64; i += 1)
-		{
 			if (beatmapPath16[i] == 0)
 			{
 				pathLength = i;
 				break;
 			}
-		}
 
 		char beatmapPath[pathLength + 1] = {};
-		{
-			for (int i = 0; i < pathLength; i += 1)
-				beatmapPath[i] = (char) beatmapPath16[i];
-		}
+
+		for (int i = 0; i < pathLength; i += 1)
+			beatmapPath[i] = (char) beatmapPath16[i];
 
 		FXT_Beatmap beatmap = {};
 
@@ -59,8 +56,40 @@ FXT_DatabaseError FXT_Database_SyncFromFileSystem_BFile(FXT_Database *database)
 			.ColumnSize = beatmap.ColumnSize,
 		};
 
-		shput(db, beatmapPath, record);
+		// Also check .tbg file for player's best grade
+		char bestGradesPath[pathLength + 1] = {};
+		{
+			strcpy(bestGradesPath, beatmapPath);
+			bestGradesPath[pathLength - 3] = 't';
+			bestGradesPath[pathLength - 2] = 'b';
+			bestGradesPath[pathLength - 1] = 'g';
+		}
 
+		auto const bestGradesPath16 = fs_path_normalize_fc(bestGradesPath);
+		auto const bestGradesFile = BFile_Open(bestGradesPath16, BFile_ReadOnly);
+		free(bestGradesPath16);
+
+		FXT_Grades *bestGrades = nullptr;
+
+		if (bestGradesFile < 0)
+			goto one_entry_done;
+
+		bestGrades = malloc(sizeof(FXT_Grades));
+
+		if (bestGrades == nullptr)
+			goto one_entry_done;
+
+		if (sizeof(FXT_Grades) > BFile_Read(bestGradesFile, bestGrades, sizeof(FXT_Grades), -1))
+			goto one_entry_done;
+
+		record.LastGrades.Exist = true;
+		record.LastGrades.Value = *bestGrades;
+		BFile_Close(bestGradesFile);
+
+	one_entry_done:
+		if (bestGradesFile < 0) BFile_Close(bestGradesFile);
+		if (bestGrades != nullptr) free(bestGrades);
+		shput(db, beatmapPath, record);
 		notFound = BFile_FindNext(handle, beatmapPath16, &foundFile);
 	}
 	while (! notFound);
