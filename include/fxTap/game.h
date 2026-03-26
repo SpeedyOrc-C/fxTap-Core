@@ -42,6 +42,7 @@ typedef struct FXT_Game
 	FXT_TimeMs LastUpdateTime;
 	bool LastUpdatePressedColumn[FXT_MaxColumnCount];
 	FXT_Grades Grades;
+	uint16_t TimingDistribution[20 + 1 + 20];
 	uint16_t Combo;
 } FXT_Game;
 
