@@ -1,4 +1,6 @@
+#include <math.h>
 #include <stdlib.h>
+#include <string.h>
 #include <fxTap/game.h>
 
 static void FXT_HoldState_SetDefault(FXT_HoldState *holdState)
@@ -20,6 +22,8 @@ void FXT_Game_Init(FXT_Game *game, const FXT_Beatmap *beatmap)
 	game->Grades.Ok = 0;
 	game->Grades.Meh = 0;
 	game->Grades.Miss = 0;
+
+	memset(game->TimingDistribution, 0, sizeof(game->TimingDistribution));
 
 	int columnOffset = 0;
 
@@ -43,54 +47,79 @@ void FXT_Game_Init(FXT_Game *game, const FXT_Beatmap *beatmap)
 	}
 }
 
+static size_t TimingDistributionIndexFromDelta(const FXT_DeltaMs delta)
+{
+	auto index = (int) round((double) delta / 10)
+	             + (int) FXT_TimingDistributionOneSideColumnCount;
+
+	if (index > 40)
+		index = 40;
+	else if (index < 0)
+		index = 0;
+
+	return (size_t) index;
+}
+
 static FXT_Grade GradeTapNote(
 	const FXT_Tolerance *tolerance,
 	const FXT_TimeMs timeNow,
 	const bool keyIsDown,
 	const FXT_TimeMs noteStart)
 {
-	// Negative: early
-	// Positive: late
-	const FXT_TimeMs delta = timeNow - noteStart;
+	const FXT_DeltaMs delta = timeNow - noteStart;
 
 	// After the grading area, MISS!
-	if (delta > tolerance->Ok) return FXT_Grade_Miss;
+	if (delta > tolerance->Ok)
+		return (FXT_Grade){FXT_GradeLevel_Miss, delta};
 
 	// Before the grading area and it's idle
-	if (! keyIsDown || delta < -tolerance->Miss) return FXT_Grade_Null;
+	if (! keyIsDown || delta < -tolerance->Miss)
+		return (FXT_Grade){FXT_GradeLevel_Null};
 
 	// Give a grade
-	if (delta < -tolerance->Meh) return FXT_Grade_Miss;
-	if (delta < -tolerance->Ok) return FXT_Grade_Meh;
-	if (delta < -tolerance->Good) return FXT_Grade_Ok;
-	if (delta < -tolerance->Great) return FXT_Grade_Good;
-	if (delta < -tolerance->Perfect) return FXT_Grade_Great;
-	if (delta <= tolerance->Perfect) return FXT_Grade_Perfect;
-	if (delta <= tolerance->Great) return FXT_Grade_Great;
-	if (delta <= tolerance->Good) return FXT_Grade_Good;
-	if (delta <= tolerance->Ok) return FXT_Grade_Ok;
-	return FXT_Grade_Miss;
+	if (delta < -tolerance->Meh)
+		return (FXT_Grade){FXT_GradeLevel_Miss, delta};
+	if (delta < -tolerance->Ok)
+		return (FXT_Grade){FXT_GradeLevel_Meh, delta};
+	if (delta < -tolerance->Good)
+		return (FXT_Grade){FXT_GradeLevel_Ok, delta};
+	if (delta < -tolerance->Great)
+		return (FXT_Grade){FXT_GradeLevel_Good, delta};
+	if (delta < -tolerance->Perfect)
+		return (FXT_Grade){FXT_GradeLevel_Great, delta};
+	if (delta <= tolerance->Perfect)
+		return (FXT_Grade){FXT_GradeLevel_Perfect, delta};
+	if (delta <= tolerance->Great)
+		return (FXT_Grade){FXT_GradeLevel_Great, delta};
+	if (delta <= tolerance->Good)
+		return (FXT_Grade){FXT_GradeLevel_Good, delta};
+	if (delta <= tolerance->Ok)
+		return (FXT_Grade){FXT_GradeLevel_Ok, delta};
+
+	return (FXT_Grade){FXT_GradeLevel_Miss};
 }
 
-static FXT_Grade GradeHoldNoteDefinite(const FXT_Tolerance *tolerance, const FXT_HoldState *holdState)
+static FXT_HoldGrade GradeHoldNoteDefinite(const FXT_Tolerance *tolerance, const FXT_HoldState *holdState)
 {
-	const auto headError = abs(holdState->HeadDelta);
-	const auto tailError = abs(holdState->TailDelta);
-	const auto totalError = headError + tailError;
+	auto const head = holdState->HeadDelta;
+	auto const tail = holdState->TailDelta;
+	auto const absHead = abs(head);
+	auto const absTail = abs(tail);
+	auto const absTotal = absHead + absTail;
 
-	if (headError <= tolerance->Perfect * 1.2 && totalError <= tolerance->Perfect * 2.4)
-		return FXT_Grade_Perfect;
-	if (headError <= tolerance->Great * 1.1 && totalError <= tolerance->Great * 2.2)
-		return FXT_Grade_Great;
-	if (headError <= tolerance->Good && totalError <= tolerance->Good * 2)
-		return FXT_Grade_Good;
-	if (headError <= tolerance->Ok && totalError <= tolerance->Ok * 2)
-		return FXT_Grade_Ok;
+	if (absHead <= tolerance->Perfect * 1.2 && absTotal <= tolerance->Perfect * 2.4)
+		return (FXT_HoldGrade){FXT_GradeLevel_Perfect, head, tail};
+	if (absHead <= tolerance->Great * 1.1 && absTotal <= tolerance->Great * 2.2)
+		return (FXT_HoldGrade){FXT_GradeLevel_Great, head, tail};
+	if (absHead <= tolerance->Good && absTotal <= tolerance->Good * 2)
+		return (FXT_HoldGrade){FXT_GradeLevel_Good, head, tail};
+	if (absHead <= tolerance->Ok && absTotal <= tolerance->Ok * 2)
+		return (FXT_HoldGrade){FXT_GradeLevel_Ok, head, tail};
 
-	return FXT_Grade_Meh;
+	return (FXT_HoldGrade){FXT_GradeLevel_Meh, head, tail};
 }
 
-static FXT_Grade GradeHoldNote(
+static FXT_HoldGrade GradeHoldNote(
 	const FXT_Tolerance *tolerance,
 	const FXT_TimeMs timeNow,
 	const bool keyIsDown,
@@ -101,7 +130,7 @@ static FXT_Grade GradeHoldNote(
 {
 	// Before the grading area
 	if (timeNow < -tolerance->Miss + noteStart)
-		return FXT_Grade_Null;
+		return (FXT_HoldGrade){FXT_GradeLevel_Null};
 
 	// After the grading area
 	if (noteEnd + tolerance->Meh < timeNow)
@@ -115,7 +144,7 @@ static FXT_Grade GradeHoldNote(
 		}
 
 		// There's not a valid hold
-		return FXT_Grade_Miss;
+		return (FXT_HoldGrade){FXT_GradeLevel_Miss};
 	}
 
 	// Inside grading area
@@ -126,7 +155,7 @@ static FXT_Grade GradeHoldNote(
 		holdState->HeadDelta = timeNow - noteStart;
 		holdState->HeadIsValid = true;
 		holdState->TailIsValid = false;
-		return FXT_Grade_Null;
+		return (FXT_HoldGrade){FXT_GradeLevel_Null};
 	}
 
 	if (keyIsUp && holdState->HeadIsValid)
@@ -140,10 +169,10 @@ static FXT_Grade GradeHoldNote(
 
 		// Outside the confirmation area
 		holdState->TailIsValid = true;
-		return FXT_Grade_Null;
+		return (FXT_HoldGrade){FXT_GradeLevel_Null};
 	}
 
-	return FXT_Grade_Null;
+	return (FXT_HoldGrade){FXT_GradeLevel_Null};
 }
 
 FXT_GameUpdateResult FXT_Game_Update(
@@ -175,30 +204,55 @@ FXT_GameUpdateResult FXT_Game_Update(
 		const bool keyIsDown = ! lastUpdatePressed && isPressing;
 		const bool keyIsUp = lastUpdatePressed && ! isPressing;
 
-		const FXT_Grade grade =
-				note.Duration == 0
-					? GradeTapNote(&game->Tolerance, timeNow, keyIsDown, noteStart)
-					: GradeHoldNote(&game->Tolerance, timeNow, keyIsDown, keyIsUp,
-					                &column->HoldState, noteStart, noteStart + note.Duration);
+		FXT_GradeLevel level;
 
-		switch (grade)
+		if (note.Duration == 0)
 		{
-		case FXT_Grade_Null: continue;
-		case FXT_Grade_Miss: game->Grades.Miss += 1;
+			auto const grade = GradeTapNote(&game->Tolerance, timeNow, keyIsDown, noteStart);
+
+			level = grade.Level;
+
+			if (level != FXT_GradeLevel_Null)
+			{
+				auto const i = TimingDistributionIndexFromDelta(grade.Delta);
+				game->TimingDistribution[i] += 1;
+			}
+		}
+		else
+		{
+			auto const grade = GradeHoldNote(
+				&game->Tolerance, timeNow, keyIsDown, keyIsUp,
+				&column->HoldState, noteStart, noteStart + note.Duration);
+
+			level = grade.Level;
+
+			if (level != FXT_GradeLevel_Null)
+			{
+				auto const iHead = TimingDistributionIndexFromDelta(grade.HeadDelta);
+				auto const iTail = TimingDistributionIndexFromDelta(grade.TailDelta);
+				game->TimingDistribution[iHead] += 1;
+				game->TimingDistribution[iTail] += 1;
+			}
+		}
+
+		switch (level)
+		{
+		case FXT_GradeLevel_Null: continue;
+		case FXT_GradeLevel_Miss: game->Grades.Miss += 1;
 			break;
-		case FXT_Grade_Meh: game->Grades.Meh += 1;
+		case FXT_GradeLevel_Meh: game->Grades.Meh += 1;
 			break;
-		case FXT_Grade_Ok: game->Grades.Ok += 1;
+		case FXT_GradeLevel_Ok: game->Grades.Ok += 1;
 			break;
-		case FXT_Grade_Good: game->Grades.Good += 1;
+		case FXT_GradeLevel_Good: game->Grades.Good += 1;
 			break;
-		case FXT_Grade_Great: game->Grades.Great += 1;
+		case FXT_GradeLevel_Great: game->Grades.Great += 1;
 			break;
-		case FXT_Grade_Perfect: game->Grades.Perfect += 1;
+		case FXT_GradeLevel_Perfect: game->Grades.Perfect += 1;
 			break;
 		}
 
-		if (grade != FXT_Grade_Miss)
+		if (level != FXT_GradeLevel_Miss)
 			game->Combo += 1;
 		else
 			game->Combo = 0;

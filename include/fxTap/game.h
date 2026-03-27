@@ -7,16 +7,35 @@ static constexpr auto FXT_EndOfColumn = -1;
 
 typedef int32_t FXT_TimeMs;
 
-typedef enum FXT_Grade
+/*
+Difference between actual tap time and note time.
+Negative: Early
+Positive: Late
+*/
+typedef int32_t FXT_DeltaMs;
+
+typedef enum FXT_GradeLevel
 {
-	FXT_Grade_Null,
-	FXT_Grade_Miss,
-	FXT_Grade_Meh,
-	FXT_Grade_Ok,
-	FXT_Grade_Good,
-	FXT_Grade_Great,
-	FXT_Grade_Perfect,
+	FXT_GradeLevel_Null,
+	FXT_GradeLevel_Miss,
+	FXT_GradeLevel_Meh,
+	FXT_GradeLevel_Ok,
+	FXT_GradeLevel_Good,
+	FXT_GradeLevel_Great,
+	FXT_GradeLevel_Perfect,
+} FXT_GradeLevel;
+
+typedef struct FXT_Grade
+{
+	FXT_GradeLevel Level;
+	FXT_DeltaMs Delta;
 } FXT_Grade;
+
+typedef struct FXT_HoldGrade
+{
+	FXT_GradeLevel Level;
+	FXT_DeltaMs HeadDelta, TailDelta;
+} FXT_HoldGrade;
 
 typedef struct FXT_HoldState
 {
@@ -33,6 +52,14 @@ typedef struct FXT_ColumnState
 	FXT_HoldState HoldState;
 } FXT_ColumnState;
 
+static constexpr size_t FXT_TimingDistributionOneSideColumnCount = 20;
+
+typedef uint16_t FXT_TimingDistribution[
+	FXT_TimingDistributionOneSideColumnCount
+	+ 1
+	+ FXT_TimingDistributionOneSideColumnCount
+];
+
 typedef struct FXT_Game
 {
 	const FXT_Beatmap *Beatmap;
@@ -42,7 +69,7 @@ typedef struct FXT_Game
 	FXT_TimeMs LastUpdateTime;
 	bool LastUpdatePressedColumn[FXT_MaxColumnCount];
 	FXT_Grades Grades;
-	uint16_t TimingDistribution[20 + 1 + 20];
+	FXT_TimingDistribution TimingDistribution;
 	uint16_t Combo;
 } FXT_Game;
 
