@@ -54,7 +54,9 @@ typedef struct FXT_ColumnState
 
 static constexpr size_t FXT_TimingDistributionOneSideColumnCount = 20;
 
-typedef uint16_t FXT_TimingDistribution[
+typedef uint16_t FXT_TimingFrequency;
+
+typedef FXT_TimingFrequency FXT_TimingDistribution[
 	FXT_TimingDistributionOneSideColumnCount
 	+ 1
 	+ FXT_TimingDistributionOneSideColumnCount
