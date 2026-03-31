@@ -186,22 +186,22 @@ FXT_GameUpdateResult FXT_Game_Update(
 
 	bool ended = true;
 
-	for (int columnIndex = 0; columnIndex < game->Beatmap->ColumnCount; columnIndex += 1)
+	for (size_t column = 0; column < game->Beatmap->ColumnCount; column += 1)
 	{
-		FXT_ColumnState *column = &game->ColumnsStates[columnIndex];
+		FXT_ColumnState *state = &game->ColumnsStates[column];
 
-		if (column->FocusedNoteNo >= game->Beatmap->ColumnSize[columnIndex])
+		if (state->FocusedNoteNo >= game->Beatmap->ColumnSize[column])
 			continue;
 
-		if (column->FocusedNoteNo == FXT_EndOfColumn)
+		if (state->FocusedNoteNo == FXT_EndOfColumn)
 			continue;
 
 		ended = false;
 
-		const FXT_Note note = game->Beatmap->Notes[column->FocusedNoteNo + game->ColumnOffset[columnIndex]];
-		const FXT_TimeMs noteStart = column->AccumulatedTime + note.AccumulatedStartTime;
-		const bool lastUpdatePressed = game->LastUpdatePressedColumn[columnIndex];
-		const bool isPressing = isPressingColumn[game->ColumnOrder[columnIndex]];
+		const FXT_Note note = game->Beatmap->Notes[state->FocusedNoteNo + game->ColumnOffset[column]];
+		const FXT_TimeMs noteStart = state->AccumulatedTime + note.AccumulatedStartTime;
+		const bool lastUpdatePressed = game->LastUpdatePressedColumn[column];
+		const bool isPressing = isPressingColumn[game->ColumnOrder[column]];
 		const bool keyIsDown = ! lastUpdatePressed && isPressing;
 		const bool keyIsUp = lastUpdatePressed && ! isPressing;
 
@@ -223,7 +223,7 @@ FXT_GameUpdateResult FXT_Game_Update(
 		{
 			auto const grade = GradeHoldNote(
 				&game->Tolerance, timeNow, keyIsDown, keyIsUp,
-				&column->HoldState, noteStart, noteStart + note.Duration);
+				&state->HoldState, noteStart, noteStart + note.Duration);
 
 			level = grade.Level;
 
@@ -258,9 +258,9 @@ FXT_GameUpdateResult FXT_Game_Update(
 		else
 			game->Combo = 0;
 
-		column->FocusedNoteNo += 1;
-		column->AccumulatedTime += note.AccumulatedStartTime;
-		FXT_HoldState_SetDefault(&game->ColumnsStates[columnIndex].HoldState);
+		state->FocusedNoteNo += 1;
+		state->AccumulatedTime += note.AccumulatedStartTime;
+		FXT_HoldState_SetDefault(&game->ColumnsStates[column].HoldState);
 	}
 
 	if (ended)
