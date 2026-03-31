@@ -43,11 +43,11 @@ void FXT_RendererController_Run(
 			const double PositionBottom = timeScale * headTimeToBottom;
 
 			if (note.Duration == 0)
-				controller->RenderTap(column, PositionBottom);
+				controller->RenderTap(game->ColumnOrder[column], PositionBottom);
 			else
 			{
 				const double PositionTop = timeScale * (headTimeToBottom + note.Duration);
-				controller->RenderHold(column, PositionBottom, PositionTop);
+				controller->RenderHold(game->ColumnOrder[column], PositionBottom, PositionTop);
 			}
 		}
 
@@ -74,13 +74,13 @@ void FXT_RendererController_Run(
 
 			if (isTap)
 			{
-				controller->RenderTap(column, PositionBottom);
+				controller->RenderTap(game->ColumnOrder[column], PositionBottom);
 				continue;
 			}
 
 			const double PositionTop = timeScale * tailTimeToBottom;
 
-			controller->RenderHold(column, PositionBottom, PositionTop);
+			controller->RenderHold(game->ColumnOrder[column], PositionBottom, PositionTop);
 		}
 	}
 }

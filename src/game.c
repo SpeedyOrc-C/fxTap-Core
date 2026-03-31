@@ -29,6 +29,7 @@ void FXT_Game_Init(FXT_Game *game, const FXT_Beatmap *beatmap)
 
 	for (int column = 0; column < FXT_MaxColumnCount; column += 1)
 	{
+		game->ColumnOrder[column] = column;
 		game->ColumnOffset[column] = columnOffset;
 		game->LastUpdatePressedColumn[column] = false;
 		game->ColumnsStates[column].AccumulatedTime = 0;
@@ -200,7 +201,7 @@ FXT_GameUpdateResult FXT_Game_Update(
 		const FXT_Note note = game->Beatmap->Notes[column->FocusedNoteNo + game->ColumnOffset[columnIndex]];
 		const FXT_TimeMs noteStart = column->AccumulatedTime + note.AccumulatedStartTime;
 		const bool lastUpdatePressed = game->LastUpdatePressedColumn[columnIndex];
-		const bool isPressing = isPressingColumn[columnIndex];
+		const bool isPressing = isPressingColumn[game->ColumnOrder[columnIndex]];
 		const bool keyIsDown = ! lastUpdatePressed && isPressing;
 		const bool keyIsUp = lastUpdatePressed && ! isPressing;
 

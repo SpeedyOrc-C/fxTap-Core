@@ -67,6 +67,7 @@ typedef struct FXT_Game
 	const FXT_Beatmap *Beatmap;
 	FXT_Tolerance Tolerance;
 	uint16_t ColumnOffset[FXT_MaxColumnCount];
+	uint8_t ColumnOrder[FXT_MaxColumnCount];
 	FXT_ColumnState ColumnsStates[FXT_MaxColumnCount];
 	FXT_TimeMs LastUpdateTime;
 	bool LastUpdatePressedColumn[FXT_MaxColumnCount];
