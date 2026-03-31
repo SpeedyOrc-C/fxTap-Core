@@ -2,6 +2,7 @@
 
 #include <stdint.h>
 #include <fxTap/beatmap.h>
+#include <fxTap/mod.h>
 
 static constexpr auto FXT_EndOfColumn = -1;
 
@@ -83,7 +84,7 @@ typedef enum FXT_GameUpdateResult
 	FXT_GameUpdateResult_RewoundTimeError,
 } FXT_GameUpdateResult;
 
-void FXT_Game_Init(FXT_Game *game, const FXT_Beatmap *beatmap);
+void FXT_Game_Init(FXT_Game *game, const FXT_Beatmap *beatmap, const FXT_ModOption *modOption);
 
 FXT_GameUpdateResult FXT_Game_Update(
 	FXT_Game *game,

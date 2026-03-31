@@ -9,7 +9,7 @@ static void FXT_HoldState_SetDefault(FXT_HoldState *holdState)
 	holdState->TailIsValid = false;
 }
 
-void FXT_Game_Init(FXT_Game *game, const FXT_Beatmap *beatmap)
+void FXT_Game_Init(FXT_Game *game, const FXT_Beatmap *beatmap, const FXT_ModOption *modOption)
 {
 	game->Beatmap = beatmap;
 	game->Tolerance = FXT_Tolerance_FromOverallDifficulty(beatmap->OverallDifficulty);
@@ -27,7 +27,7 @@ void FXT_Game_Init(FXT_Game *game, const FXT_Beatmap *beatmap)
 
 	int columnOffset = 0;
 
-	for (int column = 0; column < FXT_MaxColumnCount; column += 1)
+	for (size_t column = 0; column < FXT_MaxColumnCount; column += 1)
 	{
 		game->ColumnOrder[column] = column;
 		game->ColumnOffset[column] = columnOffset;
@@ -44,6 +44,25 @@ void FXT_Game_Init(FXT_Game *game, const FXT_Beatmap *beatmap)
 		else
 		{
 			game->ColumnsStates[column].FocusedNoteNo = FXT_EndOfColumn;
+		}
+	}
+
+	if (modOption->Mirror && ! modOption->Random)
+	{
+		for (size_t column = 0; column < beatmap->ColumnCount; column += 1)
+			game->ColumnOrder[column] = beatmap->ColumnCount - column - 1;
+	}
+
+	if (modOption->Random && ! modOption->Mirror)
+	{
+		for (size_t count = 0; count < 100; count += 1)
+		{
+			auto const i = rand() % game->Beatmap->ColumnCount;
+			auto const j = rand() % game->Beatmap->ColumnCount;
+
+			auto const tmp = game->ColumnOrder[i];
+			game->ColumnOrder[i] = game->ColumnOrder[j];
+			game->ColumnOrder[j] = tmp;
 		}
 	}
 }
