@@ -34,6 +34,9 @@ FXT_DatabaseError FXT_Database_SyncFromFileSystem_BFile(FXT_Database *database)
 				break;
 			}
 
+		if (pathLength <= 4)
+			return FXT_DatabaseError_BrokenBFileSearch;
+
 		char beatmapPath[pathLength + 1] = {};
 
 		for (int i = 0; i < pathLength; i += 1)

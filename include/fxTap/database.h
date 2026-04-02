@@ -32,6 +32,7 @@ typedef enum FXT_DatabaseError
 	FXT_DatabaseError_CannotOpenDir,
 	FXT_DatabaseError_CannotStartSavingGrades,
 	FXT_DatabaseError_CannotSaveGrades,
+	FXT_DatabaseError_BrokenBFileSearch,
 } FXT_DatabaseError;
 
 void FXT_Database_Init(FXT_Database *dst);
