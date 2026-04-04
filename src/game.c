@@ -119,10 +119,13 @@ static FXT_Grade GradeTapNote(
 	return (FXT_Grade){FXT_GradeLevel_Miss};
 }
 
-static FXT_HoldGrade GradeHoldNoteDefinite(const FXT_Tolerance *tolerance, const FXT_HoldState *holdState)
+static FXT_HoldGrade GradeHoldNoteDefinite(
+	const FXT_Tolerance *tolerance,
+	const FXT_HoldState *holdState,
+	const FXT_ModOption *modOption)
 {
 	auto const head = holdState->HeadDelta;
-	auto const tail = holdState->TailDelta;
+	auto const tail = modOption->NoRelease ? (int32_t) 0 : holdState->TailDelta;
 	auto const absHead = abs(head);
 	auto const absTail = abs(tail);
 	auto const absTotal = absHead + absTail;
@@ -141,6 +144,7 @@ static FXT_HoldGrade GradeHoldNoteDefinite(const FXT_Tolerance *tolerance, const
 
 static FXT_HoldGrade GradeHoldNote(
 	const FXT_Tolerance *tolerance,
+	const FXT_ModOption *modOption,
 	const FXT_TimeMs timeNow,
 	const bool keyIsDown,
 	const bool keyIsUp,
@@ -160,7 +164,7 @@ static FXT_HoldGrade GradeHoldNote(
 		    holdState->TailIsValid &&
 		    holdState->TailDelta >= -tolerance->Meh)
 		{
-			return GradeHoldNoteDefinite(tolerance, holdState);
+			return GradeHoldNoteDefinite(tolerance, holdState, modOption);
 		}
 
 		// There's not a valid hold
@@ -185,7 +189,7 @@ static FXT_HoldGrade GradeHoldNote(
 
 		// Inside the confirmation area, stop!
 		if (-tolerance->Meh + noteEnd <= timeNow)
-			return GradeHoldNoteDefinite(tolerance, holdState);
+			return GradeHoldNoteDefinite(tolerance, holdState, modOption);
 
 		// Outside the confirmation area
 		holdState->TailIsValid = true;
@@ -197,6 +201,7 @@ static FXT_HoldGrade GradeHoldNote(
 
 FXT_GameUpdateResult FXT_Game_Update(
 	FXT_Game *game,
+	const FXT_ModOption *modOption,
 	const FXT_TimeMs timeNow,
 	const bool isPressingColumn[16])
 {
@@ -226,7 +231,7 @@ FXT_GameUpdateResult FXT_Game_Update(
 
 		FXT_GradeLevel level;
 
-		if (note.Duration == 0)
+		if (note.Duration == 0 || modOption->HoldOff)
 		{
 			auto const grade = GradeTapNote(&game->Tolerance, timeNow, keyIsDown, noteStart);
 
@@ -241,7 +246,7 @@ FXT_GameUpdateResult FXT_Game_Update(
 		else
 		{
 			auto const grade = GradeHoldNote(
-				&game->Tolerance, timeNow, keyIsDown, keyIsUp,
+				&game->Tolerance, modOption, timeNow, keyIsDown, keyIsUp,
 				&state->HoldState, noteStart, noteStart + note.Duration);
 
 			level = grade.Level;
@@ -249,9 +254,13 @@ FXT_GameUpdateResult FXT_Game_Update(
 			if (level != FXT_GradeLevel_Null)
 			{
 				auto const iHead = TimingDistributionIndexFromDelta(grade.HeadDelta);
-				auto const iTail = TimingDistributionIndexFromDelta(grade.TailDelta);
 				game->TimingDistribution[iHead] += 1;
-				game->TimingDistribution[iTail] += 1;
+
+				if (! modOption->NoRelease)
+				{
+					auto const iTail = TimingDistributionIndexFromDelta(grade.TailDelta);
+					game->TimingDistribution[iTail] += 1;
+				}
 			}
 		}
 

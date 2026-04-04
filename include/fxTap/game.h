@@ -88,6 +88,7 @@ void FXT_Game_Init(FXT_Game *game, const FXT_Beatmap *beatmap, const FXT_ModOpti
 
 FXT_GameUpdateResult FXT_Game_Update(
 	FXT_Game *game,
+	const FXT_ModOption *modOption,
 	FXT_TimeMs timeNow,
 	const bool isPressingColumn[FXT_MaxColumnCount]
 );

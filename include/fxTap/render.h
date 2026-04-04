@@ -18,4 +18,9 @@ typedef struct FXT_RendererController
 	FXT_HoldRenderer RenderHold;
 } FXT_RendererController;
 
-void FXT_RendererController_Run(const FXT_RendererController *controller, const FXT_Game *game, FXT_TimeMs timeNow);
+void FXT_RendererController_Run(
+	const FXT_RendererController *controller,
+	const FXT_Game *game,
+	const FXT_ModOption *modOption,
+	FXT_TimeMs timeNow
+);

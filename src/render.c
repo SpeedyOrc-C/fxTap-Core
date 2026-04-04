@@ -5,6 +5,7 @@
 void FXT_RendererController_Run(
 	const FXT_RendererController *controller,
 	const FXT_Game *game,
+	const FXT_ModOption *modOption,
 	const FXT_TimeMs timeNow)
 {
 	auto const timeScale = controller->HeightAbove / controller->VisibleTime;
@@ -33,22 +34,24 @@ void FXT_RendererController_Run(
 			if (headTimeToBottom > controller->VisibleTime)
 				break;
 
-			const bool isTap = note.Duration == 0;
+			const bool isTap = note.Duration == 0 || modOption->HoldOff;
 
 			// Stop if the tail is below the line,
 			// but allow taps render for an extra 100ms.
-			if ((isTap && tailTimeToBottom < -100) || (!isTap && tailTimeToBottom < 0))
+			if ((isTap && tailTimeToBottom < -100) || (! isTap && tailTimeToBottom < 0))
 				continue;
 
 			const double PositionBottom = timeScale * headTimeToBottom;
 
-			if (note.Duration == 0)
-				controller->RenderTap(game->ColumnOrder[column], PositionBottom);
-			else
+			if (isTap)
 			{
-				const double PositionTop = timeScale * (headTimeToBottom + note.Duration);
-				controller->RenderHold(game->ColumnOrder[column], PositionBottom, PositionTop);
+				controller->RenderTap(game->ColumnOrder[column], PositionBottom);
+				continue;
 			}
+
+			const double PositionTop = timeScale * (headTimeToBottom + note.Duration);
+
+			controller->RenderHold(game->ColumnOrder[column], PositionBottom, PositionTop);
 		}
 
 		// Render notes below the line
@@ -63,11 +66,11 @@ void FXT_RendererController_Run(
 
 			controllerAccumulatedStartTime -= noteAccumulatedStartTime;
 
-			const bool isTap = note.Duration == 0;
+			const bool isTap = note.Duration == 0 || modOption->HoldOff;
 
 			// Stop if the tail is below the line,
 			// but allow taps render for an extra 100ms.
-			if ((isTap && tailTimeToBottom < -100) || (!isTap && tailTimeToBottom < 0))
+			if ((isTap && tailTimeToBottom < -100) || (! isTap && tailTimeToBottom < 0))
 				break;
 
 			const double PositionBottom = timeScale * (tailTimeToBottom - note.Duration);
