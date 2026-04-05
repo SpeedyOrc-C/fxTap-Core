@@ -6,4 +6,5 @@ typedef struct FXT_ModOption
 	bool Random: 1;
 	bool NoRelease: 1;
 	bool HoldOff: 1;
+	bool Reverse: 1;
 } FXT_ModOption;
