@@ -77,4 +77,7 @@ FXT_BeatmapError FXT_Beatmap_Load_BFile(FXT_Beatmap *dst, const char *path);
 [[nodiscard]]
 FXT_BeatmapError FXT_Beatmap_LoadMetadata_BFile(FXT_Beatmap *dst, const char *path);
 
+[[nodiscard]]
+FXT_BeatmapError FXT_Beatmap_Load_BFile_Auto(FXT_Beatmap *dst, const char *path);
+
 #endif

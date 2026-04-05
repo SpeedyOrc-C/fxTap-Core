@@ -4,6 +4,8 @@
 #include <fxTap/beatmap.h>
 #include <gint/bfile.h>
 #include <gint/fs.h>
+#include <gint/hardware.h>
+#include <gint/defs/call.h>
 
 static FXT_BeatmapError Beatmap_LoadFromFile_BFile(FXT_Beatmap *dst, const int file, const bool readNotes)
 {
@@ -127,6 +129,17 @@ FXT_BeatmapError FXT_Beatmap_Load_BFile(FXT_Beatmap *dst, const char *path)
 FXT_BeatmapError FXT_Beatmap_LoadMetadata_BFile(FXT_Beatmap *dst, const char *path)
 {
 	return Beatmap_Load_BFile(dst, path, false);
+}
+
+FXT_BeatmapError FXT_Beatmap_Load_BFile_Auto(FXT_Beatmap *dst, const char *path)
+{
+	if (gint[HWFS] == HWFS_FUGUE)
+		return FXT_Beatmap_Load(dst, path);
+
+	return gint_call((gint_call_t){
+		.function = FXT_Beatmap_Load_BFile,
+		.args = {{.pv = dst}, {.pc_c = path}}
+	});
 }
 
 #endif
