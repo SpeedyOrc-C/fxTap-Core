@@ -15,6 +15,7 @@ void FXT_Game_Init(FXT_Game *game, const FXT_Beatmap *beatmap, const FXT_ModOpti
 	game->Tolerance = FXT_Tolerance_FromOverallDifficulty(beatmap->OverallDifficulty);
 	game->LastUpdateTime = -1000;
 	game->Combo = 0;
+	game->MaxCombo = 0;
 
 	game->Grades.Perfect = 0;
 	game->Grades.Great = 0;
@@ -282,7 +283,12 @@ FXT_GameUpdateResult FXT_Game_Update(
 		}
 
 		if (level != FXT_GradeLevel_Miss)
+		{
 			game->Combo += 1;
+
+			if (game->Combo > game->MaxCombo)
+				game->MaxCombo = game->Combo;
+		}
 		else
 			game->Combo = 0;
 
