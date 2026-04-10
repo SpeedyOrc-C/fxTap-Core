@@ -7,6 +7,10 @@
 #include <fxTap/keymap.h>
 #include <fxTap/render.h>
 
+#include "fxTap/database/view.h"
+
+static FXT_ModOption modOption;
+
 bool Run(bool (*test)(), const char *name)
 {
 	printf("=== %s ===\n", name);
@@ -27,7 +31,7 @@ bool Test_FileLoading()
 	}
 
 	FXT_Game game;
-	FXT_Game_Init(&game, &beatmap);
+	FXT_Game_Init(&game, &beatmap, &modOption);
 
 	auto const startTime = FXT_Game_FirstNoteStartTime(&game);
 	auto const endTime = FXT_Game_LastNoteEndTime(&game);
@@ -76,23 +80,23 @@ bool Test_Tap()
 	};
 
 	FXT_Game game;
-	FXT_Game_Init(&game, &beatmap);
+	FXT_Game_Init(&game, &beatmap, &modOption);
 
 	bool keys[16] = {};
 
-	FXT_Game_Update(&game, 0, keys);
+	FXT_Game_Update(&game, &modOption, 0, keys);
 	keys[0] = true;
-	FXT_Game_Update(&game, 940, keys);
+	FXT_Game_Update(&game, &modOption, 940, keys);
 	keys[0] = false;
-	FXT_Game_Update(&game, 980, keys);
+	FXT_Game_Update(&game, &modOption, 980, keys);
 	keys[0] = true;
-	FXT_Game_Update(&game, 1000, keys);
+	FXT_Game_Update(&game, &modOption, 1000, keys);
 	keys[0] = false;
-	FXT_Game_Update(&game, 1050, keys);
+	FXT_Game_Update(&game, &modOption, 1050, keys);
 	keys[0] = true;
-	FXT_Game_Update(&game, 3010, keys);
+	FXT_Game_Update(&game, &modOption, 3010, keys);
 	keys[0] = false;
-	FXT_Game_Update(&game, 3011, keys);
+	FXT_Game_Update(&game, &modOption, 3011, keys);
 
 	return game.Grades.Perfect == 1 && game.Grades.Great == 1;
 }
@@ -112,20 +116,20 @@ bool Test_Hold()
 	};
 
 	FXT_Game game;
-	FXT_Game_Init(&game, &beatmap);
+	FXT_Game_Init(&game, &beatmap, &modOption);
 
 	bool keys[16] = {};
 
-	FXT_Game_Update(&game, 0, keys);
+	FXT_Game_Update(&game, &modOption, 0, keys);
 	keys[0] = true;
-	FXT_Game_Update(&game, 900, keys);
+	FXT_Game_Update(&game, &modOption, 900, keys);
 	keys[0] = false;
-	FXT_Game_Update(&game, 950, keys);
+	FXT_Game_Update(&game, &modOption, 950, keys);
 	keys[0] = true;
-	FXT_Game_Update(&game, 1000, keys);
+	FXT_Game_Update(&game, &modOption, 1000, keys);
 	keys[0] = false;
-	FXT_Game_Update(&game, 2000, keys);
-	FXT_Game_Update(&game, 3000, keys);
+	FXT_Game_Update(&game, &modOption, 2000, keys);
+	FXT_Game_Update(&game, &modOption, 3000, keys);
 
 	return game.Grades.Perfect == 1;
 }
@@ -165,7 +169,7 @@ bool Test_RendererController()
 	assert(error == 0);
 
 	FXT_Game game;
-	FXT_Game_Init(&game, &beatmap);
+	FXT_Game_Init(&game, &beatmap, &modOption);
 
 	const FXT_RendererController controller = {
 		.HeightAbove = 100,
@@ -179,13 +183,28 @@ bool Test_RendererController()
 	for (int time = 0; time <= 1000; time += 5)
 	{
 		printf("> %d\n", time);
-		FXT_Game_Update(&game, time, isKeyPressed);
-		FXT_RendererController_Run(&controller, &game, time);
+		FXT_Game_Update(&game, &modOption, time, isKeyPressed);
+		FXT_RendererController_Run(&controller, &game, &modOption, time);
 	}
 
 	FXT_Beatmap_FreeInner(&beatmap);
 
 	return true;
+}
+
+static void PrintDatabaseView(const FXT_DatabaseView *view)
+{
+	for (size_t i = 0; i < view->GroupCount; i += 1)
+	{
+		auto const group = view->Groups[i];
+		printf("%zu. %s\n", i + 1, group.Title);
+
+		for (size_t j = 0; j < group.Size; j += 1)
+		{
+			auto const member = group.Members[j];
+			printf("    %zu. %s\n", j + 1, member->value.Version);
+		}
+	}
 }
 
 bool Test_Database()
@@ -201,54 +220,20 @@ bool Test_Database()
 	FXT_Database db = nullptr;
 	FXT_Database_Init(&db);
 
-	const auto error = FXT_Database_SyncFromFileSystem(&db);
+	auto error = FXT_Database_SyncFromFileSystem(&db);
 
-	auto const size = shlenu(db);
+	assert(error == 0);
 
-	const struct FXT_Database *viewOrderByNameAsc[size] = {};
-	const struct FXT_Database *viewOrderByNameDsc[size] = {};
+	FXT_DatabaseView view;
+	error = FXT_DatabaseView_Init(&view, &db);
 
-	for (size_t i = 0; i < size; i += 1)
-	{
-		viewOrderByNameAsc[i] = &db[i];
-		viewOrderByNameDsc[i] = &db[i];
-	}
+	assert(error == 0);
 
-	qsort(viewOrderByNameAsc, size, sizeof(FXT_Database), FXT_Database_Compare_Reverse_Void);
-	qsort(viewOrderByNameDsc, size, sizeof(FXT_Database), FXT_Database_Compare_Void);
+	FXT_DatabaseView_SortDsc(&view);
+	PrintDatabaseView(&view);
 
-	if (error)
-		return false;
-
-	puts("== Original ==");
-	for (size_t i = 0; i < size; i += 1)
-		printf(
-			"[%s]: %.2f - %s - %s\n",
-			db[i].key,
-			db[i].value.OverallDifficulty,
-			db[i].value.Title,
-			db[i].value.Artist
-		);
-
-	puts("== Descending ==");
-	for (size_t i = 0; i < size; i += 1)
-	{
-		auto const x = viewOrderByNameDsc[i];
-		printf(
-			"[%s]: %.2f - %s - %s\n",
-			x->key, x->value.OverallDifficulty, x->value.Title, x->value.Artist
-		);
-	}
-
-	puts("== Ascending ==");
-	for (size_t i = 0; i < size; i += 1)
-	{
-		auto const x = viewOrderByNameAsc[i];
-		printf(
-			"[%s]: %.2f - %s - %s\n",
-			x->key, x->value.OverallDifficulty, x->value.Title, x->value.Artist
-		);
-	}
+	FXT_DatabaseView_SortAsc(&view);
+	PrintDatabaseView(&view);
 
 	shfree(db);
 

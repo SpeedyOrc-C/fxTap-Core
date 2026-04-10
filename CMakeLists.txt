@@ -16,6 +16,7 @@ add_library(fxTap-Core
         src/database.c
 		src/stb_ds.c
 		src/casiowin/database.c
+		src/database/view.c
 )
 
 target_include_directories(fxTap-Core PUBLIC include)
