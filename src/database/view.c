@@ -139,6 +139,7 @@ void FXT_DatabaseView_SortAsc(FXT_DatabaseView *view)
 {
 	view->FocusedGroupIndex = 0;
 	view->FocusedVersionIndex = 0;
+	view->VersionWindowHeadIndex = 0;
 
 	qsort(view->Groups, view->GroupCount, sizeof(FXT_BeatmapGroup),
 	      FXT_BeatmapGroup_Compare_Reverse_Void);
@@ -148,6 +149,7 @@ void FXT_DatabaseView_SortDsc(FXT_DatabaseView *view)
 {
 	view->FocusedGroupIndex = 0;
 	view->FocusedVersionIndex = 0;
+	view->VersionWindowHeadIndex = 0;
 
 	qsort(view->Groups, view->GroupCount, sizeof(FXT_BeatmapGroup),
 	      FXT_BeatmapGroup_Compare_Void);
