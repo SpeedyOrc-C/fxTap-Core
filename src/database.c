@@ -62,10 +62,10 @@ FXT_DatabaseError FXT_Database_SyncFromFileSystem(FXT_Database *database)
 		FXT_Beatmap beatmap = {};
 
 		if (FXT_Beatmap_LoadMetadata(&beatmap, beatmapPath))
-			continue;
+			return FXT_DatabaseError_BrokenBFileSearch;
 
 		if (! FXT_DatabaseRecord_IsNull(shget(db, beatmapPath)))
-			continue;
+			return FXT_DatabaseError_BrokenBFileSearch;
 
 		auto record = (FXT_DatabaseRecord){
 			.LastGrades = {.Exist = false},

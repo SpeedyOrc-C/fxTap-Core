@@ -1,6 +1,7 @@
 #ifdef FXTAP_CORE_USE_GINT
 
 #include <stdlib.h>
+#include <string.h>
 #include <fxTap/beatmap.h>
 #include <gint/bfile.h>
 #include <gint/fs.h>
@@ -21,7 +22,7 @@ static FXT_BeatmapError Beatmap_LoadFromFile_BFile(FXT_Beatmap *dst, const int f
 	uint16_t *columnSize = nullptr;
 	FXT_Note *notes = nullptr;
 
-	if (sizeof(header) > BFile_Read(file, header, sizeof(header) - 1, -1))
+	if (sizeof(header) - 1 > BFile_Read(file, header, sizeof(header) - 1, -1))
 		goto fail;
 
 	if (sizeof(overallDifficulty) > BFile_Read(file, &overallDifficulty, sizeof(overallDifficulty), -1))
@@ -53,18 +54,21 @@ static FXT_BeatmapError Beatmap_LoadFromFile_BFile(FXT_Beatmap *dst, const int f
 
 	artist[artistLength] = 0;
 
-	if (sizeof(versionLength) > BFile_Read(file, &versionLength, sizeof(versionLength), -1))
-		goto fail;
+	if (strcmp(header, FXT_BeatmapHeader_2602) == 0)
+	{
+		if (sizeof(versionLength) > BFile_Read(file, &versionLength, sizeof(versionLength), -1))
+			goto fail;
 
-	version = malloc(versionLength + 1);
+		version = malloc(versionLength + 1);
 
-	if (version == nullptr)
-		goto fail;
+		if (version == nullptr)
+			goto fail;
 
-	if (versionLength > BFile_Read(file, version, versionLength, -1))
-		goto fail;
+		if (versionLength > BFile_Read(file, version, versionLength, -1))
+			goto fail;
 
-	version[versionLength] = 0;
+		version[versionLength] = 0;
+	}
 
 	if (sizeof(columnCount) > BFile_Read(file, &columnCount, sizeof(columnCount), -1))
 		goto fail;

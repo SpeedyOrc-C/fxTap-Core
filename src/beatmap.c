@@ -72,7 +72,7 @@ static FXT_BeatmapError Beatmap_LoadFromFile(FXT_Beatmap *dst, FILE *file, const
 	char *version = nullptr;
 	double overallDifficulty;
 	uint8_t columnCount;
-	uint16_t *sizeOfColumn = nullptr;
+	uint16_t *columnSize = nullptr;
 	FXT_Note *notes = nullptr;
 
 	if (! fread(header, sizeof(header) - 1, 1, file))
@@ -126,12 +126,12 @@ static FXT_BeatmapError Beatmap_LoadFromFile(FXT_Beatmap *dst, FILE *file, const
 	if (! fread(&columnCount, sizeof(columnCount), 1, file))
 		goto fail;
 
-	sizeOfColumn = malloc(2 * columnCount);
+	columnSize = malloc(2 * columnCount);
 
-	if (sizeOfColumn == nullptr)
+	if (columnSize == nullptr)
 		goto fail;
 
-	if (! fread(sizeOfColumn, 2 * columnCount, 1, file))
+	if (! fread(columnSize, 2 * columnCount, 1, file))
 		goto fail;
 
 	if (readNotes)
@@ -139,7 +139,7 @@ static FXT_BeatmapError Beatmap_LoadFromFile(FXT_Beatmap *dst, FILE *file, const
 		int noteCount = 0;
 
 		for (int i = 0; i < columnCount; i += 1)
-			noteCount += sizeOfColumn[i];
+			noteCount += columnSize[i];
 
 		notes = malloc(sizeof(FXT_Note) * noteCount);
 
@@ -155,7 +155,7 @@ static FXT_BeatmapError Beatmap_LoadFromFile(FXT_Beatmap *dst, FILE *file, const
 	dst->Version = version;
 	dst->OverallDifficulty = overallDifficulty;
 	dst->ColumnCount = columnCount;
-	dst->ColumnSize = sizeOfColumn;
+	dst->ColumnSize = columnSize;
 	dst->Notes = notes;
 
 	return 0;
@@ -164,7 +164,7 @@ fail:
 	if (title != nullptr) free(title);
 	if (artist != nullptr) free(artist);
 	if (version != nullptr) free(version);
-	if (sizeOfColumn != nullptr) free(sizeOfColumn);
+	if (columnSize != nullptr) free(columnSize);
 	if (notes != nullptr) free(notes);
 
 	return FXT_BeatmapError_ReadNotesFailed;

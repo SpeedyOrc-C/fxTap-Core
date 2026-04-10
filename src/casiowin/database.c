@@ -14,10 +14,10 @@ FXT_DatabaseError FXT_Database_SyncFromFileSystem_BFile(FXT_Database *database)
 	uint16_t beatmapPath16[64] = {};
 	struct BFile_FileInfo foundFile;
 
-	auto notFound = BFile_FindFirst(
+	auto findResult = BFile_FindFirst(
 		u"\\\\fls0\\*.fxt", &handle, beatmapPath16, &foundFile);
 
-	if (notFound)
+	if (findResult != 0)
 	{
 		BFile_FindClose(handle);
 		return 0;
@@ -45,15 +45,16 @@ FXT_DatabaseError FXT_Database_SyncFromFileSystem_BFile(FXT_Database *database)
 		FXT_Beatmap beatmap = {};
 
 		if (FXT_Beatmap_LoadMetadata_BFile(&beatmap, beatmapPath))
-			continue;
+			return FXT_DatabaseError_BrokenBFileSearch;
 
 		if (! FXT_DatabaseRecord_IsNull(shget(db, beatmapPath)))
-			continue;
+			return FXT_DatabaseError_BrokenBFileSearch;
 
 		auto record = (FXT_DatabaseRecord){
 			.LastGrades = {.Exist = false},
 			.Title = beatmap.Title,
 			.Artist = beatmap.Artist,
+			.Version = beatmap.Version,
 			.OverallDifficulty = beatmap.OverallDifficulty,
 			.ColumnCount = beatmap.ColumnCount,
 			.ColumnSize = beatmap.ColumnSize,
@@ -87,9 +88,9 @@ FXT_DatabaseError FXT_Database_SyncFromFileSystem_BFile(FXT_Database *database)
 	one_entry_done:
 		if (bestGradesFile < 0) BFile_Close(bestGradesFile);
 		shput(db, beatmapPath, record);
-		notFound = BFile_FindNext(handle, beatmapPath16, &foundFile);
+		findResult = BFile_FindNext(handle, beatmapPath16, &foundFile);
 	}
-	while (! notFound);
+	while (! findResult);
 
 	BFile_FindClose(handle);
 	*database = db;
