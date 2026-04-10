@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <fxTap/beatmap.h>
 
 
@@ -62,17 +63,19 @@ int FXT_Beatmap_NoteCount(const FXT_Beatmap *beatmap)
 
 static FXT_BeatmapError Beatmap_LoadFromFile(FXT_Beatmap *dst, FILE *file, const bool readNotes)
 {
-	char header[8];
+	char header[9] = {};
 	uint8_t titleLength;
 	char *title = nullptr;
 	uint8_t artistLength;
 	char *artist = nullptr;
+	uint8_t versionLength;
+	char *version = nullptr;
 	double overallDifficulty;
 	uint8_t columnCount;
 	uint16_t *sizeOfColumn = nullptr;
 	FXT_Note *notes = nullptr;
 
-	if (! fread(header, sizeof(header), 1, file))
+	if (! fread(header, sizeof(header) - 1, 1, file))
 		goto fail;
 
 	if (! fread(&overallDifficulty, sizeof(overallDifficulty), 1, file))
@@ -96,10 +99,29 @@ static FXT_BeatmapError Beatmap_LoadFromFile(FXT_Beatmap *dst, FILE *file, const
 
 	artist = malloc(artistLength + 1);
 
+	if (artist == nullptr)
+		goto fail;
+
 	if (! fread(artist, artistLength, 1, file))
 		goto fail;
 
 	artist[artistLength] = 0;
+
+	if (strcmp(header, FXT_BeatmapHeader_2602) == 0)
+	{
+		if (! fread(&versionLength, sizeof(versionLength), 1, file))
+			goto fail;
+
+		version = malloc(versionLength + 1);
+
+		if (version == nullptr)
+			goto fail;
+
+		if (! fread(version, versionLength, 1, file))
+			goto fail;
+
+		version[versionLength] = 0;
+	}
 
 	if (! fread(&columnCount, sizeof(columnCount), 1, file))
 		goto fail;
@@ -130,6 +152,7 @@ static FXT_BeatmapError Beatmap_LoadFromFile(FXT_Beatmap *dst, FILE *file, const
 
 	dst->Title = title;
 	dst->Artist = artist;
+	dst->Version = version;
 	dst->OverallDifficulty = overallDifficulty;
 	dst->ColumnCount = columnCount;
 	dst->ColumnSize = sizeOfColumn;
@@ -140,6 +163,7 @@ static FXT_BeatmapError Beatmap_LoadFromFile(FXT_Beatmap *dst, FILE *file, const
 fail:
 	if (title != nullptr) free(title);
 	if (artist != nullptr) free(artist);
+	if (version != nullptr) free(version);
 	if (sizeOfColumn != nullptr) free(sizeOfColumn);
 	if (notes != nullptr) free(notes);
 
@@ -175,6 +199,8 @@ void FXT_Beatmap_FreeInner(const FXT_Beatmap *beatmap)
 {
 	free(beatmap->Title);
 	free(beatmap->Artist);
+	if (beatmap->Version != nullptr)
+		free(beatmap->Version);
 	free(beatmap->ColumnSize);
 	if (beatmap->Notes != nullptr)
 		free(beatmap->Notes);

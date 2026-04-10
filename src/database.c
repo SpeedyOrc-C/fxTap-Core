@@ -18,6 +18,7 @@ void FXT_Database_FreeInner(FXT_Database *database)
 	{
 		free(db[i].value.Title);
 		free(db[i].value.Artist);
+		free(db[i].value.Version);
 		free(db[i].value.ColumnSize);
 	}
 
@@ -70,6 +71,7 @@ FXT_DatabaseError FXT_Database_SyncFromFileSystem(FXT_Database *database)
 			.LastGrades = {.Exist = false},
 			.Title = beatmap.Title,
 			.Artist = beatmap.Artist,
+			.Version = beatmap.Version,
 			.OverallDifficulty = beatmap.OverallDifficulty,
 			.ColumnCount = beatmap.ColumnCount,
 			.ColumnSize = beatmap.ColumnSize,
@@ -85,28 +87,22 @@ FXT_DatabaseError FXT_Database_SyncFromFileSystem(FXT_Database *database)
 		}
 
 		auto const bestGradesFile = fopen(bestGradesPath, "rb");
-		FXT_Grades *bestGrades = nullptr;
+		FXT_Grades bestGrades = {};
 
 		if (bestGradesFile == nullptr)
 			goto one_entry_done;
 
-		bestGrades = malloc(sizeof(FXT_Grades));
-
-		if (bestGrades == nullptr)
-			goto one_entry_done;
-
-		if (! fread(bestGrades, sizeof(FXT_Grades), 1, bestGradesFile))
+		if (! fread(&bestGrades, sizeof(FXT_Grades), 1, bestGradesFile))
 			goto one_entry_done;
 
 		record.LastGrades.Exist = true;
-		record.LastGrades.Value = *bestGrades;
+		record.LastGrades.Value = bestGrades;
 		shput(db, beatmapPath, record);
 		fclose(bestGradesFile);
 		continue;
 
 	one_entry_done:
 		if (bestGradesFile != nullptr) fclose(bestGradesFile);
-		if (bestGrades != nullptr) free(bestGrades);
 		shput(db, beatmapPath, record);
 	}
 
@@ -118,26 +114,6 @@ FXT_DatabaseError FXT_Database_SyncFromFileSystem(FXT_Database *database)
 bool FXT_DatabaseRecord_IsNull(const FXT_DatabaseRecord record)
 {
 	return record.Title == nullptr;
-}
-
-int FXT_Database_Compare(const struct FXT_Database *a, const struct FXT_Database *b)
-{
-	return strcmp(a->value.Title, b->value.Title);
-}
-
-int FXT_Database_Compare_Reverse(const struct FXT_Database *a, const struct FXT_Database *b)
-{
-	return strcmp(b->value.Title, a->value.Title);
-}
-
-int FXT_Database_Compare_Void(const void *a, const void *b)
-{
-	return FXT_Database_Compare(*(void **) a, *(void **) b);
-}
-
-int FXT_Database_Compare_Reverse_Void(const void *a, const void *b)
-{
-	return FXT_Database_Compare_Reverse(*(void **) a, *(void **) b);
 }
 
 static FXT_DatabaseError SaveBestGrades(const char *path, const FXT_Grades *grades)

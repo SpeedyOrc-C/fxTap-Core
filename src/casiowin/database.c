@@ -72,26 +72,20 @@ FXT_DatabaseError FXT_Database_SyncFromFileSystem_BFile(FXT_Database *database)
 		auto const bestGradesFile = BFile_Open(bestGradesPath16, BFile_ReadOnly);
 		free(bestGradesPath16);
 
-		FXT_Grades *bestGrades = nullptr;
+		FXT_Grades bestGrades = {};
 
 		if (bestGradesFile < 0)
 			goto one_entry_done;
 
-		bestGrades = malloc(sizeof(FXT_Grades));
-
-		if (bestGrades == nullptr)
-			goto one_entry_done;
-
-		if (sizeof(FXT_Grades) > BFile_Read(bestGradesFile, bestGrades, sizeof(FXT_Grades), -1))
+		if (sizeof(FXT_Grades) > BFile_Read(bestGradesFile, &bestGrades, sizeof(FXT_Grades), -1))
 			goto one_entry_done;
 
 		record.LastGrades.Exist = true;
-		record.LastGrades.Value = *bestGrades;
+		record.LastGrades.Value = bestGrades;
 		BFile_Close(bestGradesFile);
 
 	one_entry_done:
 		if (bestGradesFile < 0) BFile_Close(bestGradesFile);
-		if (bestGrades != nullptr) free(bestGrades);
 		shput(db, beatmapPath, record);
 		notFound = BFile_FindNext(handle, beatmapPath16, &foundFile);
 	}

@@ -9,9 +9,11 @@ typedef struct FXT_DatabaseRecord
 		bool Exist;
 		FXT_Grades Value;
 	} LastGrades;
+
 	// Same as beatmap's but without its notes
 	char *Title;
 	char *Artist;
+	char *Version;
 	double OverallDifficulty;
 	uint8_t ColumnCount;
 	uint16_t *ColumnSize;
@@ -19,11 +21,11 @@ typedef struct FXT_DatabaseRecord
 
 static constexpr FXT_DatabaseRecord FXT_DatabaseRecord_Null = {};
 
-typedef struct FXT_Database
+typedef struct
 {
 	char *key;
 	FXT_DatabaseRecord value;
-} *FXT_Database;
+} *FXT_Database, FXT_DatabaseKV;
 
 typedef enum FXT_DatabaseError
 {
@@ -33,6 +35,7 @@ typedef enum FXT_DatabaseError
 	FXT_DatabaseError_CannotStartSavingGrades,
 	FXT_DatabaseError_CannotSaveGrades,
 	FXT_DatabaseError_BrokenBFileSearch,
+	FXT_DatabaseError_View_MallocFailed,
 } FXT_DatabaseError;
 
 void FXT_Database_Init(FXT_Database *dst);
@@ -46,14 +49,6 @@ void FXT_Database_Free(FXT_Database *database);
 FXT_DatabaseError FXT_Database_SyncFromFileSystem(FXT_Database *database);
 
 bool FXT_DatabaseRecord_IsNull(FXT_DatabaseRecord record);
-
-int FXT_Database_Compare(const struct FXT_Database *a, const struct FXT_Database *b);
-
-int FXT_Database_Compare_Reverse(const struct FXT_Database *a, const struct FXT_Database *b);
-
-int FXT_Database_Compare_Void(const void *a, const void *b);
-
-int FXT_Database_Compare_Reverse_Void(const void *a, const void *b);
 
 [[nodiscard]]
 FXT_DatabaseError FXT_SaveGradesAlongBeatmap(const char *beatmapPath, const FXT_Grades *grades);

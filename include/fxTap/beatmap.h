@@ -4,6 +4,11 @@
 #include <stdint.h>
 #include <fxTap/lib-config.h>
 
+[[maybe_unused]]
+static const char *FXT_BeatmapHeader_2601 = "FXT@2601";
+[[maybe_unused]]
+static const char *FXT_BeatmapHeader_2602 = "FXT@2602";
+
 static constexpr size_t FXT_MaxColumnCount = 10;
 
 typedef struct FXT_Tolerance
@@ -26,6 +31,7 @@ typedef struct FXT_Beatmap
 {
 	char *Title;
 	char *Artist;
+	char *Version;
 	double OverallDifficulty;
 	uint8_t ColumnCount;
 	uint16_t *ColumnSize;
