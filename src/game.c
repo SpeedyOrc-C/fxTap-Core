@@ -3,6 +3,7 @@
 #include <string.h>
 #include <fxTap/game.h>
 
+
 static void FXT_HoldState_SetDefault(FXT_HoldState *holdState)
 {
 	holdState->HeadIsValid = false;
@@ -91,12 +92,15 @@ static FXT_Grade GradeTapNote(
 
 	// After the grading area, MISS!
 	if (delta > tolerance->Ok)
+	{
+		
 		return (FXT_Grade){FXT_GradeLevel_Miss, delta};
-
+	}
 	// Before the grading area and it's idle
 	if (! keyIsDown || delta < -tolerance->Miss)
+	{
 		return (FXT_Grade){FXT_GradeLevel_Null};
-
+	}
 	// Give a grade
 	if (delta < -tolerance->Meh)
 		return (FXT_Grade){FXT_GradeLevel_Miss, delta};
@@ -268,13 +272,43 @@ FXT_GameUpdateResult FXT_Game_Update(
 		switch (level)
 		{
 		case FXT_GradeLevel_Null: continue;
-		case FXT_GradeLevel_Miss: game->Grades.Miss += 1;
+		case FXT_GradeLevel_Miss: 
+		{
+			if (modOption -> SuddenDeath || modOption -> Perfect)
+			{
+				abort();
+			}					  
+			game->Grades.Miss += 1;
+		}
 			break;
-		case FXT_GradeLevel_Meh: game->Grades.Meh += 1;
+
+		case FXT_GradeLevel_Meh:
+		{
+			if (! modOption -> SuddenDeath && modOption -> Perfect)
+			{
+				abort();
+			}					  
+			game->Grades.Meh += 1;
+		}
+		
 			break;
-		case FXT_GradeLevel_Ok: game->Grades.Ok += 1;
-			break;
-		case FXT_GradeLevel_Good: game->Grades.Good += 1;
+		case FXT_GradeLevel_Ok: 
+		{
+			if (! modOption -> SuddenDeath && modOption -> Perfect)
+			{
+				abort();
+			}					  
+			game->Grades.Ok += 1;
+		}
+				break;
+		case FXT_GradeLevel_Good: 
+		{
+			if (! modOption -> SuddenDeath && modOption -> Perfect)
+			{
+				abort();
+			}					  
+			game->Grades.Good += 1;
+		}
 			break;
 		case FXT_GradeLevel_Great: game->Grades.Great += 1;
 			break;
