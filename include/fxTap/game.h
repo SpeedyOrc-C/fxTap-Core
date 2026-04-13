@@ -82,6 +82,7 @@ typedef enum FXT_GameUpdateResult
 	FXT_GameUpdateResult_Ended,
 	FXT_GameUpdateResult_OK,
 	FXT_GameUpdateResult_RewoundTimeError,
+	FXT_GameUpdateResult_Restart,
 } FXT_GameUpdateResult;
 
 void FXT_Game_Init(FXT_Game *game, const FXT_Beatmap *beatmap, const FXT_ModOption *modOption);

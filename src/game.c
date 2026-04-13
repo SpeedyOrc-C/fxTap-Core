@@ -265,6 +265,12 @@ FXT_GameUpdateResult FXT_Game_Update(
 			}
 		}
 
+		if (modOption->FullCombo && level == FXT_GradeLevel_Miss)
+			return FXT_GameUpdateResult_Restart;
+
+		if (modOption->Perfect && FXT_GradeLevel_Miss <= level && level <= FXT_GradeLevel_Good)
+			return FXT_GameUpdateResult_Restart;
+
 		switch (level)
 		{
 		case FXT_GradeLevel_Null: continue;
