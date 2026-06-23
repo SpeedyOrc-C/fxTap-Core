@@ -47,22 +47,21 @@ FXT_DatabaseError FXT_Database_SyncFromFileSystem(FXT_Database *database)
 		if (dirent == nullptr)
 			break;
 
-		auto const pathLength = strlen(dirent->d_name);
+		auto const beatmapPath = dirent->d_name;
+		auto const pathLength = strlen(beatmapPath);
 
 		// Doesn't have file extension
 		if (pathLength <= 4)
 			continue;
 
 		// Found a beatmap
-		if (strcmp(dirent->d_name + pathLength - 4, ".fxt") != 0)
+		if (strcmp(beatmapPath + pathLength - 4, ".fxt") != 0)
 			continue;
-
-		auto const beatmapPath = dirent->d_name;
 
 		FXT_Beatmap beatmap = {};
 
 		if (FXT_Beatmap_LoadMetadata(&beatmap, beatmapPath))
-			return FXT_DatabaseError_BrokenBFileSearch;
+			continue;
 
 		if (! FXT_DatabaseRecord_IsNull(shget(db, beatmapPath)))
 			return FXT_DatabaseError_BrokenBFileSearch;
