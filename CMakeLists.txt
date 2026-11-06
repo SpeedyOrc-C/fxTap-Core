@@ -1,35 +1,21 @@
-cmake_minimum_required(VERSION 3.16)
-project(fxTap-Core C)
+cmake_minimum_required(VERSION 3.28)
+project(fxTap-Core CXX)
 
-set(CMAKE_C_STANDARD 23)
+set(CMAKE_CXX_STANDARD 23)
 
-add_library(fxTap-Core
-        src/config.c
-		src/casiowin/config.c
-        src/beatmap.c
-		src/casiowin/beatmap.c
-        src/game.c
-        src/render.c
-        src/keymap.c
-        src/keymap-djmax.c
-        src/keymap-beatmania.c
-        src/database.c
-		src/stb_ds.c
-		src/casiowin/database.c
-		src/database/view.c
+add_library(fxTap-Core)
+target_sources(fxTap-Core PUBLIC FILE_SET CXX_MODULES FILES
+        src/lib.ixx
+        src/beatmap.ixx
+        src/config.ixx
+        src/grading.ixx
+        src/keymap.ixx
+        src/keymapper.ixx
 )
 
-target_include_directories(fxTap-Core PUBLIC include)
-target_compile_definitions(fxTap-Core PUBLIC STB_DS_IMPLEMENTATION)
-
 if (DEFINED GINT_PATH)
-	target_compile_definitions(fxTap-Core PUBLIC FXTAP_CORE_USE_GINT)
+    target_compile_definitions(fxTap-Core PUBLIC FXTAP_CORE_USE_GINT)
 endif ()
 
-enable_testing()
-
-add_executable(fxTap-Core-Test EXCLUDE_FROM_ALL test/main.c)
+add_executable(fxTap-Core-Test test/main.cpp)
 target_link_libraries(fxTap-Core-Test PRIVATE fxTap-Core)
-target_include_directories(fxTap-Core-Test PRIVATE include)
-
-add_test(NAME Test_All COMMAND $<TARGET_FILE:fxTap-Core-Test>)
