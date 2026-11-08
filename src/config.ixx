@@ -33,6 +33,11 @@ namespace fxtap::config
 	};
 
 	export const std::string DefaultPath = "fxTap.cfg";
+}
+
+namespace fxtap
+{
+	using namespace config;
 
 	export struct Config
 	{
@@ -43,6 +48,15 @@ namespace fxtap::config
 		uint8_t tap_note_height = 4;
 		Language language : 8 = Language::EnUs;
 		KeyMapStyle key_map_style : 8 = KeyMapStyle::Beatmania;
+
+		[[nodiscard]]
+		std::optional<double> custom_overall_difficulty() const
+		{
+			return custom_overall_difficulty10.transform([](const uint8_t x)
+			{
+				return x / 10.0;
+			});
+		}
 
 		[[nodiscard]]
 		static std::variant<LoadError, Config> Load()

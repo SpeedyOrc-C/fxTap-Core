@@ -11,28 +11,27 @@ module;
 
 export module fxtap:beatmap;
 
+using namespace std;
+
 namespace fxtap::beatmap
 {
-	export enum class FindError
-	{
-		MallocFailed,
-		FxtapFolderNotFound,
-		BadFile,
-	};
-
 	export struct Note
 	{
-		uint16_t AccumulatedStartTime;
-		uint16_t Duration;
+		/**
+		 * @brief Time difference between this note and the previous one in the same column.
+		 * @details Reason for not using absolute time is to save space.
+		 */
+		uint16_t accumulated_time_ms;
+		uint16_t duration_ms;
 
 		[[nodiscard]] inline bool IsTap() const
 		{
-			return Duration == 0U;
+			return duration_ms == 0;
 		}
 
 		[[nodiscard]] inline bool IsHold() const
 		{
-			return Duration > 0U;
+			return duration_ms > 0;
 		}
 	};
 
@@ -52,51 +51,56 @@ namespace fxtap::beatmap
 		BadColumnSizes,
 		BadNote,
 	};
+}
+
+namespace fxtap
+{
+	using namespace beatmap;
 
 	export class Beatmap
 	{
-		std::string title_;
-		std::string artist_;
-		std::string version_;
+		string title_;
+		string artist_;
+		string version_;
 		double overall_difficulty_;
-		std::vector<std::vector<Note>> columns_;
+		vector<vector<Note>> columns_;
 
 		Beatmap(
-			std::string title,
-			std::string artist,
-			std::string version,
+			string title,
+			string artist,
+			string version,
 			const double overall_difficulty,
-			std::vector<std::vector<Note>> columns
+			vector<vector<Note>> columns
 		)
-			: title_(std::move(title))
-			  , artist_(std::move(artist))
-			  , version_(std::move(version))
+			: title_(move(title))
+			  , artist_(move(artist))
+			  , version_(move(version))
 			  , overall_difficulty_(overall_difficulty)
-			  , columns_(std::move(columns))
+			  , columns_(move(columns))
 		{
 		}
 
 	public:
 		[[nodiscard]]
-		inline auto Title() const
+		inline auto title() const
 		{
-			return std::string_view(title_);
+			return string_view(title_);
 		}
 
 		[[nodiscard]]
-		inline auto Artist() const
+		inline auto artist() const
 		{
-			return std::string_view(artist_);
+			return string_view(artist_);
 		}
 
 		[[nodiscard]]
-		inline auto Version() const
+		inline auto version() const
 		{
-			return std::string_view(version_);
+			return string_view(version_);
 		}
 
 		[[nodiscard]]
-		inline auto OverallDifficulty() const
+		inline auto overall_difficulty() const
 		{
 			return overall_difficulty_;
 		}
@@ -116,29 +120,29 @@ namespace fxtap::beatmap
 		[[nodiscard]]
 		auto ColumnsNoteCount() const
 		{
-			return columns_ | std::views::transform([](const auto& column) { return column.size(); });
+			return columns_ | views::transform([](const auto& column) { return column.size(); });
 		}
 
 		[[nodiscard]]
-		static std::variant<LoadError, Beatmap> Load(const std::string& path)
+		static variant<LoadError, Beatmap> Load(const string& path)
 		{
-			std::ifstream file(path, std::ios::binary);
+			ifstream file(path, ios::binary);
 			return Load(file);
 		}
 
 		[[nodiscard]]
-		static std::variant<LoadError, Beatmap> Load(std::ifstream& file)
+		static variant<LoadError, Beatmap> Load(ifstream& file)
 		{
 			if (!file.is_open())
 				return LoadError::FileNotFound;
 
-			std::array<char, 8> header{};
+			array<char, 8> header{};
 			file.read(header.data(), 8);
 
 			if (file.bad())
 				return LoadError::BadHeader;
 
-			if (std::string(header.data(), 8) != "FXT@2602")
+			if (string(header.data(), 8) != "FXT@2602")
 				return LoadError::FormatNotSupported;
 
 			double overallDifficulty;
@@ -153,13 +157,13 @@ namespace fxtap::beatmap
 			if (file.bad())
 				return LoadError::BadTitleLength;
 
-			std::vector<char> titleBuffer(titleLength);
+			vector<char> titleBuffer(titleLength);
 			file.read(titleBuffer.data(), titleLength);
 
 			if (file.bad())
 				return LoadError::BadTitle;
 
-			std::string title(titleBuffer.begin(), titleBuffer.end());
+			string title(titleBuffer.begin(), titleBuffer.end());
 
 			uint8_t artistLength;
 			file.read(reinterpret_cast<char*>(&artistLength), sizeof(artistLength));
@@ -167,13 +171,13 @@ namespace fxtap::beatmap
 			if (file.bad())
 				return LoadError::BadArtistLength;
 
-			std::vector<char> artistBuffer(artistLength);
+			vector<char> artistBuffer(artistLength);
 			file.read(artistBuffer.data(), artistLength);
 
 			if (file.bad())
 				return LoadError::BadArtist;
 
-			std::string artist(artistBuffer.begin(), artistBuffer.end());
+			string artist(artistBuffer.begin(), artistBuffer.end());
 
 			uint8_t versionLength;
 			file.read(reinterpret_cast<char*>(&versionLength), sizeof(versionLength));
@@ -181,13 +185,13 @@ namespace fxtap::beatmap
 			if (file.bad())
 				return LoadError::BadVersionLength;
 
-			std::vector<char> versionBuffer(versionLength);
+			vector<char> versionBuffer(versionLength);
 			file.read(versionBuffer.data(), versionLength);
 
 			if (file.bad())
 				return LoadError::BadVersion;
 
-			std::string version(versionBuffer.begin(), versionBuffer.end());
+			string version(versionBuffer.begin(), versionBuffer.end());
 
 			uint8_t columnCount;
 			file.read(reinterpret_cast<char*>(&columnCount), sizeof(columnCount));
@@ -195,16 +199,16 @@ namespace fxtap::beatmap
 			if (file.bad())
 				return LoadError::BadColumnCount;
 
-			std::vector<uint16_t> columnSizes(columnCount);
+			vector<uint16_t> columnSizes(columnCount);
 			file.read(reinterpret_cast<char*>(columnSizes.data()),
 			          static_cast<long long>(sizeof(uint16_t) * columnSizes.size()));
 
 			if (file.bad())
 				return LoadError::BadColumnSizes;
 
-			std::vector<std::vector<Note>> columns(columnCount);
+			vector<vector<Note>> columns(columnCount);
 
-			for (const auto& [i, size] : std::views::enumerate(columnSizes))
+			for (const auto& [i, size] : views::enumerate(columnSizes))
 			{
 				columns[i].resize(size);
 				file.read(reinterpret_cast<char*>(columns[i].data()), static_cast<long long>(size * sizeof(Note)));
@@ -213,7 +217,7 @@ namespace fxtap::beatmap
 					return LoadError::BadNote;
 			}
 
-			return Beatmap(std::move(title), std::move(artist), std::move(version), overallDifficulty, std::move(columns));
+			return Beatmap(move(title), move(artist), move(version), overallDifficulty, move(columns));
 		}
 	};
 }

@@ -6,11 +6,13 @@ set(CMAKE_CXX_STANDARD 23)
 add_library(fxTap-Core)
 target_sources(fxTap-Core PUBLIC FILE_SET CXX_MODULES FILES
         src/lib.ixx
+        src/base.ixx
         src/beatmap.ixx
         src/config.ixx
+        src/game.ixx
         src/grading.ixx
         src/keymap.ixx
-        src/keymapper.ixx
+        src/mod.ixx
 )
 
 if (DEFINED GINT_PATH)

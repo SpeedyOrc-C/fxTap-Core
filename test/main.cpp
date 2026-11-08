@@ -8,16 +8,14 @@ using namespace fxtap;
 
 static void TestLoadBeatmap()
 {
-	using namespace beatmap;
-
 	const auto errorOrBeatmap = Beatmap::Load("dream.fxt");
 	assert(holds_alternative<Beatmap>(errorOrBeatmap));
 	const auto& beatmap = get<Beatmap>(errorOrBeatmap);
 
 	println("Beatmap loaded.");
-	println("Title: {}", beatmap.Title());
-	println("Artist: {}", beatmap.Artist());
-	println("Version: {}", beatmap.Version());
+	println("Title: {}", beatmap.title());
+	println("Artist: {}", beatmap.artist());
+	println("Version: {}", beatmap.version());
 	print("There're {} column(s) with sizes: ", beatmap.ColumnCount());
 	for (const auto size : beatmap.ColumnsNoteCount())
 		print("{} ", size);
@@ -35,7 +33,7 @@ static void TestConfig()
 	println("Config saved.");
 
 	const auto errorOrConfig = Config::Load();
-	assert(holds_alternative<config::Config>(errorOrConfig));
+	assert(holds_alternative<Config>(errorOrConfig));
 	println("Config loaded.");
 }
 
