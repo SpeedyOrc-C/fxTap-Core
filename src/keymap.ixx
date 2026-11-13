@@ -9,6 +9,7 @@ import :config;
 
 using namespace std;
 using namespace fxtap;
+using namespace fxtap::config;
 
 namespace fxtap::keymap
 {

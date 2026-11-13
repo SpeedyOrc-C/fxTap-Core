@@ -59,11 +59,11 @@ namespace fxtap
 
 	export class Beatmap
 	{
-		string title_;
-		string artist_;
-		string version_;
-		double overall_difficulty_;
-		vector<vector<Note>> columns_;
+		const string title_;
+		const string artist_;
+		const string version_;
+		const double overall_difficulty_;
+		const vector<vector<Note>> columns_;
 
 		Beatmap(
 			string title,
@@ -103,6 +103,12 @@ namespace fxtap
 		inline auto overall_difficulty() const
 		{
 			return overall_difficulty_;
+		}
+
+		[[nodiscard]]
+		inline const auto& columns() const
+		{
+			return columns_;
 		}
 
 		[[nodiscard]]
